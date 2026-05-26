@@ -143,3 +143,37 @@ if __name__ == '__main__':
 def clear_chat():
     save_chat([])
     return jsonify({'status': 'ok'})
+
+PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
+
+def load_pseudos():
+    if os.path.exists(PSEUDOS_FILE):
+        with open(PSEUDOS_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_pseudo(ip, pseudo):
+    pseudos = load_pseudos()
+    pseudos[ip] = pseudo
+    with open(PSEUDOS_FILE, 'w') as f:
+        json.dump(pseudos, f)
+
+@app.route('/api/pseudo', methods=['POST'])
+def set_pseudo():
+    data = request.get_json()
+    pseudo = data.get('pseudo', '').strip()
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    if ',' in ip:
+        ip = ip.split(',')[0].strip()
+    if pseudo and len(pseudo) >= 2:
+        save_pseudo(ip, pseudo)
+        return jsonify({'status': 'ok', 'pseudo': pseudo})
+    return jsonify({'status': 'error'})
+
+@app.route('/api/pseudo', methods=['GET'])
+def get_pseudo():
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    if ',' in ip:
+        ip = ip.split(',')[0].strip()
+    pseudos = load_pseudos()
+    return jsonify({'pseudo': pseudos.get(ip, '')})

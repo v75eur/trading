@@ -164,7 +164,10 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 
 <script>
 // PSEUDO
-var USERNAME = localStorage.getItem('rick_chat_username');
+// USERNAME chargé via API
+var USERNAME = "";
+fetch("/api/pseudo").then(r=>r.json()).then(d=>{USERNAME=d.pseudo;if(USERNAME){document.getElementById("pseudoModal").style.display="none";}});
+// Ancien:('rick_chat_username');
 if (USERNAME) {
     document.getElementById('pseudoModal').style.display = 'none';
 } else {
@@ -175,7 +178,7 @@ function setPseudo() {
     var name = document.getElementById('pseudoInput').value.trim();
     if (name.length < 2) return alert('Pseudo trop court (min 2 caractères)');
     USERNAME = name;
-    localStorage.setItem('rick_chat_username', name);
+    fetch("/api/pseudo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pseudo:name})});
     document.getElementById('pseudoModal').style.display = 'none';
 }
 
