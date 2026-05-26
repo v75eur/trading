@@ -27,10 +27,9 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 .chat-header .share-btns button{background:none;border:none;color:#8b949e;cursor:pointer;font-size:16px;padding:2px 4px}
 .chat-header .share-btns button:hover{color:#58a6ff}
 .chat-messages{flex:1;overflow-y:auto;padding:8px;min-height:0}
-.chat-msg{padding:6px 8px;margin:3px 0;background:#0d1117;border-radius:4px;font-size:14px;line-height:1.3;word-wrap:break-word;animation:fadeIn 0.2s}
+.chat-msg{padding:6px 8px;margin:3px 0;background:#0d1117;border-radius:4px;font-size:14px;line-height:1.3;word-wrap:break-word}
 .chat-msg .user{color:#58a6ff;font-weight:bold;font-size:12px;display:block}
 .chat-msg .time{color:#666;font-size:10px}
-@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .chat-input-area{padding:8px;border-top:1px solid #30363d;flex-shrink:0;background:#161b22}
 .chat-input-area input{width:100%;background:#0d1117;color:white;border:1px solid #30363d;padding:10px;border-radius:20px;font-size:14px;margin-bottom:6px;outline:none}
 .chat-input-area input:focus{border-color:#58a6ff}
@@ -40,7 +39,7 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 .emoji-bar button{background:none;border:none;font-size:20px;cursor:pointer;padding:2px 4px;border-radius:4px}
 .emoji-bar button:hover{background:#21262d}
 
-/* PSEUDO MODAL */
+/* PSEUDO MODAL - caché par défaut */
 #pseudoModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;display:none;justify-content:center;align-items:center}
 .pseudo-box{background:#161b22;border:1px solid #58a6ff;border-radius:15px;padding:2rem;width:90%;max-width:350px;text-align:center}
 .pseudo-box h3{color:#58a6ff;margin-bottom:0.5rem}
@@ -54,13 +53,10 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 .like-btn:hover{background:#f85149;color:white}
 .like-btn.liked{background:#f85149;color:white;cursor:default}
 .like-count{background:rgba(22,27,34,0.95);color:white;padding:8px 14px;border-radius:20px;font-weight:bold;font-size:15px;border:1px solid #30363d}
-<div id="limitAlert" style="position:fixed;bottom:80px;right:20px;background:#f85149;color:white;padding:10px 15px;border-radius:8px;font-weight:bold;font-size:14px;display:none;animation:blink 1s infinite;z-index:9999;">⚠️ Limite 500 presque atteinte !</div>
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
-@keyframes blink{0%{opacity:1}50%{opacity:0.3}100%{opacity:1}}
 .like-count.up{animation:pulse 0.5s}
-<div id="limitAlert" style="position:fixed;bottom:80px;right:20px;background:#f85149;color:white;padding:10px 15px;border-radius:8px;font-weight:bold;font-size:14px;display:none;animation:blink 1s infinite;z-index:9999;">⚠️ Limite 500 presque atteinte !</div>
 
-#adminTrigger{position:fixed;bottom:10px;left:10px;z-index:9999;width:20px;height:20px;border-radius:50%;background:rgba(22,27,34,0.8);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.2);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#adminTrigger{position:fixed;bottom:10px;left:10px;z-index:9999;width:22px;height:22px;border-radius:50%;background:rgba(22,27,34,0.8);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.2);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 #adminTrigger:hover{background:rgba(22,27,34,1);border-color:#d29922;color:#d29922}
 #adminOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:99999;display:none;justify-content:center;align-items:center}
 .admin-box{background:#161b22;border:1px solid #d29922;border-radius:15px;padding:2rem;width:90%;max-width:400px;text-align:center;position:relative}
@@ -107,30 +103,24 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
     <div class="chat-header">
         💬 Chat Live
         <div class="share-btns">
-            <button onclick="share('twitter')" title="Partager sur Twitter">𝕏</button>
-            <button onclick="share('facebook')" title="Partager sur Facebook">📘</button>
-            <button onclick="share('telegram')" title="Partager sur Telegram">📱</button>
+            <button onclick="share('twitter')" title="Twitter">𝕏</button>
+            <button onclick="share('facebook')" title="Facebook">📘</button>
+            <button onclick="share('telegram')" title="Telegram">📱</button>
         </div>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-area">
         <div class="emoji-bar">
-            <button onclick="addEmoji('🚀')">🚀</button>
-            <button onclick="addEmoji('📈')">📈</button>
-            <button onclick="addEmoji('📉')">📉</button>
-            <button onclick="addEmoji('💰')">💰</button>
-            <button onclick="addEmoji('🔥')">🔥</button>
-            <button onclick="addEmoji('👀')">👀</button>
-            <button onclick="addEmoji('💎')">💎</button>
-            <button onclick="addEmoji('✅')">✅</button>
+            <button onclick="addEmoji('🚀')">🚀</button><button onclick="addEmoji('📈')">📈</button><button onclick="addEmoji('📉')">📉</button><button onclick="addEmoji('💰')">💰</button>
+            <button onclick="addEmoji('🔥')">🔥</button><button onclick="addEmoji('👀')">👀</button><button onclick="addEmoji('💎')">💎</button><button onclick="addEmoji('✅')">✅</button>
         </div>
-        <input type="text" id="chatInput" placeholder="Votre message..." onclick="if(!USERNAME)document.getElementById("pseudoModal"" onkeypress="if(event.key==='Enter')sendChat()">
+        <input type="text" id="chatInput" placeholder="Votre message..." onkeypress="if(event.key==='Enter')sendChat()" onclick="openPseudoIfNeeded()">
         <button onclick="sendChat()">ENVOYER</button>
     </div>
 </div>
 
 <!-- PSEUDO MODAL -->
-<div id="pseudoModal" style="display:none;">
+<div id="pseudoModal">
     <div class="pseudo-box">
         <h3>👋 Bienvenue !</h3>
         <p>Choisissez un pseudo pour chatter</p>
@@ -140,11 +130,13 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 </div>
 
 <div class="like-container">
-    <div class="like-count" id="likeCount">545</div>
-<div id="limitAlert" style="position:fixed;bottom:80px;right:20px;background:#f85149;color:white;padding:10px 15px;border-radius:8px;font-weight:bold;font-size:14px;display:none;animation:blink 1s infinite;z-index:9999;">⚠️ Limite 500 presque atteinte !</div>
+    <div class="like-count" id="likeCount">112</div>
     <button class="like-btn" id="likeBtn" onclick="addLike()" title="J'aime">❤️</button>
 </div>
+
+<!-- ENGRENAGE -->
 <button id="adminTrigger" title="Admin">⚙</button>
+
 <div id="adminOverlay">
     <div class="admin-box">
         <button id="closeAdmin" onclick="closeAdminPopup()">✕</button>
@@ -155,8 +147,7 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
             <p id="adminError" style="color:#f85149;display:none;">Mot de passe incorrect</p>
         </div>
         <div id="adminStats" style="display:none;">
-            <div class="stats"><p>👥 <span id="onlineNow">0</span> en ligne</p><p>❤️ <span id="totalLikes">545</span> likes</p><p>📊 <span id="totalVisitors">0</span> visiteurs</p></div>
-<button onclick="clearChat()" style="background:#f85149;color:white;padding:0.5rem 1rem;border:none;border-radius:8px;cursor:pointer;margin:0.5rem;">🗑️ Vider le chat</button>
+            <div class="stats"><p>👥 <span id="onlineNow">0</span> en ligne</p><p>❤️ <span id="totalLikes">112</span> likes</p><p>📊 <span id="totalVisitors">0</span> visiteurs</p></div>
             <button onclick="closeAdminPopup()" style="background:#30363d;">Fermer</button>
         </div>
     </div>
@@ -164,14 +155,14 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 
 <script>
 // PSEUDO
-// USERNAME chargé via API
 var USERNAME = "";
-fetch("/api/pseudo").then(r=>r.json()).then(d=>{USERNAME=d.pseudo;if(USERNAME){document.getElementById("pseudoModal").style.display="none";}});
-// Ancien:('rick_chat_username');
-if (USERNAME) {
-    document.getElementById('pseudoModal').style.display = 'none';
-} else {
-    // Caché au début
+fetch("/api/pseudo").then(r=>r.json()).then(d=>{USERNAME=d.pseudo;});
+
+function openPseudoIfNeeded() {
+    if (!USERNAME) {
+        document.getElementById('pseudoModal').style.display = 'flex';
+        document.getElementById('pseudoInput').focus();
+    }
 }
 
 function setPseudo() {
@@ -183,20 +174,13 @@ function setPseudo() {
 }
 
 // EMOJIS
-function addEmoji(emoji) {
-    document.getElementById('chatInput').value += emoji;
-    document.getElementById('chatInput').focus();
-}
+function addEmoji(emoji) { document.getElementById('chatInput').value += emoji; document.getElementById('chatInput').focus(); }
 
 // SHARE
 function share(platform) {
     var url = encodeURIComponent('https://trading-ilfh.onrender.com');
-    var text = encodeURIComponent('📊 Rejoignez-moi sur Rick Trading ! Graphiques en direct, chat live et analyses techniques.');
-    var links = {
-        twitter: 'https://twitter.com/intent/tweet?text=' + text + '&url=' + url,
-        facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + url,
-        telegram: 'https://t.me/share/url?url=' + url + '&text=' + text
-    };
+    var text = encodeURIComponent('📊 Rejoignez-moi sur Rick Trading !');
+    var links = {twitter:'https://twitter.com/intent/tweet?text='+text+'&url='+url,facebook:'https://www.facebook.com/sharer/sharer.php?u='+url,telegram:'https://t.me/share/url?url='+url+'&text='+text};
     window.open(links[platform], '_blank', 'width=600,height=400');
 }
 
@@ -208,11 +192,10 @@ async function loadStats(){try{var res=await fetch('/api/stats');var data=await 
 async function addLike(){try{var res=await fetch('/api/like',{method:'POST'});var data=await res.json();document.getElementById('likeCount').textContent=data.likes;document.getElementById('likeCount').classList.add('up');setTimeout(function(){document.getElementById('likeCount').classList.remove('up');},500);if(data.status==='ok')document.getElementById('likeBtn').classList.add('liked');}catch(e){}}
 document.getElementById('adminTrigger').addEventListener('click',function(){document.getElementById('adminOverlay').style.display='flex';document.getElementById('loginForm').style.display='block';document.getElementById('adminStats').style.display='none';});
 function closeAdminPopup(){document.getElementById('adminOverlay').style.display='none';}
-async function clearChat(){await fetch("/api/chat/clear",{method:"POST"});loadChat();}
 async function checkAdminPass(){var _p=document.getElementById('adminPass').value;var _e=new TextEncoder().encode(_p);var _h=await crypto.subtle.digest('SHA-256',_e);var _s=Array.from(new Uint8Array(_h)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');if(_s===_k){IS_ADMIN=true;await registerVisit();document.getElementById('loginForm').style.display='none';document.getElementById('adminStats').style.display='block';var res=await fetch('/api/stats');var data=await res.json();document.getElementById('onlineNow').textContent=data.online;document.getElementById('totalLikes').textContent=data.likes;document.getElementById('totalVisitors').textContent=data.visitors;}else{document.getElementById('adminError').style.display='block';}}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAdminPopup();});
 async function loadChat(){try{var res=await fetch('/api/chat');var msgs=await res.json();var el=document.getElementById('chatMessages');el.innerHTML=msgs.map(function(m){var u=m.user||'Anonyme';return'<div class="chat-msg"><span class="user">'+u+'</span>'+m.message+' <span class="time">'+m.time+'</span></div>';}).join('');el.scrollTop=el.scrollHeight;}catch(e){}}
-async function sendChat(){if(!USERNAME)return;var input=document.getElementById('chatInput');var msg=input.value.trim();if(!msg)return;await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,user:USERNAME})});input.value='';loadChat();}
+async function sendChat(){if(!USERNAME){openPseudoIfNeeded();return;}var input=document.getElementById('chatInput');var msg=input.value.trim();if(!msg)return;await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,user:USERNAME})});input.value='';loadChat();}
 loadChat();setInterval(loadChat,3000);
 registerVisit();loadStats();setInterval(loadStats,10000);
 </script>
