@@ -124,7 +124,7 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
             <button onclick="addEmoji('💎')">💎</button>
             <button onclick="addEmoji('✅')">✅</button>
         </div>
-        <input type="text" id="chatInput" placeholder="Votre message..." onkeypress="if(event.key==='Enter')sendChat()">
+        <input type="text" id="chatInput" placeholder="Votre message..." onclick="if(!USERNAME)document.getElementById("pseudoModal").style.display="flex"" onkeypress="if(event.key==='Enter')sendChat()">
         <button onclick="sendChat()">ENVOYER</button>
     </div>
 </div>
