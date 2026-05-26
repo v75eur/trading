@@ -14,7 +14,7 @@ def load_stats():
     if os.path.exists(STATS_FILE):
         with open(STATS_FILE, 'r') as f:
             return json.load(f)
-    return {'likes': 545, 'real_likes': 0, 'visitors': 0, 'online': {}, 'liked_ips': []}
+    return {'likes': 112, 'real_likes': 0, 'visitors': 0, 'online': {}, 'liked_ips': []}
 
 def save_stats(s):
     with open(STATS_FILE, 'w') as f:
@@ -27,7 +27,6 @@ def load_chat():
     return []
 
 def save_chat(messages):
-    # Garder seulement les 30 derniers messages
     if len(messages) > 30:
         messages = messages[-30:]
     with open(CHAT_FILE, 'w') as f:
@@ -64,7 +63,21 @@ def api_stats():
     now = time.time()
     stats['online'] = {k: v for k, v in stats['online'].items() if now - v < 300 and k not in ADMIN_IPS}
     save_stats(stats)
-    return jsonify({'likes': stats['likes'], 'visitors': stats['visitors'], 'online': len(stats['online'])})
+    # Lire le compteur journalier
+    today = time.strftime('%Y-%m-%d')
+    daily_count = 0
+    if os.path.exists(DAILY_FILE):
+        with open(DAILY_FILE, 'r') as f:
+            d = json.load(f)
+            if d.get('date') == today:
+                daily_count = d.get('count', 0)
+    return jsonify({
+        'likes': stats['likes'],
+        'visitors': stats['visitors'],
+        'online': len(stats['online']),
+        'daily_count': daily_count,
+        'daily_limit': DAILY_LIMIT
+    })
 
 @app.route('/api/visit', methods=['POST'])
 def api_visit():
@@ -105,7 +118,6 @@ def api_like():
         return jsonify({'status': 'ok', 'likes': stats['likes']})
     return jsonify({'status': 'already_liked', 'likes': stats['likes']})
 
-# === CHAT API ===
 @app.route('/api/chat', methods=['GET'])
 def get_chat():
     return jsonify(load_chat())
@@ -118,8 +130,8 @@ def post_chat():
     if msg and len(msg) <= 200:
         messages.append({
             'message': msg,
-            'time': time.strftime('%H:%M'),
-            'id': len(messages)
+            'user': data.get('user', 'Anonyme'),
+            'time': time.strftime('%H:%M')
         })
         save_chat(messages)
     return jsonify({'status': 'ok'})

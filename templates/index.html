@@ -20,26 +20,45 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 .spinner{width:40px;height:40px;border:3px solid #30363d;border-top:3px solid #58a6ff;border-radius:50%;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* CHAT STYLE YOUTUBE */
+/* CHAT */
 .chat-panel{width:320px;background:#161b22;border-left:1px solid #30363d;display:flex;flex-direction:column;height:100vh}
-.chat-header{background:#21262d;padding:10px;text-align:center;font-weight:bold;color:#58a6ff;font-size:14px;border-bottom:1px solid #30363d;flex-shrink:0}
+.chat-header{background:#21262d;padding:10px;text-align:center;font-weight:bold;color:#58a6ff;font-size:14px;border-bottom:1px solid #30363d;flex-shrink:0;display:flex;justify-content:space-between;align-items:center}
+.chat-header .share-btns{display:flex;gap:4px}
+.chat-header .share-btns button{background:none;border:none;color:#8b949e;cursor:pointer;font-size:16px;padding:2px 4px}
+.chat-header .share-btns button:hover{color:#58a6ff}
 .chat-messages{flex:1;overflow-y:auto;padding:8px;min-height:0}
 .chat-msg{padding:6px 8px;margin:3px 0;background:#0d1117;border-radius:4px;font-size:14px;line-height:1.3;word-wrap:break-word;animation:fadeIn 0.2s}
-.chat-msg .time{color:#666;font-size:10px;margin-right:4px}
+.chat-msg .user{color:#58a6ff;font-weight:bold;font-size:12px;display:block}
+.chat-msg .time{color:#666;font-size:10px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .chat-input-area{padding:8px;border-top:1px solid #30363d;flex-shrink:0;background:#161b22}
 .chat-input-area input{width:100%;background:#0d1117;color:white;border:1px solid #30363d;padding:10px;border-radius:20px;font-size:14px;margin-bottom:6px;outline:none}
 .chat-input-area input:focus{border-color:#58a6ff}
 .chat-input-area button{width:100%;background:#3ea6ff;color:#0d1117;border:none;padding:8px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:bold}
 .chat-input-area button:hover{background:#58b6ff}
+.emoji-bar{display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap}
+.emoji-bar button{background:none;border:none;font-size:20px;cursor:pointer;padding:2px 4px;border-radius:4px}
+.emoji-bar button:hover{background:#21262d}
+
+/* PSEUDO MODAL */
+#pseudoModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;display:flex;justify-content:center;align-items:center}
+.pseudo-box{background:#161b22;border:1px solid #58a6ff;border-radius:15px;padding:2rem;width:90%;max-width:350px;text-align:center}
+.pseudo-box h3{color:#58a6ff;margin-bottom:0.5rem}
+.pseudo-box p{color:#8b949e;font-size:13px;margin-bottom:1rem}
+.pseudo-box input{width:100%;padding:10px;background:#0d1117;color:white;border:1px solid #30363d;border-radius:8px;text-align:center;font-size:16px;margin-bottom:0.8rem}
+.pseudo-box button{width:100%;padding:10px;background:#58a6ff;color:white;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:bold}
+.pseudo-box button:hover{background:#4c8ed6}
 
 .like-container{position:fixed;bottom:20px;right:340px;z-index:9999;display:flex;align-items:center;gap:8px}
 .like-btn{background:rgba(22,27,34,0.95);border:2px solid #f85149;color:#f85149;font-size:22px;width:50px;height:50px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .like-btn:hover{background:#f85149;color:white}
 .like-btn.liked{background:#f85149;color:white;cursor:default}
 .like-count{background:rgba(22,27,34,0.95);color:white;padding:8px 14px;border-radius:20px;font-weight:bold;font-size:15px;border:1px solid #30363d}
+<div id="limitAlert" style="position:fixed;bottom:80px;right:20px;background:#f85149;color:white;padding:10px 15px;border-radius:8px;font-weight:bold;font-size:14px;display:none;animation:blink 1s infinite;z-index:9999;">⚠️ Limite 500 presque atteinte !</div>
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes blink{0%{opacity:1}50%{opacity:0.3}100%{opacity:1}}
 .like-count.up{animation:pulse 0.5s}
+<div id="limitAlert" style="position:fixed;bottom:80px;right:20px;background:#f85149;color:white;padding:10px 15px;border-radius:8px;font-weight:bold;font-size:14px;display:none;animation:blink 1s infinite;z-index:9999;">⚠️ Limite 500 presque atteinte !</div>
 
 #adminTrigger{position:fixed;bottom:10px;left:10px;z-index:9999;width:20px;height:20px;border-radius:50%;background:rgba(22,27,34,0.8);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.2);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 #adminTrigger:hover{background:rgba(22,27,34,1);border-color:#d29922;color:#d29922}
@@ -85,16 +104,44 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 
 <!-- CHAT -->
 <div class="chat-panel">
-    <div class="chat-header">💬 Chat Live</div>
+    <div class="chat-header">
+        💬 Chat Live
+        <div class="share-btns">
+            <button onclick="share('twitter')" title="Partager sur Twitter">𝕏</button>
+            <button onclick="share('facebook')" title="Partager sur Facebook">📘</button>
+            <button onclick="share('telegram')" title="Partager sur Telegram">📱</button>
+        </div>
+    </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-area">
-        <input type="text" id="chatInput" placeholder="Saisissez votre message..." onkeypress="if(event.key==='Enter')sendChat()">
+        <div class="emoji-bar">
+            <button onclick="addEmoji('🚀')">🚀</button>
+            <button onclick="addEmoji('📈')">📈</button>
+            <button onclick="addEmoji('📉')">📉</button>
+            <button onclick="addEmoji('💰')">💰</button>
+            <button onclick="addEmoji('🔥')">🔥</button>
+            <button onclick="addEmoji('👀')">👀</button>
+            <button onclick="addEmoji('💎')">💎</button>
+            <button onclick="addEmoji('✅')">✅</button>
+        </div>
+        <input type="text" id="chatInput" placeholder="Votre message..." onkeypress="if(event.key==='Enter')sendChat()">
         <button onclick="sendChat()">ENVOYER</button>
+    </div>
+</div>
+
+<!-- PSEUDO MODAL -->
+<div id="pseudoModal">
+    <div class="pseudo-box">
+        <h3>👋 Bienvenue !</h3>
+        <p>Choisissez un pseudo pour chatter</p>
+        <input type="text" id="pseudoInput" placeholder="Votre pseudo..." maxlength="20">
+        <button onclick="setPseudo()">Rejoindre le chat</button>
     </div>
 </div>
 
 <div class="like-container">
     <div class="like-count" id="likeCount">545</div>
+<div id="limitAlert" style="position:fixed;bottom:80px;right:20px;background:#f85149;color:white;padding:10px 15px;border-radius:8px;font-weight:bold;font-size:14px;display:none;animation:blink 1s infinite;z-index:9999;">⚠️ Limite 500 presque atteinte !</div>
     <button class="like-btn" id="likeBtn" onclick="addLike()" title="J'aime">❤️</button>
 </div>
 <button id="adminTrigger" title="Admin">⚙</button>
@@ -115,6 +162,40 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 </div>
 
 <script>
+// PSEUDO
+var USERNAME = localStorage.getItem('rick_chat_username');
+if (USERNAME) {
+    document.getElementById('pseudoModal').style.display = 'none';
+} else {
+    document.getElementById('pseudoModal').style.display = 'flex';
+}
+
+function setPseudo() {
+    var name = document.getElementById('pseudoInput').value.trim();
+    if (name.length < 2) return alert('Pseudo trop court (min 2 caractères)');
+    USERNAME = name;
+    localStorage.setItem('rick_chat_username', name);
+    document.getElementById('pseudoModal').style.display = 'none';
+}
+
+// EMOJIS
+function addEmoji(emoji) {
+    document.getElementById('chatInput').value += emoji;
+    document.getElementById('chatInput').focus();
+}
+
+// SHARE
+function share(platform) {
+    var url = encodeURIComponent('https://trading-ilfh.onrender.com');
+    var text = encodeURIComponent('📊 Rejoignez-moi sur Rick Trading ! Graphiques en direct, chat live et analyses techniques.');
+    var links = {
+        twitter: 'https://twitter.com/intent/tweet?text=' + text + '&url=' + url,
+        facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + url,
+        telegram: 'https://t.me/share/url?url=' + url + '&text=' + text
+    };
+    window.open(links[platform], '_blank', 'width=600,height=400');
+}
+
 var IS_ADMIN=false;
 var _k=null;
 (async function(){var _d=new TextEncoder().encode('AlidaBerenice1994');var _h=await crypto.subtle.digest('SHA-256',_d);_k=Array.from(new Uint8Array(_h)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');})();
@@ -125,8 +206,8 @@ document.getElementById('adminTrigger').addEventListener('click',function(){docu
 function closeAdminPopup(){document.getElementById('adminOverlay').style.display='none';}
 async function checkAdminPass(){var _p=document.getElementById('adminPass').value;var _e=new TextEncoder().encode(_p);var _h=await crypto.subtle.digest('SHA-256',_e);var _s=Array.from(new Uint8Array(_h)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');if(_s===_k){IS_ADMIN=true;await registerVisit();document.getElementById('loginForm').style.display='none';document.getElementById('adminStats').style.display='block';var res=await fetch('/api/stats');var data=await res.json();document.getElementById('onlineNow').textContent=data.online;document.getElementById('totalLikes').textContent=data.likes;document.getElementById('totalVisitors').textContent=data.visitors;}else{document.getElementById('adminError').style.display='block';}}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAdminPopup();});
-async function loadChat(){try{var res=await fetch('/api/chat');var msgs=await res.json();var el=document.getElementById('chatMessages');el.innerHTML=msgs.map(function(m){return'<div class="chat-msg"><span class="time">'+m.time+'</span>'+m.message+'</div>';}).join('');el.scrollTop=el.scrollHeight;}catch(e){}}
-async function sendChat(){var input=document.getElementById('chatInput');var msg=input.value.trim();if(!msg)return;await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});input.value='';loadChat();}
+async function loadChat(){try{var res=await fetch('/api/chat');var msgs=await res.json();var el=document.getElementById('chatMessages');el.innerHTML=msgs.map(function(m){var u=m.user||'Anonyme';return'<div class="chat-msg"><span class="user">'+u+'</span>'+m.message+' <span class="time">'+m.time+'</span></div>';}).join('');el.scrollTop=el.scrollHeight;}catch(e){}}
+async function sendChat(){if(!USERNAME)return;var input=document.getElementById('chatInput');var msg=input.value.trim();if(!msg)return;await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,user:USERNAME})});input.value='';loadChat();}
 loadChat();setInterval(loadChat,3000);
 registerVisit();loadStats();setInterval(loadStats,10000);
 </script>
