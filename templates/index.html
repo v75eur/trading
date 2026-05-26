@@ -41,13 +41,13 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 .emoji-bar button:hover{background:#21262d}
 
 /* PSEUDO MODAL */
-#pseudoModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;display:none;justify-content:center;align-items:center}
-.pseudo-box{background:#161b22;border:1px solid #58a6ff;border-radius:15px;padding:2rem;width:90%;max-width:350px;text-align:center;position:relative}
-.pseudo-box h3{color:#58a6ff;margin-bottom:0.5rem}
+#pseudoModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:99999;display:none;justify-content:center;align-items:center;backdrop-filter:blur(5px)}
+.pseudo-box{background:#1a1a2e;border:2px solid #58a6ff;border-radius:20px;padding:2.5rem 2rem;width:90%;max-width:380px;text-align:center;position:relative;box-shadow:0 0 40px rgba(88,166,255,0.2)}
+.pseudo-box h3{color:#58a6ff;margin-bottom:0.5rem;font-size:1.5rem}
 .pseudo-box p{color:#8b949e;font-size:13px;margin-bottom:1rem}
-.pseudo-box input{width:100%;padding:10px;background:#0d1117;color:white;border:1px solid #30363d;border-radius:8px;text-align:center;font-size:16px;margin-bottom:0.8rem}
-.pseudo-box button{width:100%;padding:10px;background:#58a6ff;color:white;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:bold}
-.pseudo-box button:hover{background:#4c8ed6}
+.pseudo-box input{width:100%;padding:12px;background:#0d1117;color:white;border:2px solid #30363d;border-radius:12px;text-align:center;font-size:16px;margin-bottom:1rem;transition:0.3s}
+.pseudo-box button{width:100%;padding:12px;background:linear-gradient(135deg,#58a6ff,#3fb950);color:white;border:none;border-radius:12px;cursor:pointer;font-size:16px;font-weight:bold;transition:0.3s}
+.pseudo-box button:hover{transform:scale(1.02);box-shadow:0 0 20px rgba(88,166,255,0.4)}
 
 .like-container{position:fixed;bottom:20px;right:340px;z-index:9999;display:flex;align-items:center;gap:8px}
 .like-btn{background:rgba(22,27,34,0.95);border:2px solid #f85149;color:#f85149;font-size:22px;width:50px;height:50px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
@@ -122,7 +122,7 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 
 <!-- PSEUDO MODAL -->
 <div id="pseudoModal">
-    <div class="pseudo-box"><button onclick="document.getElementById('pseudoModal').style.display='none'" style="position:absolute;top:10px;right:15px;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;z-index:1">✕</button>
+    <div class="pseudo-box"><button onclick="document.getElementById('pseudoModal').style.display='none'" style="position:absolute;top:15px;right:18px;background:rgba(255,255,255,0.1);border:none;color:#8b949e;font-size:20px;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:0.3s" onmouseover="this.style.background='rgba(248,81,73,0.3)';this.style.color='#f85149'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='#8b949e'">✕</button>
         <h3>👋 Bienvenue !</h3>
         <p>Choisissez un pseudo pour chatter</p>
         <input type="text" id="pseudoInput" placeholder="Votre pseudo..." maxlength="20">
