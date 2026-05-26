@@ -138,3 +138,8 @@ def post_chat():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+@app.route('/api/chat/clear', methods=['POST'])
+def clear_chat():
+    save_chat([])
+    return jsonify({'status': 'ok'})
