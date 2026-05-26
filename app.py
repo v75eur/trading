@@ -3,7 +3,9 @@ import json, os, time
 
 app = Flask(__name__)
 STATS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'stats.json')
+DAILY_FILE = os.path.join(os.path.dirname(__file__), 'data', 'daily.json')
 ADMIN_IPS = []
+DAILY_LIMIT = 500
 
 os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
 
@@ -17,8 +19,25 @@ def save_stats(s):
     with open(STATS_FILE, 'w') as f:
         json.dump(s, f)
 
+def check_daily_limit():
+    today = time.strftime('%Y-%m-%d')
+    data = {'date': today, 'count': 0}
+    if os.path.exists(DAILY_FILE):
+        with open(DAILY_FILE, 'r') as f:
+            data = json.load(f)
+    if data.get('date') != today:
+        data = {'date': today, 'count': 0}
+    if data['count'] >= DAILY_LIMIT:
+        return False
+    data['count'] += 1
+    with open(DAILY_FILE, 'w') as f:
+        json.dump(data, f)
+    return True
+
 @app.route('/')
 def index():
+    if not check_daily_limit():
+        return "<h1 style='color:white;text-align:center;margin-top:100px;font-family:Arial;background:#0d1117;height:100vh;'>⚠️ Limite quotidienne de 500 visiteurs atteinte.<br>Revenez demain.</h1>", 429
     return render_template('index.html')
 
 @app.route('/ping')
