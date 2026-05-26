@@ -4,6 +4,7 @@ import json, os, time
 app = Flask(__name__)
 STATS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'stats.json')
 DAILY_FILE = os.path.join(os.path.dirname(__file__), 'data', 'daily.json')
+CHAT_FILE = os.path.join(os.path.dirname(__file__), 'data', 'chat.json')
 ADMIN_IPS = []
 DAILY_LIMIT = 500
 
@@ -18,6 +19,19 @@ def load_stats():
 def save_stats(s):
     with open(STATS_FILE, 'w') as f:
         json.dump(s, f)
+
+def load_chat():
+    if os.path.exists(CHAT_FILE):
+        with open(CHAT_FILE, 'r') as f:
+            return json.load(f)
+    return []
+
+def save_chat(messages):
+    # Garder seulement les 30 derniers messages
+    if len(messages) > 30:
+        messages = messages[-30:]
+    with open(CHAT_FILE, 'w') as f:
+        json.dump(messages, f)
 
 def check_daily_limit():
     today = time.strftime('%Y-%m-%d')
@@ -60,12 +74,10 @@ def api_visit():
         visitor_id = visitor_id.split(',')[0].strip()
     data = request.get_json() or {}
     is_admin = data.get('admin', False)
-    
     if is_admin:
         if visitor_id not in ADMIN_IPS:
             ADMIN_IPS.append(visitor_id)
         return jsonify({'status': 'ok'})
-    
     now = time.time()
     stats['online'] = {k: v for k, v in stats['online'].items() if now - v < 300}
     if visitor_id not in stats['online'] and visitor_id not in ADMIN_IPS:
@@ -81,7 +93,6 @@ def api_like():
     visitor_id = request.headers.get('X-Forwarded-For', request.remote_addr)
     if ',' in visitor_id:
         visitor_id = visitor_id.split(',')[0].strip()
-    
     if visitor_id in ADMIN_IPS:
         return jsonify({'status': 'admin'})
     if visitor_id not in stats.get('liked_ips', []):
@@ -93,6 +104,25 @@ def api_like():
         save_stats(stats)
         return jsonify({'status': 'ok', 'likes': stats['likes']})
     return jsonify({'status': 'already_liked', 'likes': stats['likes']})
+
+# === CHAT API ===
+@app.route('/api/chat', methods=['GET'])
+def get_chat():
+    return jsonify(load_chat())
+
+@app.route('/api/chat', methods=['POST'])
+def post_chat():
+    messages = load_chat()
+    data = request.get_json()
+    msg = data.get('message', '').strip()
+    if msg and len(msg) <= 200:
+        messages.append({
+            'message': msg,
+            'time': time.strftime('%H:%M'),
+            'id': len(messages)
+        })
+        save_chat(messages)
+    return jsonify({'status': 'ok'})
 
 if __name__ == '__main__':
     app.run(debug=True)

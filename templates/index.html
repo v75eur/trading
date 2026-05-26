@@ -5,7 +5,8 @@
 <title>Rick Trading</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden}
+body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:flex}
+.left{flex:1;display:flex;flex-direction:column}
 .top{background:#161b22;padding:8px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #30363d;flex-wrap:wrap;gap:5px}
 .top h1{color:#58a6ff;font-size:18px}
 .ctrls{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -19,11 +20,24 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden}
 .spinner{width:40px;height:40px;border:3px solid #30363d;border-top:3px solid #58a6ff;border-radius:50%;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .trend-bar{background:#161b22;padding:6px 15px;text-align:center;font-size:14px;border-top:1px solid #30363d}
-.like-container{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;align-items:center;gap:10px}
+
+/* CHAT */
+.chat-panel{width:280px;background:#161b22;border-left:1px solid #30363d;display:flex;flex-direction:column}
+.chat-header{background:#21262d;padding:8px;text-align:center;font-weight:bold;color:#58a6ff;font-size:13px;border-bottom:1px solid #30363d}
+.chat-messages{flex:1;overflow-y:auto;padding:8px;font-size:11px}
+.chat-msg{padding:4px 6px;margin:3px 0;background:#0d1117;border-radius:4px;animation:fadeIn 0.3s}
+.chat-msg .time{color:#666;font-size:9px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.chat-input{display:flex;padding:6px;border-top:1px solid #30363d}
+.chat-input input{flex:1;background:#0d1117;color:white;border:1px solid #30363d;padding:6px 8px;border-radius:4px;font-size:11px}
+.chat-input button{background:#21262d;color:#58a6ff;border:1px solid #30363d;padding:6px 10px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:4px}
+.chat-input button:hover{background:#30363d}
+
+.like-container{position:fixed;bottom:20px;right:300px;z-index:9999;display:flex;align-items:center;gap:10px}
 .like-btn{background:rgba(22,27,34,0.95);border:2px solid #f85149;color:#f85149;font-size:24px;width:55px;height:55px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(248,81,73,0.3)}
 .like-btn:hover{background:#f85149;color:white;transform:scale(1.1)}
 .like-btn.liked{background:#f85149;color:white;cursor:default}
-.like-count{background:rgba(22,27,34,0.95);color:white;padding:10px 16px;border-radius:20px;font-weight:bold;font-size:16px;border:1px solid #30363d;min-width:65px;text-align:center;box-shadow:0 0 10px rgba(0,0,0,0.5)}
+.like-count{background:rgba(22,27,34,0.95);color:white;padding:10px 16px;border-radius:20px;font-weight:bold;font-size:16px;border:1px solid #30363d;min-width:65px;text-align:center}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
 .like-count.up{animation:pulse 0.5s}
 #adminTrigger{position:fixed;bottom:10px;left:10px;z-index:9999;width:22px;height:22px;border-radius:50%;background:rgba(22,27,34,0.8);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.2);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.3s}
@@ -40,6 +54,7 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden}
 </style>
 </head>
 <body>
+<div class="left">
 <div class="top">
     <h1>📊 Rick Trading</h1>
     <div class="ctrls">
@@ -65,6 +80,18 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden}
     <span id="pat">Signaux: --</span>
     <span id="stats">Stats: --</span>
 </div>
+</div>
+
+<!-- CHAT PANEL -->
+<div class="chat-panel">
+    <div class="chat-header">💬 Chat Live</div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Votre message..." onkeypress="if(event.key==='Enter')sendChat()">
+        <button onclick="sendChat()">➤</button>
+    </div>
+</div>
+
 <div class="like-container">
     <div class="like-count" id="likeCount">545</div>
     <button class="like-btn" id="likeBtn" onclick="addLike()" title="J'aime">❤️</button>
@@ -80,11 +107,12 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden}
             <p id="adminError" style="color:#f85149;display:none;">Mot de passe incorrect</p>
         </div>
         <div id="adminStats" style="display:none;">
-            <div class="stats"><p>👥 <span id="onlineNow">0</span> en ligne</p><p>❤️ <span id="totalLikes">545</span> likes</p><p>📊 <span id="totalVisitors">0</span> visiteurs</p><p style="font-size:10px;color:#666;">Admin exclu</p></div>
+            <div class="stats"><p>👥 <span id="onlineNow">0</span> en ligne</p><p>❤️ <span id="totalLikes">545</span> likes</p><p>📊 <span id="totalVisitors">0</span> visiteurs</p></div>
             <button onclick="closeAdminPopup()" style="background:#30363d;">Fermer</button>
         </div>
     </div>
 </div>
+
 <script>
 var IS_ADMIN=false;
 var _k=null;
@@ -92,10 +120,15 @@ var _k=null;
 async function registerVisit(){await fetch('/api/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({admin:IS_ADMIN})});}
 async function loadStats(){try{var res=await fetch('/api/stats');var data=await res.json();document.getElementById('likeCount').textContent=data.likes;}catch(e){}}
 async function addLike(){try{var res=await fetch('/api/like',{method:'POST'});var data=await res.json();document.getElementById('likeCount').textContent=data.likes;document.getElementById('likeCount').classList.add('up');setTimeout(function(){document.getElementById('likeCount').classList.remove('up');},500);if(data.status==='ok')document.getElementById('likeBtn').classList.add('liked');}catch(e){}}
-document.getElementById('adminTrigger').addEventListener('click',function(){document.getElementById('adminOverlay').style.display='flex';document.getElementById('loginForm').style.display='block';document.getElementById('adminStats').style.display='none';document.getElementById('adminPass').value='';});
+document.getElementById('adminTrigger').addEventListener('click',function(){document.getElementById('adminOverlay').style.display='flex';document.getElementById('loginForm').style.display='block';document.getElementById('adminStats').style.display='none';});
 function closeAdminPopup(){document.getElementById('adminOverlay').style.display='none';}
 async function checkAdminPass(){var _p=document.getElementById('adminPass').value;var _e=new TextEncoder().encode(_p);var _h=await crypto.subtle.digest('SHA-256',_e);var _s=Array.from(new Uint8Array(_h)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');if(_s===_k){IS_ADMIN=true;await registerVisit();document.getElementById('loginForm').style.display='none';document.getElementById('adminStats').style.display='block';var res=await fetch('/api/stats');var data=await res.json();document.getElementById('onlineNow').textContent=data.online;document.getElementById('totalLikes').textContent=data.likes;document.getElementById('totalVisitors').textContent=data.visitors;}else{document.getElementById('adminError').style.display='block';}}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAdminPopup();});
+
+// CHAT
+async function loadChat(){try{var res=await fetch('/api/chat');var msgs=await res.json();var el=document.getElementById('chatMessages');el.innerHTML=msgs.map(function(m){return'<div class="chat-msg"><span class="time">'+m.time+'</span> '+m.message+'</div>';}).join('');el.scrollTop=el.scrollHeight;}catch(e){}}
+async function sendChat(){var input=document.getElementById('chatInput');var msg=input.value.trim();if(!msg)return;await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});input.value='';loadChat();}
+loadChat();setInterval(loadChat,3000);
 registerVisit();loadStats();setInterval(loadStats,10000);
 </script>
 <script src="/static/chart.js"></script>
