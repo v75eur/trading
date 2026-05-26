@@ -48,8 +48,6 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 .pseudo-box input{width:100%;padding:10px;background:#0d1117;color:white;border:1px solid #30363d;border-radius:8px;text-align:center;font-size:16px;margin-bottom:0.8rem}
 .pseudo-box button{width:100%;padding:10px;background:#58a6ff;color:white;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:bold}
 .pseudo-box button:hover{background:#4c8ed6}
-.pseudo-close{position:absolute;top:8px;right:12px;background:none;border:none;color:#666;font-size:1.2rem;cursor:pointer}
-.pseudo-close:hover{color:white}
 
 .like-container{position:fixed;bottom:20px;right:340px;z-index:9999;display:flex;align-items:center;gap:8px}
 .like-btn{background:rgba(22,27,34,0.95);border:2px solid #f85149;color:#f85149;font-size:22px;width:50px;height:50px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
@@ -124,8 +122,7 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 
 <!-- PSEUDO MODAL -->
 <div id="pseudoModal">
-    <div class="pseudo-box">
-        <button class="pseudo-close" onclick="document.getElementById('pseudoModal').style.display='none'">✕</button>
+    <div class="pseudo-box"><button onclick="document.getElementById('pseudoModal').style.display='none'" style="position:absolute;top:10px;right:15px;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;z-index:1">✕</button>
         <h3>👋 Bienvenue !</h3>
         <p>Choisissez un pseudo pour chatter</p>
         <input type="text" id="pseudoInput" placeholder="Votre pseudo..." maxlength="20">
