@@ -41,7 +41,7 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 .emoji-bar button:hover{background:#21262d}
 
 /* PSEUDO MODAL */
-#pseudoModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;display:flex;justify-content:center;align-items:center}
+#pseudoModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;display:none;justify-content:center;align-items:center}
 .pseudo-box{background:#161b22;border:1px solid #58a6ff;border-radius:15px;padding:2rem;width:90%;max-width:350px;text-align:center}
 .pseudo-box h3{color:#58a6ff;margin-bottom:0.5rem}
 .pseudo-box p{color:#8b949e;font-size:13px;margin-bottom:1rem}
@@ -124,7 +124,7 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
             <button onclick="addEmoji('💎')">💎</button>
             <button onclick="addEmoji('✅')">✅</button>
         </div>
-        <input type="text" id="chatInput" placeholder="Votre message..." onclick="if(!USERNAME)document.getElementById("pseudoModal").style.display="flex"" onkeypress="if(event.key==='Enter')sendChat()">
+        <input type="text" id="chatInput" placeholder="Votre message..." onclick="if(!USERNAME)document.getElementById("pseudoModal"" onkeypress="if(event.key==='Enter')sendChat()">
         <button onclick="sendChat()">ENVOYER</button>
     </div>
 </div>
