@@ -122,8 +122,9 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 
 <!-- PSEUDO MODAL -->
 <div id="pseudoModal">
-    <div class="pseudo-box"><button onclick="document.getElementById('pseudoModal').style.display='none'" style="position:absolute;top:15px;right:18px;background:rgba(255,255,255,0.1);border:none;color:#8b949e;font-size:20px;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:0.3s" onmouseover="this.style.background='rgba(248,81,73,0.3)';this.style.color='#f85149'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='#8b949e'">✕</button>
+    <div class="pseudo-box"><button onclick="document.getElementById('pseudoModal').style.display='none'" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.1);border:none;color:#8b949e;font-size:20px;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:0.3s" onmouseover="this.style.background='rgba(248,81,73,0.3)';this.style.color='#f85149'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='#8b949e'">✕</button>
         <h3>👋 Bienvenue !</h3>
+        <br>
         <p>Choisissez un pseudo pour chatter</p>
         <input type="text" id="pseudoInput" placeholder="Votre pseudo..." maxlength="20">
         <button onclick="setPseudo()">Rejoindre le chat</button>
