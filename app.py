@@ -54,8 +54,10 @@ def index():
     return render_template('index.html')
 
 @app.route('/ping')
-def ping():
-    return 'OK', 200
+    response = make_response('pong', 200)
+    response.headers['Content-Type'] = 'text/plain'
+    return response
+
 
 @app.route('/api/stats')
 def api_stats():
