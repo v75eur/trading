@@ -1,10 +1,11 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, make_response
 import json, os, time
 
 app = Flask(__name__)
 STATS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'stats.json')
 DAILY_FILE = os.path.join(os.path.dirname(__file__), 'data', 'daily.json')
 CHAT_FILE = os.path.join(os.path.dirname(__file__), 'data', 'chat.json')
+PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
 ADMIN_IPS = []
 DAILY_LIMIT = 500
 
@@ -32,6 +33,18 @@ def save_chat(messages):
     with open(CHAT_FILE, 'w') as f:
         json.dump(messages, f)
 
+def load_pseudos():
+    if os.path.exists(PSEUDOS_FILE):
+        with open(PSEUDOS_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_pseudo(ip, pseudo):
+    pseudos = load_pseudos()
+    pseudos[ip] = pseudo
+    with open(PSEUDOS_FILE, 'w') as f:
+        json.dump(pseudos, f)
+
 def check_daily_limit():
     today = time.strftime('%Y-%m-%d')
     data = {'date': today, 'count': 0}
@@ -50,14 +63,12 @@ def check_daily_limit():
 @app.route('/')
 def index():
     if not check_daily_limit():
-        return "<h1 style='color:white;text-align:center;margin-top:100px;font-family:Arial;background:#0d1117;height:100vh;'>⚠️ Limite quotidienne de 500 visiteurs atteinte.<br>Revenez demain.</h1>", 429
+        return "<h1>⚠️ Limite 500 visiteurs atteinte. Revenez demain.</h1>", 429
     return render_template('index.html')
 
 @app.route('/ping')
-    response = make_response('pong', 200)
-    response.headers['Content-Type'] = 'text/plain'
-    return response
-
+def ping():
+    return 'pong', 200, {'Content-Type': 'text/plain'}
 
 @app.route('/api/stats')
 def api_stats():
@@ -65,7 +76,6 @@ def api_stats():
     now = time.time()
     stats['online'] = {k: v for k, v in stats['online'].items() if now - v < 300 and k not in ADMIN_IPS}
     save_stats(stats)
-    # Lire le compteur journalier
     today = time.strftime('%Y-%m-%d')
     daily_count = 0
     if os.path.exists(DAILY_FILE):
@@ -73,13 +83,7 @@ def api_stats():
             d = json.load(f)
             if d.get('date') == today:
                 daily_count = d.get('count', 0)
-    return jsonify({
-        'likes': stats['likes'],
-        'visitors': stats['visitors'],
-        'online': len(stats['online']),
-        'daily_count': daily_count,
-        'daily_limit': DAILY_LIMIT
-    })
+    return jsonify({'likes': stats['likes'], 'visitors': stats['visitors'], 'online': len(stats['online']), 'daily_count': daily_count, 'daily_limit': DAILY_LIMIT})
 
 @app.route('/api/visit', methods=['POST'])
 def api_visit():
@@ -130,35 +134,9 @@ def post_chat():
     data = request.get_json()
     msg = data.get('message', '').strip()
     if msg and len(msg) <= 200:
-        messages.append({
-            'message': msg,
-            'user': data.get('user', 'Anonyme'),
-            'time': time.strftime('%H:%M')
-        })
+        messages.append({'message': msg, 'user': data.get('user', 'Anonyme'), 'time': time.strftime('%H:%M')})
         save_chat(messages)
     return jsonify({'status': 'ok'})
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-@app.route('/api/chat/clear', methods=['POST'])
-def clear_chat():
-    save_chat([])
-    return jsonify({'status': 'ok'})
-
-PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
-
-def load_pseudos():
-    if os.path.exists(PSEUDOS_FILE):
-        with open(PSEUDOS_FILE, 'r') as f:
-            return json.load(f)
-    return {}
-
-def save_pseudo(ip, pseudo):
-    pseudos = load_pseudos()
-    pseudos[ip] = pseudo
-    with open(PSEUDOS_FILE, 'w') as f:
-        json.dump(pseudos, f)
 
 @app.route('/api/pseudo', methods=['POST'])
 def set_pseudo():
@@ -179,3 +157,6 @@ def get_pseudo():
         ip = ip.split(',')[0].strip()
     pseudos = load_pseudos()
     return jsonify({'pseudo': pseudos.get(ip, '')})
+
+if __name__ == '__main__':
+    app.run(debug=True)
