@@ -6,6 +6,7 @@ STATS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'stats.json')
 DAILY_FILE = os.path.join(os.path.dirname(__file__), 'data', 'daily.json')
 CHAT_FILE = os.path.join(os.path.dirname(__file__), 'data', 'chat.json')
 PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
+VISITORS_LOG = os.path.join(os.path.dirname(__file__), 'data', 'visitors_log.json')
 ADMIN_IPS = []
 DAILY_LIMIT = 500
 
@@ -20,6 +21,20 @@ def load_stats():
 def save_stats(s):
     with open(STATS_FILE, 'w') as f:
         json.dump(s, f)
+
+def load_visitors_log():
+    if os.path.exists(VISITORS_LOG):
+        with open(VISITORS_LOG, 'r') as f:
+            return json.load(f)
+    return []
+
+def save_visitor(ip, action):
+    log = load_visitors_log()
+    log.append({'ip': ip, 'time': time.strftime('%Y-%m-%d %H:%M:%S'), 'action': action})
+    if len(log) > 200:
+        log = log[-200:]
+    with open(VISITORS_LOG, 'w') as f:
+        json.dump(log, f)
 
 def load_chat():
     if os.path.exists(CHAT_FILE):
@@ -85,6 +100,11 @@ def api_stats():
                 daily_count = d.get('count', 0)
     return jsonify({'likes': stats['likes'], 'visitors': stats['visitors'], 'online': len(stats['online']), 'daily_count': daily_count, 'daily_limit': DAILY_LIMIT})
 
+@app.route('/api/visitors-log')
+def api_visitors_log():
+    log = load_visitors_log()
+    return jsonify(log[-50:])
+
 @app.route('/api/visit', methods=['POST'])
 def api_visit():
     stats = load_stats()
@@ -101,6 +121,7 @@ def api_visit():
     stats['online'] = {k: v for k, v in stats['online'].items() if now - v < 300}
     if visitor_id not in stats['online'] and visitor_id not in ADMIN_IPS:
         stats['visitors'] += 1
+        save_visitor(visitor_id, 'visit')
     if visitor_id not in ADMIN_IPS:
         stats['online'][visitor_id] = now
     save_stats(stats)
@@ -121,6 +142,7 @@ def api_like():
             stats['liked_ips'] = []
         stats['liked_ips'].append(visitor_id)
         save_stats(stats)
+        save_visitor(visitor_id, 'like')
         return jsonify({'status': 'ok', 'likes': stats['likes']})
     return jsonify({'status': 'already_liked', 'likes': stats['likes']})
 

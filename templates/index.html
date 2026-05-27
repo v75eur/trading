@@ -150,6 +150,8 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
         </div>
         <div id="adminStats" style="display:none;">
             <div class="stats"><p>👥 <span id="onlineNow">0</span> en ligne</p><p>❤️ <span id="totalLikes">112</span> likes</p><p>📊 <span id="totalVisitors">0</span> visiteurs</p></div>
+<p>📋 <span id="visitorsHistory">Chargement...</span></p>
+<p>📋 <span id="visitorsHistory">Chargement...</span></p>
             <button onclick="closeAdminPopup()" style="background:#30363d;">Fermer</button>
         </div>
     </div>
@@ -231,6 +233,7 @@ async function loadStats(){try{var res=await fetch('/api/stats');var data=await 
 async function addLike(){try{var res=await fetch('/api/like',{method:'POST'});var data=await res.json();document.getElementById('likeCount').textContent=data.likes;document.getElementById('likeCount').classList.add('up');setTimeout(function(){document.getElementById('likeCount').classList.remove('up');},500);if(data.status==='ok')document.getElementById('likeBtn').classList.add('liked');}catch(e){}}
 document.getElementById('adminTrigger').addEventListener('click',function(){document.getElementById('adminOverlay').style.display='flex';document.getElementById('loginForm').style.display='block';document.getElementById('adminStats').style.display='none';});
 function closeAdminPopup(){document.getElementById('adminOverlay').style.display='none';}
+async function loadVisitorsLog(){try{var res=await fetch("/api/visitors-log");var data=await res.json();var el=document.getElementById("visitorsHistory");el.innerHTML="Historique ("+data.length+") :<br>"+data.slice(-10).reverse().map(function(l){return l.time+" - "+l.ip+" ("+l.action+")";}).join("<br>");}catch(e){}}
 async function checkAdminPass(){var _p=document.getElementById('adminPass').value;var _e=new TextEncoder().encode(_p);var _h=await crypto.subtle.digest('SHA-256',_e);var _s=Array.from(new Uint8Array(_h)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');if(_s===_k){IS_ADMIN=true;await registerVisit();document.getElementById('loginForm').style.display='none';document.getElementById('adminStats').style.display='block';var res=await fetch('/api/stats');var data=await res.json();document.getElementById('onlineNow').textContent=data.online;document.getElementById('totalLikes').textContent=data.likes;document.getElementById('totalVisitors').textContent=data.visitors;}else{document.getElementById('adminError').style.display='block';}}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAdminPopup();});
 
