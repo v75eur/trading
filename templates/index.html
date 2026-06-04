@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <script src="/static/translations.js"></script>
 <meta charset="UTF-8">
 <title>Rick Trading</title>
 <style>
@@ -73,6 +74,13 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 <body>
 <div class="left">
 <div class="top">
+    <select id="langSelect" style="background:#21262d;color:#c9d1d9;border:1px solid #f59e0b;border-radius:6px;padding:5px 10px;margin-left:10px;" onchange="changeAppLanguage(this.value)">
+        <option value="fr">🇫🇷 FR</option>
+        <option value="en">🇬🇧 EN</option>
+        <option value="es">🇪🇸 ES</option>
+        <option value="pt">🇵🇹 PT</option>
+        <option value="ru">🇷🇺 RU</option>
+    </select>
     <select id="languageSelect" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:4px 8px;margin-left:auto;" onchange="changeLanguage()">
         <option value="fr">🇫🇷 FR</option>
         <option value="en">🇬🇧 EN</option>

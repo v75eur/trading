@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rick Trading - Accueil officiel</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="/static/translations.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -85,59 +86,35 @@
         <option value="es">🇪🇸 Español</option>
         <option value="pt">🇵🇹 Português</option>
         <option value="ru">🇷🇺 Русский</option>
-        <option value="it">🇮🇹 Italiano</option>
-        <option value="de">🇩🇪 Deutsch</option>
-        <option value="zh">🇨🇳 中文</option>
-        <option value="ja">🇯🇵 日本語</option>
     </select>
 
     <div class="content">
-        <h1 id="title">📊 Rick Trading</h1>
-        <p id="subtitle" class="subtitle">Plateforme professionnelle d'analyse de marché, signaux en temps réel et communauté active</p>
-        
-        <a href="/app" id="launchBtn" class="btn-primary">🚀 Accéder à la plateforme</a>
-        
+        <h1 id="title"></h1>
+        <p id="subtitle" class="subtitle"></p>
+        <a href="/app" id="launchBtn" class="btn-primary"></a>
         <div class="features">
-            <div class="feature"><div class="feature-icon">📈</div><div id="feature1">Signaux live</div></div>
-            <div class="feature"><div class="feature-icon">🔔</div><div id="feature2">Notifications APK</div></div>
-            <div class="feature"><div class="feature-icon">💬</div><div id="feature3">Chat communautaire</div></div>
+            <div class="feature"><div class="feature-icon">📈</div><div id="feature1"></div></div>
+            <div class="feature"><div class="feature-icon">🔔</div><div id="feature2"></div></div>
+            <div class="feature"><div class="feature-icon">💬</div><div id="feature3"></div></div>
         </div>
-        
-        <footer><p id="footer">© 2025 Rick Trading - Le trading comporte des risques</p></footer>
+        <footer><p id="footer"></p></footer>
     </div>
 
     <script>
-        const translations = {
-            fr: { title: "📊 Rick Trading", subtitle: "Plateforme professionnelle d'analyse de marché, signaux en temps réel et communauté active", launch: "🚀 Accéder à la plateforme", feature1: "Signaux live", feature2: "Notifications APK", feature3: "Chat communautaire", footer: "© 2025 Rick Trading - Le trading comporte des risques" },
-            en: { title: "📊 Rick Trading", subtitle: "Professional market analysis platform, real-time signals and active community", launch: "🚀 Access the platform", feature1: "Live signals", feature2: "APK notifications", feature3: "Community chat", footer: "© 2025 Rick Trading - Trading involves risks" },
-            es: { title: "📊 Rick Trading", subtitle: "Plataforma profesional de análisis de mercado, señales en tiempo real y comunidad activa", launch: "🚀 Acceder a la plataforma", feature1: "Señales en vivo", feature2: "Notificaciones APK", feature3: "Chat comunitario", footer: "© 2025 Rick Trading - El trading implica riesgos" },
-            pt: { title: "📊 Rick Trading", subtitle: "Plataforma profissional de análise de mercado, sinais em tempo real e comunidade ativa", launch: "🚀 Acessar plataforma", feature1: "Sinais ao vivo", feature2: "Notificações APK", feature3: "Chat comunitário", footer: "© 2025 Rick Trading - Negociação envolve riscos" },
-            ru: { title: "📊 Rick Trading", subtitle: "Профессиональная платформа для анализа рынка, сигналы в реальном времени и активное сообщество", launch: "🚀 Перейти на платформу", feature1: "Живые сигналы", feature2: "APK уведомления", feature3: "Чат сообщества", footer: "© 2025 Rick Trading - Торговля сопряжена с рисками" },
-            it: { title: "📊 Rick Trading", subtitle: "Piattaforma professionale di analisi di mercato, segnali in tempo reale e community attiva", launch: "🚀 Accedi alla piattaforma", feature1: "Segnali live", feature2: "Notifiche APK", feature3: "Chat community", footer: "© 2025 Rick Trading - Il trading comporta rischi" },
-            de: { title: "📊 Rick Trading", subtitle: "Professionelle Marktanalyseplattform, Echtzeitsignale und aktive Community", launch: "🚀 Zur Plattform", feature1: "Live-Signale", feature2: "APK-Benachrichtigungen", feature3: "Community-Chat", footer: "© 2025 Rick Trading - Handel ist riskant" },
-            zh: { title: "📊 Rick Trading", subtitle: "专业市场分析平台，实时信号和活跃社区", launch: "🚀 访问平台", feature1: "实时信号", feature2: "APK通知", feature3: "社区聊天", footer: "© 2025 Rick Trading - 交易涉及风险" },
-            ja: { title: "📊 Rick Trading", subtitle: "プロフェッショナルな市場分析プラットフォーム、リアルタイムシグナルと活発なコミュニティ", launch: "🚀 プラットフォームへ", feature1: "ライブシグナル", feature2: "APK通知", feature3: "コミュニティチャット", footer: "© 2025 Rick Trading - 取引にはリスクが伴います" }
-        };
-
         function updatePage() {
-            const lang = localStorage.getItem('rick_lang') || 'fr';
-            const t = translations[lang];
-            if (t) {
-                document.getElementById('title').textContent = t.title;
-                document.getElementById('subtitle').textContent = t.subtitle;
-                document.getElementById('launchBtn').innerHTML = t.launch;
-                document.getElementById('feature1').textContent = t.feature1;
-                document.getElementById('feature2').textContent = t.feature2;
-                document.getElementById('feature3').textContent = t.feature3;
-                document.getElementById('footer').textContent = t.footer;
-                document.getElementById('languageSelect').value = lang;
-            }
+            document.getElementById('title').textContent = t('title');
+            document.getElementById('subtitle').textContent = t('subtitle');
+            document.getElementById('launchBtn').innerHTML = t('launch');
+            document.getElementById('feature1').textContent = t('feature1');
+            document.getElementById('feature2').textContent = t('feature2');
+            document.getElementById('feature3').textContent = t('feature3');
+            document.getElementById('footer').textContent = t('footer');
+            document.getElementById('languageSelect').value = getCurrentLanguage();
         }
 
         function changeLanguage() {
             const lang = document.getElementById('languageSelect').value;
-            localStorage.setItem('rick_lang', lang);
-            updatePage();
+            setLanguage(lang);
         }
 
         updatePage();
