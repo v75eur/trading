@@ -75,7 +75,17 @@ def check_daily_limit():
         json.dump(data, f)
     return True
 
+# ============================================
+# PAGE D'ACCUEIL (LANDING)
+# ============================================
 @app.route('/')
+def landing():
+    return render_template('landing.html')
+
+# ============================================
+# APPLICATION PRINCIPALE (TRADING)
+# ============================================
+@app.route('/app')
 def index():
     if not check_daily_limit():
         return "<h1>⚠️ Limite 500 visiteurs atteinte. Revenez demain.</h1>", 429
