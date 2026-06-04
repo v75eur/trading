@@ -1,7 +1,6 @@
 // Fichier central des traductions pour tout le site
 const translations = {
     fr: {
-        // Landing
         title: "📊 Rick Trading",
         subtitle: "Plateforme professionnelle d'analyse de marché, signaux en temps réel et communauté active",
         launch: "🚀 Accéder à la plateforme",
@@ -9,28 +8,17 @@ const translations = {
         feature2: "Notifications APK",
         feature3: "Chat communautaire",
         footer: "© 2025 Rick Trading - Le trading comporte des risques",
-        // Trading App
         app_title: "Rick Trading",
         price: "Prix",
         canal: "Canal",
         sr: "S/R",
         signals: "Signaux",
         stats: "Stats",
-        canal_haussier: "HAUSSIER",
-        canal_baissier: "BAISSIER",
-        canal_neutre: "NEUTRE",
         chat_title: "💬 Chat Live",
         chat_placeholder: "Votre message...",
         chat_send: "ENVOYER",
-        chat_welcome: "👋 Bienvenue !",
-        chat_pseudo: "Choisissez un pseudo pour chatter",
-        chat_join: "Rejoindre le chat",
-        like_count: "J'aime",
         online: "en ligne",
-        admin_title: "Administration",
-        admin_pass: "Mot de passe",
-        admin_access: "Accéder",
-        admin_wrong: "Mot de passe incorrect"
+        likes: "j'aime"
     },
     en: {
         title: "📊 Rick Trading",
@@ -46,21 +34,11 @@ const translations = {
         sr: "S/R",
         signals: "Signals",
         stats: "Stats",
-        canal_haussier: "BULLISH",
-        canal_baissier: "BEARISH",
-        canal_neutre: "NEUTRAL",
         chat_title: "💬 Live Chat",
         chat_placeholder: "Your message...",
         chat_send: "SEND",
-        chat_welcome: "👋 Welcome!",
-        chat_pseudo: "Choose a nickname to chat",
-        chat_join: "Join the chat",
-        like_count: "Likes",
         online: "online",
-        admin_title: "Administration",
-        admin_pass: "Password",
-        admin_access: "Access",
-        admin_wrong: "Wrong password"
+        likes: "likes"
     },
     es: {
         title: "📊 Rick Trading",
@@ -76,21 +54,11 @@ const translations = {
         sr: "S/R",
         signals: "Señales",
         stats: "Estadísticas",
-        canal_haussier: "ALCISTA",
-        canal_baissier: "BAJISTA",
-        canal_neutre: "NEUTRO",
         chat_title: "💬 Chat en vivo",
         chat_placeholder: "Tu mensaje...",
         chat_send: "ENVIAR",
-        chat_welcome: "👋 ¡Bienvenido!",
-        chat_pseudo: "Elige un apodo",
-        chat_join: "Unirse al chat",
-        like_count: "Me gusta",
         online: "en línea",
-        admin_title: "Administración",
-        admin_pass: "Contraseña",
-        admin_access: "Acceder",
-        admin_wrong: "Contraseña incorrecta"
+        likes: "me gusta"
     },
     pt: {
         title: "📊 Rick Trading",
@@ -106,21 +74,11 @@ const translations = {
         sr: "S/R",
         signals: "Sinais",
         stats: "Estatísticas",
-        canal_haussier: "ALTA",
-        canal_baissier: "BAIXA",
-        canal_neutre: "NEUTRO",
         chat_title: "💬 Chat ao vivo",
         chat_placeholder: "Sua mensagem...",
         chat_send: "ENVIAR",
-        chat_welcome: "👋 Bem-vindo!",
-        chat_pseudo: "Escolha um apelido",
-        chat_join: "Entrar no chat",
-        like_count: "Curtidas",
         online: "online",
-        admin_title: "Administração",
-        admin_pass: "Senha",
-        admin_access: "Acessar",
-        admin_wrong: "Senha incorreta"
+        likes: "curtidas"
     },
     ru: {
         title: "📊 Rick Trading",
@@ -136,25 +94,94 @@ const translations = {
         sr: "Уровни",
         signals: "Сигналы",
         stats: "Статистика",
-        canal_haussier: "ВОСХОДЯЩИЙ",
-        canal_baissier: "НИСХОДЯЩИЙ",
-        canal_neutre: "НЕЙТРАЛЬНЫЙ",
         chat_title: "💬 Чат",
         chat_placeholder: "Ваше сообщение...",
         chat_send: "ОТПРАВИТЬ",
-        chat_welcome: "👋 Добро пожаловать!",
-        chat_pseudo: "Выберите никнейм",
-        chat_join: "Присоединиться",
-        like_count: "Лайки",
         online: "онлайн",
-        admin_title: "Администрирование",
-        admin_pass: "Пароль",
-        admin_access: "Войти",
-        admin_wrong: "Неверный пароль"
+        likes: "лайков"
+    },
+    it: {
+        title: "📊 Rick Trading",
+        subtitle: "Piattaforma professionale di analisi di mercato, segnali in tempo reale e community attiva",
+        launch: "🚀 Accedi alla piattaforma",
+        feature1: "Segnali live",
+        feature2: "Notifiche APK",
+        feature3: "Chat community",
+        footer: "© 2025 Rick Trading - Il trading comporta rischi",
+        app_title: "Rick Trading",
+        price: "Prezzo",
+        canal: "Canale",
+        sr: "S/R",
+        signals: "Segnali",
+        stats: "Statistiche",
+        chat_title: "💬 Chat Live",
+        chat_placeholder: "Il tuo messaggio...",
+        chat_send: "INVIA",
+        online: "online",
+        likes: "mi piace"
+    },
+    de: {
+        title: "📊 Rick Trading",
+        subtitle: "Professionelle Marktanalyseplattform, Echtzeitsignale und aktive Community",
+        launch: "🚀 Zur Plattform",
+        feature1: "Live-Signale",
+        feature2: "APK-Benachrichtigungen",
+        feature3: "Community-Chat",
+        footer: "© 2025 Rick Trading - Handel ist riskant",
+        app_title: "Rick Trading",
+        price: "Preis",
+        canal: "Kanal",
+        sr: "U/S",
+        signals: "Signale",
+        stats: "Statistiken",
+        chat_title: "💬 Live-Chat",
+        chat_placeholder: "Deine Nachricht...",
+        chat_send: "SENDEN",
+        online: "online",
+        likes: "Gefällt mir"
+    },
+    zh: {
+        title: "📊 Rick Trading",
+        subtitle: "专业市场分析平台，实时信号和活跃社区",
+        launch: "🚀 访问平台",
+        feature1: "实时信号",
+        feature2: "APK通知",
+        feature3: "社区聊天",
+        footer: "© 2025 Rick Trading - 交易涉及风险",
+        app_title: "Rick Trading",
+        price: "价格",
+        canal: "通道",
+        sr: "支撑/阻力",
+        signals: "信号",
+        stats: "统计",
+        chat_title: "💬 聊天室",
+        chat_placeholder: "您的消息...",
+        chat_send: "发送",
+        online: "在线",
+        likes: "点赞"
+    },
+    ja: {
+        title: "📊 Rick Trading",
+        subtitle: "プロフェッショナルな市場分析プラットフォーム、リアルタイムシグナルと活発なコミュニティ",
+        launch: "🚀 プラットフォームへ",
+        feature1: "ライブシグナル",
+        feature2: "APK通知",
+        feature3: "コミュニティチャット",
+        footer: "© 2025 Rick Trading - 取引にはリスクが伴います",
+        app_title: "Rick Trading",
+        price: "価格",
+        canal: "チャネル",
+        sr: "サポート/レジスタンス",
+        signals: "シグナル",
+        stats: "統計",
+        chat_title: "💬 ライブチャット",
+        chat_placeholder: "メッセージ...",
+        chat_send: "送信",
+        online: "オンライン",
+        likes: "いいね"
     }
 };
 
-// Fonction pour obtenir la langue actuelle
 function getCurrentLanguage() {
     let lang = localStorage.getItem('rick_lang');
     if (!lang || !translations[lang]) {
@@ -164,15 +191,13 @@ function getCurrentLanguage() {
     return lang;
 }
 
-// Fonction pour changer la langue
 function setLanguage(lang) {
     if (translations[lang]) {
         localStorage.setItem('rick_lang', lang);
-        location.reload(); // Recharge la page pour appliquer toutes les traductions
+        location.reload();
     }
 }
 
-// Fonction pour obtenir une traduction
 function t(key) {
     const lang = getCurrentLanguage();
     return translations[lang][key] || translations['fr'][key] || key;
