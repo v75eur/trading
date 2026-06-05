@@ -14,7 +14,7 @@
         .container { position: relative; z-index: 2; max-width: 1200px; width: 90%; margin: 0 auto; text-align: center; padding: 1rem; animation: fadeInUp 0.7s ease-out; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .main-title { font-size: 3.8rem; font-weight: 900; margin-bottom: 1rem; background: linear-gradient(135deg, #ffffff 0%, #f59e0b 40%, #ffedd5 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .subtitle { font-size: 1.05rem; color: #94a3b8; margin-bottom: 1.8rem; max-width: 550px; margin-left: auto; margin-right: auto; }
+        .subtitle { font-size: 1.05rem; color: #94a3b8; margin-bottom: 1.8rem; max-width: 550px; margin-left: auto; margin-right: auto; line-height: 1.5; }
         .online-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(26,26,46,0.5); backdrop-filter: blur(8px); padding: 6px 20px; border-radius: 60px; margin-bottom: 1.8rem; border: 1px solid rgba(63,185,80,0.4); }
         .online-dot { width: 10px; height: 10px; background: #3fb950; border-radius: 50%; box-shadow: 0 0 6px #3fb950; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.1); } }
@@ -36,10 +36,47 @@
         .language-selector { position: fixed; top: 16px; right: 16px; background: rgba(30,41,59,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(245,158,11,0.5); border-radius: 40px; padding: 5px 12px; color: #f59e0b; cursor: pointer; z-index: 100; font-size: 0.75rem; }
         .language-selector:hover { background: #f59e0b; color: #0a0a0a; }
         footer { margin-top: 1.5rem; color: #64748b; font-size: 0.65rem; text-align: center; padding: 0.8rem; }
-        @media (max-width: 700px) { .main-title { font-size: 2.2rem; } .cards-row { flex-direction: column; align-items: center; } .card { max-width: 100%; } }
+        /* Bandeau urgence */
+        .urgent-banner {
+            background: linear-gradient(135deg, #f85149, #d32f2f);
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .urgent-close {
+            background: rgba(0,0,0,0.3);
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .urgent-close:hover { background: rgba(0,0,0,0.5); }
+        @media (max-width: 700px) { .main-title { font-size: 2.2rem; } .cards-row { flex-direction: column; align-items: center; } .card { max-width: 100%; } .urgent-banner { font-size: 0.7rem; } }
     </style>
 </head>
 <body>
+    <!-- Bandeau urgence -->
+    <div class="urgent-banner" id="urgentBanner">
+        <span>⚠️</span>
+        <span id="urgentMessage"></span>
+        <button class="urgent-close" onclick="closeUrgentBanner()">✕</button>
+    </div>
+
     <img src="/static/rick.jpeg" alt="Rick Trading" class="hero-bg">
     <select id="languageSelect" class="language-selector" onchange="changeLanguage()">
         <option value="fr">🇫🇷 FR</option><option value="en">🇬🇧 EN</option><option value="es">🇪🇸 ES</option>
@@ -83,6 +120,36 @@
     </div>
 
     <script>
+        // Traductions du message d'urgence
+        const urgentMessages = {
+            fr: "📱 Conseil mobile : activez le mode PC / bureau dans votre navigateur (Chrome : ⋮ → « Site Web pour ordinateur ») pour une meilleure expérience.",
+            en: "📱 Mobile tip: enable Desktop mode in your browser (Chrome: ⋮ → 'Desktop site') for a better experience.",
+            es: "📱 Consejo móvil: active el modo PC / escritorio en su navegador (Chrome: ⋮ → 'Sitio web para ordenador') para una mejor experiencia.",
+            pt: "📱 Dica móvel: ative o modo PC / desktop no seu navegador (Chrome: ⋮ → 'Site para computador') para uma melhor experiência.",
+            ru: "📱 Мобильный совет: включите режим ПК / рабочего стола в браузере (Chrome: ⋮ → «Компьютерная версия сайта») для лучшего опыта.",
+            it: "📱 Consiglio mobile: attiva la modalità PC / desktop nel tuo browser (Chrome: ⋮ → 'Sito per computer') per una migliore esperienza.",
+            de: "📱 Mobil-Tipp: aktivieren Sie den PC- / Desktop-Modus in Ihrem Browser (Chrome: ⋮ → 'Computerwebsite') für ein besseres Erlebnis.",
+            zh: "📱 移动提示：在浏览器中启用PC /桌面模式（Chrome：⋮→“电脑版网站”）以获得更好的体验。",
+            ja: "📱 モバイルヒント：ブラウザでPC /デスクトップモードを有効にしてください（Chrome：⋮→「コンピューターサイト」）。"
+        };
+
+        function updateUrgentMessage() {
+            const lang = getCurrentLanguage();
+            const msg = urgentMessages[lang] || urgentMessages.fr;
+            document.getElementById('urgentMessage').innerText = msg;
+        }
+
+        function closeUrgentBanner() {
+            document.getElementById('urgentBanner').style.display = 'none';
+            localStorage.setItem('urgentClosed', 'true');
+        }
+
+        function checkUrgentBanner() {
+            if (localStorage.getItem('urgentClosed') === 'true') {
+                document.getElementById('urgentBanner').style.display = 'none';
+            }
+        }
+
         function updatePage() {
             document.getElementById('title').textContent = t('title');
             document.getElementById('subtitle').textContent = t('subtitle');
@@ -95,10 +162,13 @@
             document.getElementById('partnerSpace').textContent = t('partner_space');
             document.getElementById('onlineLabel').textContent = t('online');
             document.getElementById('languageSelect').value = getCurrentLanguage();
+            updateUrgentMessage();
         }
 
         function changeLanguage() {
-            setLanguage(document.getElementById('languageSelect').value);
+            const lang = document.getElementById('languageSelect').value;
+            setLanguage(lang);
+            updateUrgentMessage();
         }
 
         async function updateOnlineCount() {
@@ -124,6 +194,7 @@
         updatePage();
         updateOnlineCount();
         updateChartPreview();
+        checkUrgentBanner();
         setInterval(updateOnlineCount, 35000);
         setInterval(updateChartPreview, 600000);
     </script>
