@@ -2,178 +2,286 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rick Trading - Accueil officiel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Rick Trading | Accueil</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="/static/translations.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-            color: #ffffff;
-            min-height: 100vh;
+            overflow-x: hidden;
+            background: #0a0a0a;
+        }
+
+        /* Hero section pleine hauteur */
+        .hero {
+            position: relative;
+            height: 100vh;
+            width: 100%;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 2rem;
-            position: relative;
+            overflow: hidden;
+            isolation: isolate;
         }
-        .hero-image {
+
+        /* Image de fond animée (zoom lent + surbrillance) */
+        .hero-bg {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.15;
             z-index: 0;
+            filter: brightness(0.4) saturate(1.2);
+            transition: transform 0.3s ease-out, filter 0.5s ease;
+            will-change: transform;
         }
-        .content { position: relative; z-index: 1; max-width: 1200px; width: 100%; }
-        h1 { font-size: 4rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, #fff, #f59e0b); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .subtitle { font-size: 1.2rem; color: #94a3b8; margin-bottom: 2rem; }
+
+        /* Overlay dynamique */
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+            z-index: 1;
+        }
+
+        /* Contenu principal */
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            padding: 2rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        /* Titre avec gradient animé */
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, #f59e0b, #ffb347);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shimmer 4s linear infinite;
+        }
+
+        /* Sous-titre */
+        .subtitle {
+            font-size: 1.3rem;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(4px);
+            display: inline-block;
+            padding: 0 1rem;
+        }
+
+        /* Badge en ligne animé */
+        .online-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            padding: 0.6rem 1.8rem;
+            border-radius: 60px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(63, 185, 80, 0.6);
+            box-shadow: 0 0 15px rgba(63, 185, 80, 0.2);
+            transition: all 0.3s;
+        }
+
+        .online-dot {
+            width: 12px;
+            height: 12px;
+            background: #3fb950;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #3fb950;
+            animation: pulse 1.2s infinite;
+        }
+
+        /* Bouton principal */
         .btn-primary {
             display: inline-block;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #fff;
-            padding: 0.9rem 2.2rem;
-            font-size: 1.1rem;
+            background: linear-gradient(95deg, #f59e0b, #d97706);
+            color: white;
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
             font-weight: 600;
             border-radius: 50px;
             text-decoration: none;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
             margin: 0.5rem;
+            border: none;
+            cursor: pointer;
         }
-        .btn-primary:hover { transform: scale(1.03); }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 28px rgba(245, 158, 11, 0.5);
+            filter: brightness(1.05);
+        }
+
+        /* Cartes services */
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(20, 20, 40, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 32px;
+            width: 200px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: default;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #f59e0b;
+            background: rgba(30, 30, 50, 0.8);
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.4);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f59e0b;
+        }
+
+        /* Sélecteur langue */
         .language-selector {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #1e293b;
-            border: 1px solid #f59e0b;
-            border-radius: 8px;
-            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            border-radius: 40px;
+            padding: 0.5rem 1rem;
             color: #f59e0b;
+            font-weight: 500;
             cursor: pointer;
             z-index: 100;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            transition: 0.2s;
         }
-        .features {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 3rem 0;
+
+        .language-selector:hover {
+            border-color: #f59e0b;
+            background: rgba(0,0,0,0.8);
         }
-        .feature {
-            background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(10px);
-            padding: 1.8rem;
-            border-radius: 24px;
-            width: 200px;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s;
+
+        /* Animation clavier */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .feature:hover { transform: translateY(-5px); border-color: #f59e0b; }
-        .feature-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
-        .feature h3 { font-size: 1.1rem; color: #f59e0b; margin-bottom: 0.5rem; }
-        footer { margin-top: 4rem; color: #64748b; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; }
-        .online-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(26, 26, 46, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 8px 20px;
-            border-radius: 50px;
-            margin: 20px 0;
-            border: 1px solid #3fb950;
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        .online-dot { width: 10px; height: 10px; background: #3fb950; border-radius: 50%; box-shadow: 0 0 6px #3fb950; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .cards-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-            justify-content: center;
-            margin: 3rem 0;
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.5; transform: scale(1.2);}
         }
-        .card {
-            flex: 1;
-            min-width: 280px;
-            background: rgba(13, 17, 23, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            border: 1px solid #30363d;
-            overflow: hidden;
-            transition: all 0.3s;
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 1rem; }
+            .feature-card { width: 160px; padding: 1rem; }
+            .btn-primary { padding: 0.8rem 1.8rem; font-size: 1rem; }
+            .online-badge { padding: 0.4rem 1.2rem; }
         }
-        .card:hover { transform: translateY(-4px); border-color: #f59e0b; }
-        .card-header {
-            background: rgba(22, 27, 34, 0.9);
-            padding: 0.9rem;
-            text-align: center;
-            border-bottom: 1px solid #30363d;
-            font-weight: 600;
-            color: #f59e0b;
-            font-size: 1rem;
-        }
-        .card-body { padding: 1.5rem; text-align: center; }
-        .card-body img { max-width: 100%; border-radius: 16px; background: #0a0a0a; }
-        .update-time { font-size: 0.7rem; color: #8b949e; margin-top: 0.8rem; }
-        .empty-card { display: flex; align-items: center; justify-content: center; min-height: 200px; color: #8b949e; text-align: center; flex-direction: column; gap: 1rem; }
-        @media (max-width: 768px) { h1 { font-size: 2.2rem; } .features { flex-direction: column; align-items: center; } .cards-container { flex-direction: column; } }
     </style>
 </head>
 <body>
-    <img src="/static/rick.jpeg" alt="Rick Trading" class="hero-image">
+
+    <!-- Image de fond animée (zoom très lent au survol) -->
+    <div class="hero">
+        <img src="/static/rick.jpeg" alt="Rick Trading Background" class="hero-bg" id="bgImage">
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+            <!-- Badge en ligne animé -->
+            <div class="online-badge">
+                <span class="online-dot"></span>
+                <span id="onlineCount" style="font-weight:bold;">0</span>
+                <span id="onlineLabel">en ligne</span>
+            </div>
+
+            <h1 id="title">📊 Rick Trading</h1>
+            <p class="subtitle" id="subtitle">Plateforme professionnelle d'analyse de marché, signaux en temps réel et communauté active</p>
+
+            <div>
+                <a href="/app" id="launchBtn" class="btn-primary">🚀 Accéder à la plateforme</a>
+            </div>
+
+            <!-- Cartes services animées -->
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 id="feature1">Signaux live</h3>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h3 id="feature2">Notifications APK</h3>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3 id="feature3">Chat communautaire</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <select id="languageSelect" class="language-selector" onchange="changeLanguage()">
         <option value="fr">🇫🇷 FR</option><option value="en">🇬🇧 EN</option><option value="es">🇪🇸 ES</option>
         <option value="pt">🇵🇹 PT</option><option value="ru">🇷🇺 RU</option><option value="it">🇮🇹 IT</option>
         <option value="de">🇩🇪 DE</option><option value="zh">🇨🇳 中文</option><option value="ja">🇯🇵 JP</option>
     </select>
-
-    <div class="content">
-        <h1 id="title"></h1>
-        <p id="subtitle" class="subtitle"></p>
-        
-        <div class="online-badge">
-            <span class="online-dot"></span>
-            <span id="onlineCount" style="font-weight:bold;">0</span>
-            <span id="onlineLabel"></span>
-        </div>
-        
-        <div>
-            <a href="/app" id="launchBtn" class="btn-primary"></a>
-        </div>
-        
-        <div class="features">
-            <div class="feature"><div class="feature-icon">📈</div><h3 id="feature1"></h3></div>
-            <div class="feature"><div class="feature-icon">🔔</div><h3 id="feature2"></h3></div>
-            <div class="feature"><div class="feature-icon">💬</div><h3 id="feature3"></h3></div>
-        </div>
-
-        <div class="cards-container">
-            <div class="card">
-                <div class="card-header"><span id="marketPreview"></span></div>
-                <div class="card-body">
-                    <img id="chartPreview" src="" alt="Graphique">
-                    <div class="update-time" id="chartUpdateTime"></div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header"><span id="partnerSpace"></span></div>
-                <div class="card-body empty-card">
-                    <div style="font-size: 3rem;">⚡</div>
-                    <div>Contenu à venir</div>
-                </div>
-            </div>
-        </div>
-        
-        <footer><p id="footer"></p></footer>
-    </div>
 
     <script>
         function updatePage() {
@@ -183,22 +291,35 @@
             document.getElementById('feature1').textContent = t('feature1');
             document.getElementById('feature2').textContent = t('feature2');
             document.getElementById('feature3').textContent = t('feature3');
-            document.getElementById('footer').innerHTML = t('footer');
-            document.getElementById('marketPreview').textContent = t('market_preview');
-            document.getElementById('partnerSpace').textContent = t('partner_space');
             document.getElementById('onlineLabel').textContent = t('online');
             document.getElementById('languageSelect').value = getCurrentLanguage();
         }
-        function changeLanguage() { setLanguage(document.getElementById('languageSelect').value); }
+
+        function changeLanguage() {
+            setLanguage(document.getElementById('languageSelect').value);
+        }
+
         async function updateOnlineCount() {
-            try { const res = await fetch('/api/online-display'); const data = await res.json(); document.getElementById('onlineCount').innerText = data.online; } catch(e) {}
+            try {
+                const res = await fetch('/api/online-display');
+                const data = await res.json();
+                document.getElementById('onlineCount').innerText = data.online;
+            } catch(e) {}
         }
-        async function updateChartPreview() {
-            try { const res = await fetch('/api/chart-screenshot'); const data = await res.json(); const img = document.getElementById('chartPreview'); if (img && data.image_url) { img.src = data.image_url + '?t=' + new Date().getTime(); document.getElementById('chartUpdateTime').innerHTML = '🕒 ' + data.updated_at; } } catch(e) {}
+
+        // Animation de mouvement subtile sur l'image de fond (effet "virtuel")
+        const bg = document.getElementById('bgImage');
+        if (bg) {
+            document.addEventListener('mousemove', (e) => {
+                const x = (window.innerWidth / 2 - e.pageX) / 80;
+                const y = (window.innerHeight / 2 - e.pageY) / 80;
+                bg.style.transform = `translate(${x}px, ${y}px) scale(1.02)`;
+            });
         }
-        updatePage(); updateOnlineCount(); updateChartPreview();
+
+        updatePage();
+        updateOnlineCount();
         setInterval(updateOnlineCount, 35000);
-        setInterval(updateChartPreview, 600000);
     </script>
 </body>
 </html>
