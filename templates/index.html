@@ -213,3 +213,28 @@ updateAppLanguage();
 <script src="/static/chart.js"></script>
 </body>
 </html>
+<style>
+@keyframes flyEnvelope {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5) rotate(-10deg);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -150%) scale(1.2) rotate(10deg);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translate(-50%, -300%) scale(0.8) rotate(20deg);
+        opacity: 0;
+    }
+}
+
+.flying-envelope {
+    position: fixed;
+    font-size: 1.8rem;
+    pointer-events: none;
+    z-index: 10000;
+    animation: flyEnvelope 0.8s ease-out forwards;
+    filter: drop-shadow(0 0 4px #f59e0b);
+}
+</style>
