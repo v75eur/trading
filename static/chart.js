@@ -25,6 +25,18 @@ function init(){
 }
 function resize(){ canvas.width=window.innerWidth-350; canvas.height=window.innerHeight-120; }
 
+function getGranularity() {
+    let val = parseInt(document.getElementById('tf').value);
+    // Mapping Deriv : M5=300, M15=900, H1=3600, H4=14400
+    switch(val) {
+        case 5: return 300;
+        case 15: return 900;
+        case 60: return 3600;
+        case 240: return 14400;
+        default: return 300;
+    }
+}
+
 function connect(){
     if(ws){ ws.onclose=null; try{ws.close();}catch(e){} }
     candles=[]; price=0; lastR=null; lastS=null; macdData=[]; signalData=[]; histogramData=[];
@@ -33,7 +45,8 @@ function connect(){
     ws=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
     ws.onopen=()=>{
         hideWsError();
-        ws.send(JSON.stringify({ticks_history:sym,count:500,end:'latest',start:1,style:'candles',granularity:tf*60}));
+        let granularity = getGranularity();
+        ws.send(JSON.stringify({ticks_history:sym,count:500,end:'latest',start:1,style:'candles',granularity:granularity}));
         ws.send(JSON.stringify({ticks:sym,subscribe:1}));
     };
     ws.onmessage=(m)=>{
@@ -55,7 +68,6 @@ function connect(){
     ws.onclose=()=>{ showWsError(); setTimeout(connect,5000); };
 }
 
-// UNIQUEMENT dernier support et dernière résistance
 function findLastSR(){
     lastR=null; lastS=null; if(candles.length<10) return;
     let n=candles.length;
@@ -160,7 +172,7 @@ function loop(){
     // Grille
     ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.5;
     for(let i=0;i<=4;i++){ let y=T+H*i/4; ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.stroke(); ctx.fillStyle='#555'; ctx.font='11px monospace'; ctx.fillText((maxP-(maxP-minP)*i/4).toFixed(dec),L-6,y+4); }
-    // Canal de tendance
+    // Canal
     if(n>=20){
         let sx=0,sy=0,sxy=0,sx2=0;
         for(let i=0;i<n;i++){ sx+=i; sy+=candles[i].c; sxy+=i*candles[i].c; sx2+=i*i; }
@@ -172,10 +184,10 @@ function loop(){
         ctx.beginPath(); ctx.moveTo(x1,Y(intercept-md)); ctx.lineTo(x2,Y(intercept+slope*n-md)); ctx.stroke();
         ctx.setLineDash([]);
     }
-    // Dernier support / dernière résistance
+    // S/R
     if(lastR){ let y=Y(lastR.price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#f85149'; ctx.setLineDash([6,4]); ctx.stroke(); ctx.fillStyle='#f85149'; ctx.fillText('R: '+lastR.price.toFixed(dec),L+4,y-8); }
     if(lastS){ let y=Y(lastS.price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#3fb950'; ctx.setLineDash([6,4]); ctx.stroke(); ctx.fillStyle='#3fb950'; ctx.fillText('S: '+lastS.price.toFixed(dec),L+4,y-8); }
-    // Lignes de tendance
+    // Tendances
     trendLines.forEach(tl=>{ if(tl.p1.idx>=si && tl.p2.idx>=si){ let x1=L+(tl.p1.idx-si)*tw+2, y1=Y(tl.p1.price), x2=L+(tl.p2.idx-si)*tw+2, y2=Y(tl.p2.price); ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.strokeStyle=tl.color; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.stroke(); ctx.fillStyle=tl.color; ctx.fillText(tl.label,(x1+x2)/2,(y1+y2)/2-10); } });
     ctx.setLineDash([]);
     // Bougies
@@ -188,7 +200,7 @@ function loop(){
     }
     // Prix live
     if(price>0){ let y=Y(price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#fff'; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle='#fff'; ctx.fillText(price.toFixed(dec),R+6,y+4); }
-    // MACD en bas
+    // MACD
     if(macdData.length){
         let mT=B+15, mH=80, mMin=1e10, mMax=-1e10;
         for(let i=si;i<n;i++){ if(macdData[i]){ if(macdData[i].v<mMin) mMin=macdData[i].v; if(macdData[i].v>mMax) mMax=macdData[i].v; } if(signalData[i]){ if(signalData[i].v<mMin) mMin=signalData[i].v; if(signalData[i].v>mMax) mMax=signalData[i].v; } }
@@ -203,18 +215,12 @@ function loop(){
     requestAnimationFrame(loop);
 }
 function changeSymbol(){ sym=document.getElementById('sym').value; connect(); }
-function changeTF(){
-    tf = parseInt(document.getElementById("tf").value);
+function changeTF(){ 
+    tf = parseInt(document.getElementById('tf').value);
     if(ws) ws.close();
     connect();
 }
+function zoomIn(){ cw=Math.min(30,cw+2); }
 function zoomOut(){ cw=Math.max(2,cw-2); }
 function resetZoom(){ cw=8; }
 window.addEventListener('load',init);
-
-// Forcer la reconnexion avec le nouveau timeframe
-function changeTF(){
-    tf = parseInt(document.getElementById("tf").value);
-    if(ws) ws.close();
-    connect();
-}
