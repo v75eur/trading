@@ -68,6 +68,17 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 </style>
 </head>
 <body>
+
+<!-- BANDEAU ERREUR WEBSOCKET -->
+<div id="wsErrorBanner" style="display:none; background:#f85149; color:white; text-align:center; padding:8px; font-size:14px; position:fixed; top:0; left:0; width:100%; z-index:9999;">
+⚠️ Serveur de données temporairement indisponible. Reconnexion automatique en cours...
+</div>
+
+<!-- BULLE TOKEN GITHUB EXPIRE -->
+<div id="tokenWarning" style="display:none; background:#d29922; color:#0a0a0a; text-align:center; padding:6px 12px; font-size:13px; position:fixed; top:10px; right:10px; border-radius:30px; z-index:9999; box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+🔐 Token GitHub expire dans <span id="tokenDaysLeft"></span> jours
+</div>
+
 <div class="left">
 <div class="top">
     <h1 id="appTitle">📊 Rick Trading</h1>
@@ -84,18 +95,24 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
         <span class="live" id="price">---</span>
         <button onclick="zoomIn()">+</button><button onclick="zoomOut()">-</button><button onclick="resetZoom()">↺</button>
     </div>
-    <!-- Sélecteur de langue unique -->
-    <select id="langSelect" style="background:#21262d;color:#f59e0b;border:1px solid #f59e0b;border-radius:6px;padding:5px 10px;margin-left:auto;" onchange="changeAppLanguage(this.value)">
-        <option value="fr">🇫🇷 FR</option>
-        <option value="en">🇬🇧 EN</option>
-        <option value="es">🇪🇸 ES</option>
-        <option value="pt">🇵🇹 PT</option>
-        <option value="ru">🇷🇺 RU</option>
-        <option value="it">🇮🇹 IT</option>
-        <option value="de">🇩🇪 DE</option>
-        <option value="zh">🇨🇳 中文</option>
-        <option value="ja">🇯🇵 JP</option>
-    </select>
+    <div style="display:flex; align-items:center; gap:12px;">
+        <div style="display:flex; align-items:center; gap:6px; background:#1a1a2e; padding:4px 12px; border-radius:50px;">
+            <span style="width:8px; height:8px; background:#3fb950; border-radius:50%; box-shadow:0 0 4px #3fb950;"></span>
+            <span id="onlineCount" style="font-weight:bold; font-size:13px;">0</span>
+            <span style="color:#8b949e; font-size:12px;">en ligne</span>
+        </div>
+        <select id="langSelect" style="background:#21262d;color:#f59e0b;border:1px solid #f59e0b;border-radius:6px;padding:5px 10px;" onchange="changeAppLanguage(this.value)">
+            <option value="fr">🇫🇷 FR</option>
+            <option value="en">🇬🇧 EN</option>
+            <option value="es">🇪🇸 ES</option>
+            <option value="pt">🇵🇹 PT</option>
+            <option value="ru">🇷🇺 RU</option>
+            <option value="it">🇮🇹 IT</option>
+            <option value="de">🇩🇪 DE</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 JP</option>
+        </select>
+    </div>
 </div>
 <div id="loader"><div class="spinner"></div></div>
 <canvas id="chart"></canvas>
@@ -121,8 +138,9 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-area">
         <div class="emoji-bar">
-            <button onclick="addEmoji('🚀')">🚀</button><button onclick="addEmoji('📈')">📈</button><button onclick="addEmoji('📉')">📉</button>
-            <button onclick="addEmoji('💰')">💰</button><button onclick="addEmoji('🔥')">🔥</button><button onclick="addEmoji('👀')">👀</button>
+            <button onclick="addEmoji('🚀')">🚀</button><button onclick="addEmoji('📈')">📈</button>
+            <button onclick="addEmoji('📉')">📉</button><button onclick="addEmoji('💰')">💰</button>
+            <button onclick="addEmoji('🔥')">🔥</button><button onclick="addEmoji('👀')">👀</button>
             <button onclick="addEmoji('💎')">💎</button><button onclick="addEmoji('✅')">✅</button>
         </div>
         <input type="text" id="chatInput" placeholder="" onkeypress="if(event.key==='Enter')sendChat()" onclick="openPseudoIfNeeded()">
@@ -196,6 +214,17 @@ function changeAppLanguage(lang) {
     setLanguage(lang);
 }
 
+// Mise à jour compteur en ligne
+async function updateOnlineCount() {
+    try {
+        const res = await fetch('/api/online-display');
+        const data = await res.json();
+        document.getElementById('onlineCount').innerText = data.online;
+    } catch(e) {}
+}
+updateOnlineCount();
+setInterval(updateOnlineCount, 30000);
+
 // SONS
 var audioCtx = null;
 function playSound(freq, type, duration) {
@@ -267,6 +296,16 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAdminPo
 var lastMsgCount = 0;
 async function loadChat(){try{var res=await fetch('/api/chat');var msgs=await res.json();if(msgs.length>lastMsgCount&&lastMsgCount>0){soundNewMessage();}lastMsgCount=msgs.length;var el=document.getElementById('chatMessages');el.innerHTML=msgs.map(function(m){var u=m.user||'Anonyme';var color=getColor(u);return'<div class="chat-msg"><span class="online-dot" style="background:'+color+'"></span><span class="user" style="color:'+color+'">'+u+'</span>'+m.message+'<span class="time">'+m.time+'</span></div>';}).join('');el.scrollTop=el.scrollHeight;}catch(e){}}
 async function sendChat(){if(!USERNAME){openPseudoIfNeeded();return;}var input=document.getElementById('chatInput');var msg=input.value.trim();if(!msg)return;await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,user:USERNAME})});input.value='';loadChat();}
+
+// TOKEN GITHUB EXPIRE
+fetch('/api/token-status')
+  .then(r => r.json())
+  .then(data => {
+    if (data.warning_needed && data.expires_in_days > 0) {
+      document.getElementById('tokenDaysLeft').innerText = data.expires_in_days;
+      document.getElementById('tokenWarning').style.display = 'block';
+    }
+  });
 
 loadChat();setInterval(loadChat,3000);
 registerVisit();loadStats();setInterval(loadStats,10000);

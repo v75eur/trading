@@ -75,6 +75,23 @@
         }
         .feature-icon { font-size: 2rem; margin-bottom: 0.5rem; }
         footer { margin-top: 4rem; color: #64748b; font-size: 0.8rem; }
+        .online-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1a1a2e;
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-top: 20px;
+            border: 1px solid #3fb950;
+        }
+        .online-dot {
+            width: 10px;
+            height: 10px;
+            background: #3fb950;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #3fb950;
+        }
         @media (max-width: 768px) { h1 { font-size: 2rem; } .features { flex-direction: column; align-items: center; } }
     </style>
 </head>
@@ -90,22 +107,28 @@
         <option value="de">🇩🇪 Deutsch</option>
         <option value="zh">🇨🇳 中文</option>
         <option value="ja">🇯🇵 日本語</option>
-        <option value="fr">🇫🇷 Français</option>
-        <option value="en">🇬🇧 English</option>
-        <option value="es">🇪🇸 Español</option>
-        <option value="pt">🇵🇹 Português</option>
-        <option value="ru">🇷🇺 Русский</option>
     </select>
 
     <div class="content">
         <h1 id="title"></h1>
         <p id="subtitle" class="subtitle"></p>
-        <a href="/app" id="launchBtn" class="btn-primary"></a>
+        
+        <div class="online-badge">
+            <span class="online-dot"></span>
+            <span id="onlineCount" style="font-weight:bold;">0</span>
+            <span id="onlineLabel">personnes en ligne</span>
+        </div>
+        
+        <div>
+            <a href="/app" id="launchBtn" class="btn-primary"></a>
+        </div>
+        
         <div class="features">
             <div class="feature"><div class="feature-icon">📈</div><div id="feature1"></div></div>
             <div class="feature"><div class="feature-icon">🔔</div><div id="feature2"></div></div>
             <div class="feature"><div class="feature-icon">💬</div><div id="feature3"></div></div>
         </div>
+        
         <footer><p id="footer"></p></footer>
     </div>
 
@@ -119,6 +142,7 @@
             document.getElementById('feature3').textContent = t('feature3');
             document.getElementById('footer').textContent = t('footer');
             document.getElementById('languageSelect').value = getCurrentLanguage();
+            document.getElementById('onlineLabel').textContent = t('online') + ' en ligne';
         }
 
         function changeLanguage() {
@@ -126,7 +150,17 @@
             setLanguage(lang);
         }
 
+        async function updateOnlineCount() {
+            try {
+                const res = await fetch('/api/online-display');
+                const data = await res.json();
+                document.getElementById('onlineCount').innerText = data.online;
+            } catch(e) {}
+        }
+
         updatePage();
+        updateOnlineCount();
+        setInterval(updateOnlineCount, 30000);
     </script>
 </body>
 </html>

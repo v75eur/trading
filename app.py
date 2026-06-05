@@ -75,6 +75,46 @@ def check_daily_limit():
         json.dump(data, f)
     return True
 
+# Cache pour le compteur en ligne
+online_cache = {"value": 0, "last_update": 0}
+
+@app.route('/api/online-display')
+def online_display():
+    global online_cache
+    now = time.time()
+    
+    # Mise à jour toutes les 2 minutes max
+    if now - online_cache["last_update"] > 120:
+        stats = load_stats()
+        real_online = len([k for k, v in stats.get('online', {}).items() if now - v < 300])
+        
+        # Base fictive selon l'heure
+        hour = time.localtime().tm_hour
+        if hour < 8:
+            fake_base = 3
+        elif hour < 12:
+            fake_base = 6
+        elif hour < 18:
+            fake_base = 12
+        elif hour < 22:
+            fake_base = 18
+        else:
+            fake_base = 7
+        
+        total = min(real_online + fake_base, 30)
+        
+        # Variation douce
+        if online_cache["value"] == 0:
+            online_cache["value"] = total
+        else:
+            diff = total - online_cache["value"]
+            step = max(-1, min(1, diff))
+            online_cache["value"] += step
+        
+        online_cache["last_update"] = now
+    
+    return jsonify({"online": online_cache["value"]})
+
 # ============================================
 # PAGE D'ACCUEIL (LANDING)
 # ============================================
