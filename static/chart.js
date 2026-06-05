@@ -59,8 +59,16 @@ function connect(){
 function findLastSR(){
     lastR=null; lastS=null; if(candles.length<10) return;
     let n=candles.length;
-    for(let i=n-6;i>=5;i--){ let c=candles[i], high=true; for(let j=i-5;j<=i+5;j++) if(j!==i && candles[j].h>=c.h){ high=false; break; } if(high){ lastR={price:c.h,time:c.t}; break; } }
-    for(let i=n-6;i>=5;i--){ let c=candles[i], low=true; for(let j=i-5;j<=i+5;j++) if(j!==i && candles[j].l<=c.l){ low=false; break; } if(low){ lastS={price:c.l,time:c.t}; break; } }
+    for(let i=n-6;i>=5;i--){ 
+        let c=candles[i], high=true; 
+        for(let j=i-5;j<=i+5;j++) if(j!==i && candles[j].h>=c.h){ high=false; break; } 
+        if(high){ lastR={price:c.h,time:c.t}; break; } 
+    }
+    for(let i=n-6;i>=5;i--){ 
+        let c=candles[i], low=true; 
+        for(let j=i-5;j<=i+5;j++) if(j!==i && candles[j].l<=c.l){ low=false; break; } 
+        if(low){ lastS={price:c.l,time:c.t}; break; } 
+    }
 }
 function computePivots(){
     if(candles.length<24) return;
@@ -152,7 +160,7 @@ function loop(){
     // Grille
     ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.5;
     for(let i=0;i<=4;i++){ let y=T+H*i/4; ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.stroke(); ctx.fillStyle='#555'; ctx.font='11px monospace'; ctx.fillText((maxP-(maxP-minP)*i/4).toFixed(dec),L-6,y+4); }
-    // CANAL
+    // Canal de tendance
     if(n>=20){
         let sx=0,sy=0,sxy=0,sx2=0;
         for(let i=0;i<n;i++){ sx+=i; sy+=candles[i].c; sxy+=i*candles[i].c; sx2+=i*i; }
@@ -164,14 +172,9 @@ function loop(){
         ctx.beginPath(); ctx.moveTo(x1,Y(intercept-md)); ctx.lineTo(x2,Y(intercept+slope*n-md)); ctx.stroke();
         ctx.setLineDash([]);
     }
-    // UNIQUEMENT dernier support et dernière résistance
+    // Dernier support / dernière résistance
     if(lastR){ let y=Y(lastR.price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#f85149'; ctx.setLineDash([6,4]); ctx.stroke(); ctx.fillStyle='#f85149'; ctx.fillText('R: '+lastR.price.toFixed(dec),L+4,y-8); }
     if(lastS){ let y=Y(lastS.price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#3fb950'; ctx.setLineDash([6,4]); ctx.stroke(); ctx.fillStyle='#3fb950'; ctx.fillText('S: '+lastS.price.toFixed(dec),L+4,y-8); }
-    // Points pivots (optionnel, tu peux les garder ou les enlever)
-    if(pivotLevels){
-        let pColors={'R2':'#f85149','R1':'rgba(248,81,73,0.7)','PP':'#d29922','S1':'rgba(63,185,80,0.7)','S2':'#3fb950'};
-        for(let k in pivotLevels){ let y=Y(pivotLevels[k]); if(y>15 && y<B-15){ ctx.strokeStyle=pColors[k]; ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.setLineDash([3,5]); ctx.stroke(); ctx.fillStyle=pColors[k]; ctx.fillText(k+': '+pivotLevels[k].toFixed(dec),L+4,y-6); } }
-    }
     // Lignes de tendance
     trendLines.forEach(tl=>{ if(tl.p1.idx>=si && tl.p2.idx>=si){ let x1=L+(tl.p1.idx-si)*tw+2, y1=Y(tl.p1.price), x2=L+(tl.p2.idx-si)*tw+2, y2=Y(tl.p2.price); ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.strokeStyle=tl.color; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.stroke(); ctx.fillStyle=tl.color; ctx.fillText(tl.label,(x1+x2)/2,(y1+y2)/2-10); } });
     ctx.setLineDash([]);
@@ -185,7 +188,7 @@ function loop(){
     }
     // Prix live
     if(price>0){ let y=Y(price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#fff'; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle='#fff'; ctx.fillText(price.toFixed(dec),R+6,y+4); }
-    // MACD
+    // MACD en bas
     if(macdData.length){
         let mT=B+15, mH=80, mMin=1e10, mMax=-1e10;
         for(let i=si;i<n;i++){ if(macdData[i]){ if(macdData[i].v<mMin) mMin=macdData[i].v; if(macdData[i].v>mMax) mMax=macdData[i].v; } if(signalData[i]){ if(signalData[i].v<mMin) mMin=signalData[i].v; if(signalData[i].v>mMax) mMax=signalData[i].v; } }
