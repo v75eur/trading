@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request, make_response
-import json, os, time
+import json, os, time, random, base64
+from datetime import datetime
 
 app = Flask(__name__)
 STATS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'stats.json')
@@ -9,6 +10,10 @@ PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
 VISITORS_LOG = os.path.join(os.path.dirname(__file__), 'data', 'visitors_log.json')
 ADMIN_IPS = []
 DAILY_LIMIT = 500
+
+# Dossier pour les captures d'écran
+SCREENSHOT_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'screenshots')
+os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
 
 os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
 
@@ -83,12 +88,10 @@ def online_display():
     global online_cache
     now = time.time()
     
-    # Mise à jour toutes les 2 minutes max
     if now - online_cache["last_update"] > 120:
         stats = load_stats()
         real_online = len([k for k, v in stats.get('online', {}).items() if now - v < 300])
         
-        # Base fictive selon l'heure
         hour = time.localtime().tm_hour
         if hour < 8:
             fake_base = 3
@@ -103,7 +106,6 @@ def online_display():
         
         total = min(real_online + fake_base, 50)
         
-        # Variation douce
         if online_cache["value"] == 0:
             online_cache["value"] = total
         else:
@@ -114,6 +116,42 @@ def online_display():
         online_cache["last_update"] = now
     
     return jsonify({"online": online_cache["value"]})
+
+# Route pour l'image du graphique (capture simulée pour l'instant)
+# Plus tard : vraie capture du canvas
+@app.route('/api/chart-screenshot')
+def chart_screenshot():
+    # Pour l'instant, retourne une image par défaut
+    # La vraie capture sera faite côté client et envoyée via POST
+    return jsonify({
+        "image_url": "/static/screenshots/default_chart.png",
+        "updated_at": time.strftime('%Y-%m-%d %H:%M:%S')
+    })
+
+# Route pour recevoir la capture d'écran depuis le client
+@app.route('/api/upload-screenshot', methods=['POST'])
+def upload_screenshot():
+    data = request.get_json()
+    image_data = data.get('image', '')
+    if image_data and image_data.startswith('data:image'):
+        # Extraire le base64
+        import re
+        match = re.match(r'data:image/(png|jpeg);base64,(.*)', image_data)
+        if match:
+            ext = match.group(1)
+            img_data = match.group(2)
+            filename = f"chart_{int(time.time())}.{ext}"
+            filepath = os.path.join(SCREENSHOT_FOLDER, filename)
+            with open(filepath, 'wb') as f:
+                f.write(base64.b64decode(img_data))
+            
+            # Garder seulement les 10 dernières captures
+            files = sorted(os.listdir(SCREENSHOT_FOLDER))
+            for old_file in files[:-10]:
+                os.remove(os.path.join(SCREENSHOT_FOLDER, old_file))
+            
+            return jsonify({"status": "ok", "filename": filename})
+    return jsonify({"status": "error"}), 400
 
 # ============================================
 # PAGE D'ACCUEIL (LANDING)

@@ -1,8 +1,8 @@
 var canvas,ctx,candles=[],price=0,ws=null,sym='R_75',tf=5,cw=8,sp=2;
 var lastR=null,lastS=null,macdData=[],signalData=[],histogramData=[];
 var patterns=[],divergences=[],pivotLevels=null,trendLines=[],lastDivLine=null;
+var lastScreenshotTime = 0;
 
-// Bandeau d'erreur WebSocket
 function showWsError() {
     var banner = document.getElementById('wsErrorBanner');
     if (banner) banner.style.display = 'block';
@@ -13,12 +13,30 @@ function hideWsError() {
     if (banner) banner.style.display = 'none';
 }
 
+function captureChart() {
+    var now = Date.now();
+    // Capture toutes les heures (3600000 ms)
+    if (now - lastScreenshotTime < 3600000) return;
+    lastScreenshotTime = now;
+    
+    try {
+        var dataURL = canvas.toDataURL('image/png');
+        fetch('/api/upload-screenshot', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: dataURL })
+        }).catch(e => console.log('Capture erreur:', e));
+    } catch(e) {}
+}
+
 function init(){
     canvas=document.getElementById('chart');
     ctx=canvas.getContext('2d');
     resize();window.addEventListener('resize',resize);
     canvas.addEventListener('wheel',function(e){e.preventDefault();cw+=e.deltaY>0?-1:1;cw=Math.max(2,Math.min(30,cw));});
     connect();requestAnimationFrame(loop);
+    // Capture toutes les heures
+    setInterval(captureChart, 3600000);
 }
 function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight-90;}
 
