@@ -42,7 +42,7 @@ function connect(){
             candles=[];
             for(let i=0;i<d.candles.length;i++){ let c=d.candles[i]; candles.push({t:c.epoch,o:+c.open,h:+c.high,l:+c.low,c:+c.close}); }
             if(candles.length>200) candles=candles.slice(-200);
-            findSR(); computePivots(); computeTrendLines(); computeMACD(); detectPatterns(); detectDivergences(); updateInfo();
+            findLastSR(); computePivots(); computeTrendLines(); computeMACD(); detectPatterns(); detectDivergences(); updateInfo();
             document.getElementById('loader') && (document.getElementById('loader').style.display='none');
         }
         if(d.tick){
@@ -55,7 +55,8 @@ function connect(){
     ws.onclose=()=>{ showWsError(); setTimeout(connect,5000); };
 }
 
-function findSR(){
+// UNIQUEMENT dernier support et dernière résistance
+function findLastSR(){
     lastR=null; lastS=null; if(candles.length<10) return;
     let n=candles.length;
     for(let i=n-6;i>=5;i--){ let c=candles[i], high=true; for(let j=i-5;j<=i+5;j++) if(j!==i && candles[j].h>=c.h){ high=false; break; } if(high){ lastR={price:c.h,time:c.t}; break; } }
@@ -86,26 +87,22 @@ function computeMACD(){
 }
 function detectPatterns(){
     patterns=[]; if(candles.length<2) return;
-    let a=candles[candles.length-1], b=candles[candles.length-2];
+    let a=candles[candles.length-1];
     let body=Math.abs(a.c-a.o);
     let avgBody=0;
     for(let i=Math.max(0,candles.length-20);i<candles.length;i++) avgBody+=Math.abs(candles[i].c-candles[i].o);
     avgBody/=20;
     if(body>avgBody*2.5) patterns.push(a.c>a.o?{type:'LONGUE VERTE',color:'#3fb950'}:{type:'LONGUE ROUGE',color:'#f85149'});
-    if(a.c>a.o && b.c<b.o && a.o<b.c && a.c>b.o) patterns.push({type:'ENGULFING HAUSSIER',color:'#3fb950'});
-    if(a.c<a.o && b.c>b.o && a.o>b.c && a.c<b.o) patterns.push({type:'ENGULFING BAISSIER',color:'#f85149'});
 }
 function detectDivergences(){
     divergences=[]; lastDivLine=null; if(macdData.length<40) return;
     let n=candles.length;
-    // Divergence baissière (prix plus haut, MACD plus bas)
     let pH1=0,pH1i=0; for(let i=n-5;i<n;i++) if(candles[i].h>pH1){ pH1=candles[i].h; pH1i=i; }
     let pH2=0,pH2i=0; for(let i=n-25;i<n-10;i++) if(candles[i].h>pH2){ pH2=candles[i].h; pH2i=i; }
     if(pH1>pH2 && macdData[pH1i] && macdData[pH2i] && macdData[pH1i].v<macdData[pH2i].v){
         divergences.push({type:'DIVERGENCE BAISSIERE',color:'#f85149',i1:pH2i,i2:pH1i,p1:pH2,p2:pH1});
         lastDivLine={i1:pH2i,i2:pH1i,color:'#f85149',price:true};
     }
-    // Divergence haussière (prix plus bas, MACD plus haut)
     let pL1=1e10,pL1i=0; for(let i=n-5;i<n;i++) if(candles[i].l<pL1){ pL1=candles[i].l; pL1i=i; }
     let pL2=1e10,pL2i=0; for(let i=n-25;i<n-10;i++) if(candles[i].l<pL2){ pL2=candles[i].l; pL2i=i; }
     if(pL1<pL2 && macdData[pL1i] && macdData[pL2i] && macdData[pL1i].v>macdData[pL2i].v){
@@ -155,7 +152,7 @@ function loop(){
     // Grille
     ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.5;
     for(let i=0;i<=4;i++){ let y=T+H*i/4; ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.stroke(); ctx.fillStyle='#555'; ctx.font='11px monospace'; ctx.fillText((maxP-(maxP-minP)*i/4).toFixed(dec),L-6,y+4); }
-    // CANAL DE TENDANCE (régression)
+    // CANAL
     if(n>=20){
         let sx=0,sy=0,sxy=0,sx2=0;
         for(let i=0;i<n;i++){ sx+=i; sy+=candles[i].c; sxy+=i*candles[i].c; sx2+=i*i; }
@@ -167,10 +164,10 @@ function loop(){
         ctx.beginPath(); ctx.moveTo(x1,Y(intercept-md)); ctx.lineTo(x2,Y(intercept+slope*n-md)); ctx.stroke();
         ctx.setLineDash([]);
     }
-    // S/R
+    // UNIQUEMENT dernier support et dernière résistance
     if(lastR){ let y=Y(lastR.price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#f85149'; ctx.setLineDash([6,4]); ctx.stroke(); ctx.fillStyle='#f85149'; ctx.fillText('R: '+lastR.price.toFixed(dec),L+4,y-8); }
     if(lastS){ let y=Y(lastS.price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#3fb950'; ctx.setLineDash([6,4]); ctx.stroke(); ctx.fillStyle='#3fb950'; ctx.fillText('S: '+lastS.price.toFixed(dec),L+4,y-8); }
-    // Points pivots
+    // Points pivots (optionnel, tu peux les garder ou les enlever)
     if(pivotLevels){
         let pColors={'R2':'#f85149','R1':'rgba(248,81,73,0.7)','PP':'#d29922','S1':'rgba(63,185,80,0.7)','S2':'#3fb950'};
         for(let k in pivotLevels){ let y=Y(pivotLevels[k]); if(y>15 && y<B-15){ ctx.strokeStyle=pColors[k]; ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.setLineDash([3,5]); ctx.stroke(); ctx.fillStyle=pColors[k]; ctx.fillText(k+': '+pivotLevels[k].toFixed(dec),L+4,y-6); } }
@@ -180,7 +177,7 @@ function loop(){
     ctx.setLineDash([]);
     // Bougies
     for(let i=si;i<n;i++){ let c=candles[i]; let x=L+(i-si)*tw+2; let g=c.c>=c.o; ctx.strokeStyle=g?'#3fb950':'#f85149'; ctx.beginPath(); ctx.moveTo(x+cw/2,Y(c.h)); ctx.lineTo(x+cw/2,Y(c.l)); ctx.stroke(); ctx.fillStyle=g?'#3fb950':'#f85149'; let y1=Y(c.o), y2=Y(c.c); ctx.fillRect(x,Math.min(y1,y2),cw,Math.max(1,Math.abs(y2-y1))); }
-    // Divergence (ligne sur le graphique)
+    // Divergence
     if(lastDivLine && lastDivLine.i1>=si && lastDivLine.i2>=si){
         let x1=L+(lastDivLine.i1-si)*tw+2, y1=Y(candles[lastDivLine.i1][lastDivLine.price?'h':'h']);
         let x2=L+(lastDivLine.i2-si)*tw+2, y2=Y(candles[lastDivLine.i2][lastDivLine.price?'h':'h']);
@@ -188,7 +185,7 @@ function loop(){
     }
     // Prix live
     if(price>0){ let y=Y(price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#fff'; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle='#fff'; ctx.fillText(price.toFixed(dec),R+6,y+4); }
-    // MACD EN BAS
+    // MACD
     if(macdData.length){
         let mT=B+15, mH=80, mMin=1e10, mMax=-1e10;
         for(let i=si;i<n;i++){ if(macdData[i]){ if(macdData[i].v<mMin) mMin=macdData[i].v; if(macdData[i].v>mMax) mMax=macdData[i].v; } if(signalData[i]){ if(signalData[i].v<mMin) mMin=signalData[i].v; if(signalData[i].v>mMax) mMax=signalData[i].v; } }
