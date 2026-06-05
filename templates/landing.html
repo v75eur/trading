@@ -293,6 +293,7 @@
 
     <div class="hero">
         <div class="container">
+            <div class="urgent-message">⚠️ <strong>Conseil mobile</strong> : Pour une meilleure expérience sur smartphone, activez le <strong>mode PC / bureau</strong> dans votre navigateur (Chrome : ⋮ → « Site Web pour ordinateur »).</div>
             <h1 class="main-title" id="title"></h1>
             <p class="subtitle" id="subtitle"></p>
             
@@ -378,3 +379,90 @@
     </script>
 </body>
 </html>
+<style>
+.urgent-message {
+    background: linear-gradient(135deg, #f59e0b20, #d9770620);
+    border-left: 4px solid #f59e0b;
+    border-radius: 12px;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    color: #fbbf24;
+    text-align: center;
+    backdrop-filter: blur(4px);
+    max-width: 550px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.urgent-message strong {
+    color: #f59e0b;
+}
+@media (max-width: 700px) {
+    .urgent-message {
+        font-size: 0.75rem;
+        padding: 8px 12px;
+    }
+}
+</style>
+<style>
+.urgent-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #f85149, #d32f2f);
+    color: white;
+    padding: 10px 45px 10px 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+    animation: blinkWarning 1.2s ease-in-out infinite;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+@keyframes blinkWarning {
+    0%, 100% { background: linear-gradient(135deg, #f85149, #d32f2f); opacity: 1; }
+    50% { background: linear-gradient(135deg, #d32f2f, #b71c1c); opacity: 0.95; box-shadow: 0 0 12px rgba(248,81,73,0.6); }
+}
+.urgent-icon {
+    font-size: 1.2rem;
+    animation: shake 0.5s ease-in-out infinite;
+}
+@keyframes shake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
+}
+.urgent-close {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.3);
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.urgent-close:hover {
+    background: rgba(0,0,0,0.5);
+    transform: translateY(-50%) scale(1.1);
+}
+@media (max-width: 700px) {
+    .urgent-banner { font-size: 0.7rem; padding: 8px 35px 8px 12px; gap: 6px; }
+    .urgent-icon { font-size: 0.9rem; }
+}
+</style>
