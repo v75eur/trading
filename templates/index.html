@@ -5,69 +5,50 @@
 <title>Rick Trading - Plateforme</title>
 <script src="/static/translations.js"></script>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: system-ui, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; height: 100vh; display: flex; flex-direction: column; }
-.app-header { background: #161b22; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; flex-wrap: wrap; gap: 10px; }
-.logo { font-size: 1.3rem; font-weight: 600; color: #58a6ff; }
-.controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.controls select, .controls button, .home-btn { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 5px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
-.controls select:hover, .controls button:hover, .home-btn:hover { background: #30363d; border-color: #58a6ff; }
-.home-btn:hover { background: #f59e0b20; border-color: #f59e0b; color: #f59e0b; }
-.price-live { font-weight: bold; color: #3fb950; min-width: 90px; font-size: 1.1rem; text-shadow: 0 0 5px rgba(63,185,80,0.3); animation: pricePulse 2s infinite; }
-@keyframes pricePulse { 0% { text-shadow: 0 0 0px rgba(63,185,80,0); } 50% { text-shadow: 0 0 8px rgba(63,185,80,0.5); } 100% { text-shadow: 0 0 0px rgba(63,185,80,0); } }
-.right-header { display: flex; align-items: center; gap: 15px; }
-.online-indicator { display: flex; align-items: center; gap: 6px; background: #1e293b; padding: 4px 12px; border-radius: 30px; font-size: 0.85rem; transition: all 0.2s; }
-.online-indicator:hover { background: #2d3748; transform: scale(1.02); }
-.online-dot { width: 8px; height: 8px; background: #3fb950; border-radius: 50%; box-shadow: 0 0 4px #3fb950; animation: onlinePulse 1s infinite; }
-@keyframes onlinePulse { 0% { opacity: 1; box-shadow: 0 0 0px #3fb950; } 50% { opacity: 0.7; box-shadow: 0 0 6px #3fb950; } 100% { opacity: 1; box-shadow: 0 0 0px #3fb950; } }
-.lang-select { background: #21262d; color: #f59e0b; border: 1px solid #f59e0b; border-radius: 6px; padding: 5px 10px; cursor: pointer; transition: all 0.2s; }
-.lang-select:hover { background: #f59e0b20; }
-.main-layout { display: flex; flex: 1; overflow: hidden; }
-.chart-area { flex: 1; display: flex; flex-direction: column; }
-#chart { width: 100%; flex: 1; background: #0d1117; }
-.chart-info { background: #161b22; padding: 8px 15px; display: flex; gap: 20px; font-size: 0.8rem; border-top: 1px solid #30363d; flex-wrap: wrap; justify-content: center; }
-.chart-info span { background: #0d1117; padding: 5px 12px; border-radius: 20px; transition: all 0.3s ease; cursor: pointer; animation: statsGlow 2s infinite; }
-.chart-info span:hover { transform: translateY(-2px); background: #1e293b; border-left: 2px solid #f59e0b; }
-@keyframes statsGlow { 0% { box-shadow: 0 0 0px rgba(245,158,11,0); } 50% { box-shadow: 0 0 8px rgba(245,158,11,0.2); } 100% { box-shadow: 0 0 0px rgba(245,158,11,0); } }
-.chat-panel { width: 320px; background: #161b22; border-left: 1px solid #30363d; display: flex; flex-direction: column; }
-.chat-header { background: #21262d; padding: 10px; text-align: center; font-weight: bold; color: #58a6ff; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; }
-.chat-messages { flex: 1; overflow-y: auto; padding: 10px; }
-.chat-msg { background: #0d1117; padding: 6px 10px; margin: 5px 0; border-radius: 10px; font-size: 0.85rem; transition: all 0.2s; }
-.chat-msg:hover { background: #1a1a2e; transform: translateX(2px); }
-.chat-user { font-weight: bold; margin-right: 6px; }
-.chat-time { color: #666; font-size: 0.7rem; margin-left: 6px; }
-.chat-input-area { padding: 10px; border-top: 1px solid #30363d; }
-.chat-input-area input { width: 100%; background: #0d1117; border: 1px solid #30363d; padding: 8px; border-radius: 25px; color: white; margin-bottom: 6px; transition: all 0.2s; }
-.chat-input-area input:focus { border-color: #58a6ff; outline: none; transform: scale(1.01); }
-.chat-input-area button { width: 100%; background: #58a6ff; color: #0d1117; border: none; padding: 6px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
-.chat-input-area button:hover { background: #79c0ff; transform: scale(1.02); }
-.emoji-bar { display: flex; gap: 5px; margin-bottom: 6px; justify-content: center; }
-.emoji-bar button { background: #21262d; border: none; font-size: 1.1rem; padding: 3px 6px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-.emoji-bar button:hover { background: #30363d; transform: scale(1.1); }
-.like-container { position: fixed; bottom: 20px; right: 340px; display: flex; align-items: center; gap: 8px; background: rgba(22,27,34,0.9); padding: 5px 10px; border-radius: 50px; backdrop-filter: blur(4px); z-index: 100; transition: all 0.2s; }
-.like-container:hover { transform: scale(1.02); background: rgba(22,27,34,1); }
-.like-btn { background: #f85149; border: none; color: white; font-size: 1.1rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: all 0.2s; }
-.like-btn:hover { transform: scale(1.1); background: #ff6b5b; }
-#adminTrigger { position: fixed; bottom: 15px; left: 15px; width: 32px; height: 32px; background: #21262d; border: 1px solid #30363d; border-radius: 50%; color: #8b949e; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; z-index: 200; }
-#adminTrigger:hover { transform: rotate(30deg); background: #30363d; color: #f59e0b; }
-.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10001; display: none; justify-content: center; align-items: center; }
-.modal-content { background: #1a1a2e; border: 1px solid #f59e0b; border-radius: 16px; padding: 25px; width: 320px; text-align: center; position: relative; animation: modalPop 0.3s ease-out; }
-@keyframes modalPop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-.modal-content input { width: 100%; padding: 8px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; }
-.modal-content button { background: #f59e0b; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
-.modal-content button:hover { transform: scale(1.02); background: #fbbf24; }
-.close-modal { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; color: #8b949e; transition: all 0.2s; }
-.close-modal:hover { color: white; transform: scale(1.1); }
-.pseudo-box { background: #1a1a2e; border: 2px solid #58a6ff; border-radius: 20px; padding: 25px; width: 320px; text-align: center; position: relative; animation: modalPop 0.3s ease-out; }
-.pseudo-box input { width: 100%; padding: 10px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; }
-.pseudo-box button { background: linear-gradient(135deg,#58a6ff,#3fb950); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; transition: all 0.2s; }
-.pseudo-box button:hover { transform: scale(1.02); }
-@media (max-width: 700px) { .chat-panel { width: 280px; } .like-container { right: 300px; } .chart-info { gap: 8px; } .chart-info span { font-size: 0.7rem; padding: 3px 8px; } }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;height:100vh;display:flex;flex-direction:column}
+.app-header{background:#161b22;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #30363d;flex-wrap:wrap;gap:10px}
+.logo{font-size:1.3rem;font-weight:600;color:#58a6ff}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.controls select,.controls button,.home-btn{background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:5px 10px;border-radius:6px;cursor:pointer;text-decoration:none}
+.home-btn:hover{background:#f59e0b20;border-color:#f59e0b;color:#f59e0b}
+.price-live{font-weight:bold;color:#3fb950;min-width:90px}
+.right-header{display:flex;align-items:center;gap:15px}
+.online-indicator{display:flex;align-items:center;gap:6px;background:#1e293b;padding:4px 12px;border-radius:30px;font-size:0.85rem}
+.online-dot{width:8px;height:8px;background:#3fb950;border-radius:50%;box-shadow:0 0 4px #3fb950}
+.lang-select{background:#21262d;color:#f59e0b;border:1px solid #f59e0b;border-radius:6px;padding:5px 10px;cursor:pointer}
+.main-layout{display:flex;flex:1;overflow:hidden}
+.chart-area{flex:1;display:flex;flex-direction:column}
+#chart{width:100%;flex:1;background:#0d1117}
+.chart-info{background:#161b22;padding:8px 15px;display:flex;gap:20px;font-size:0.75rem;border-top:1px solid #30363d;flex-wrap:wrap}
+.chart-info span{background:#0d1117;padding:5px 12px;border-radius:20px}
+.chat-panel{width:320px;background:#161b22;border-left:1px solid #30363d;display:flex;flex-direction:column}
+.chat-header{background:#21262d;padding:10px;text-align:center;font-weight:bold;color:#58a6ff;border-bottom:1px solid #30363d;display:flex;justify-content:space-between}
+.chat-messages{flex:1;overflow-y:auto;padding:10px}
+.chat-msg{background:#0d1117;padding:8px 12px;margin:5px 0;border-radius:10px;font-size:0.85rem}
+.chat-user{font-weight:bold;margin-right:6px}
+.chat-time{color:#666;font-size:0.7rem;margin-left:6px}
+.chat-input-area{padding:10px;border-top:1px solid #30363d}
+.chat-input-area input{width:100%;background:#0d1117;border:1px solid #30363d;padding:8px;border-radius:25px;color:white;margin-bottom:6px}
+.chat-input-area button{width:100%;background:#58a6ff;color:#0d1117;border:none;padding:6px;border-radius:25px;font-weight:bold;cursor:pointer}
+.emoji-bar{display:flex;gap:5px;margin-bottom:6px;justify-content:center}
+.emoji-bar button{background:#21262d;border:none;font-size:1.1rem;padding:3px 6px;border-radius:8px;cursor:pointer}
+.like-container{position:fixed;bottom:20px;right:340px;display:flex;align-items:center;gap:8px;background:rgba(22,27,34,0.9);padding:5px 10px;border-radius:50px;z-index:100}
+.like-btn{background:#f85149;border:none;color:white;font-size:1rem;width:30px;height:30px;border-radius:50%;cursor:pointer}
+#adminTrigger{position:fixed;bottom:15px;left:15px;width:30px;height:30px;background:#21262d;border:1px solid #30363d;border-radius:50%;color:#8b949e;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10001;display:none;justify-content:center;align-items:center}
+.modal-content{background:#1a1a2e;border:1px solid #f59e0b;border-radius:16px;padding:25px;width:320px;text-align:center;position:relative}
+.close-modal{position:absolute;top:10px;right:15px;font-size:20px;cursor:pointer;color:#8b949e}
+.pseudo-box{background:#1a1a2e;border:2px solid #58a6ff;border-radius:20px;padding:25px;width:320px;text-align:center;position:relative}
+.pseudo-box input{width:100%;padding:10px;margin:10px 0;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:white}
+.pseudo-box button{background:linear-gradient(135deg,#58a6ff,#3fb950);color:white;border:none;padding:10px;border-radius:8px;cursor:pointer;width:100%;font-weight:bold}
+@media (max-width:700px){.chat-panel{width:280px}.like-container{right:300px}}
 </style>
 </head>
 <body>
 
-<div id="wsError" class="ws-error">⚠️ Connexion données temporairement indisponible</div>
+<div class="app-header">
+    <div class="logo" id="appTitle"></div>
     <div class="controls">
         <a href="/" class="home-btn">🏠 Accueil</a>
         <select id="sym" onchange="changeSymbol()">
@@ -76,10 +57,7 @@ body { font-family: system-ui, 'Segoe UI', Roboto, sans-serif; background: #0d11
             <option value="frxXAUUSD">XAU/USD</option>
         </select>
         <select id="tf" onchange="changeTF()">
-            <option value="5">M5</option>
-            <option value="15">M15</option>
-            <option value="60">H1</option>
-            <option value="240">H4</option>
+            <option value="5">M5</option><option value="15">M15</option><option value="60">H1</option><option value="240">H4</option>
         </select>
         <span class="price-live" id="price">---</span>
         <button onclick="zoomIn()">+</button><button onclick="zoomOut()">-</button><button onclick="resetZoom()">↺</button>
@@ -98,10 +76,10 @@ body { font-family: system-ui, 'Segoe UI', Roboto, sans-serif; background: #0d11
     <div class="chart-area">
         <canvas id="chart"></canvas>
         <div class="chart-info">
-            <span id="canalInfo"><span id="canalLabel"></span>: <span id="canalValue" class="stat-value">--</span></span>
-            <span id="srInfo"><span id="srLabel"></span>: <span id="srValue" class="stat-value">--</span></span>
-            <span id="signalInfo"><span id="signalsLabel"></span>: <span id="signalValue" class="stat-value">--</span></span>
-            <span id="statsInfo"><span id="statsLabel"></span>: <span id="statsValue" class="stat-value">--</span></span>
+            <span id="canalInfo"><span id="canalLabel"></span>: --</span>
+            <span id="srInfo"><span id="srLabel"></span>: --</span>
+            <span id="signalInfo"><span id="signalsLabel"></span>: --</span>
+            <span id="statsInfo"><span id="statsLabel"></span>: --</span>
         </div>
     </div>
     <div class="chat-panel">
@@ -116,113 +94,88 @@ body { font-family: system-ui, 'Segoe UI', Roboto, sans-serif; background: #0d11
 </div>
 
 <div class="like-container"><span id="likeCount">112</span><button class="like-btn" onclick="addLike()">❤️</button></div>
-<div id="loader" class="loader"><div class="spinner"></div></div>
 
 <div id="adminTrigger" onclick="openAdminModal()">⚙</div>
-
-<div id="adminModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeAdminModal()">&times;</span>
-        <h3>⚙️ Administration</h3>
-        <input type="password" id="adminPass" placeholder="Mot de passe">
-        <button onclick="checkAdmin()">Accéder</button>
-        <p id="adminError" style="color:#f85149; display:none;">Mot de passe incorrect</p>
-    </div>
-</div>
-
-<div id="statsModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeStatsModal()">&times;</span>
-        <h3>📊 Statistiques</h3>
-        <div id="statsContent"></div>
-    </div>
-</div>
+<div id="adminModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeAdminModal()">&times;</span><h3>⚙️ Admin</h3><input type="password" id="adminPass" placeholder="Mot de passe"><button onclick="checkAdmin()">Accéder</button><p id="adminError" style="color:#f85149;display:none;">Mot de passe incorrect</p></div></div>
+<div id="statsModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeStatsModal()">&times;</span><h3>📊 Statistiques</h3><div id="statsContent"></div></div></div>
 
 <script>
 let USERNAME = "";
 let ADMIN_HASH = "d0695d2f4b6487fb81c7047ba01d06d5065aa1a9f18f89633389e1e9b5d85fd6";
-let isAdmin = false;
 
-function updateAppLanguage() {
-    const lang = getCurrentLanguage();
-    const t = translations[lang];
-    if (t) {
-        document.getElementById('appTitle').innerHTML = t.app_title;
-        document.getElementById('canalLabel').innerHTML = t.canal;
-        document.getElementById('srLabel').innerHTML = t.sr;
-        document.getElementById('signalsLabel').innerHTML = t.signals;
-        document.getElementById('statsLabel').innerHTML = t.stats;
-        document.getElementById('chatTitle').innerHTML = t.chat_title;
-        document.getElementById('chatInput').placeholder = t.chat_placeholder;
-        document.getElementById('sendBtn').innerHTML = t.chat_send;
-        document.getElementById('onlineLabel').innerHTML = t.online;
+function updateAppLanguage(){
+    const lang=getCurrentLanguage(),t=translations[lang];
+    if(t){
+        document.getElementById('appTitle').innerHTML=t.app_title;
+        document.getElementById('canalLabel').innerHTML=t.canal;
+        document.getElementById('srLabel').innerHTML=t.sr;
+        document.getElementById('signalsLabel').innerHTML=t.signals;
+        document.getElementById('statsLabel').innerHTML=t.stats;
+        document.getElementById('chatTitle').innerHTML=t.chat_title;
+        document.getElementById('chatInput').placeholder=t.chat_placeholder;
+        document.getElementById('sendBtn').innerHTML=t.chat_send;
+        document.getElementById('onlineLabel').innerHTML=t.online;
     }
-    document.getElementById('langSelect').value = getCurrentLanguage();
+    document.getElementById('langSelect').value=getCurrentLanguage();
 }
-function changeAppLanguage(lang) { setLanguage(lang); }
+function changeAppLanguage(lang){setLanguage(lang);}
 
-async function updateOnline() {
-    try { const res = await fetch('/api/online-display'); const data = await res.json(); document.getElementById('onlineCount').innerText = data.online; } catch(e) {}
+async function updateOnline(){
+    try{const r=await fetch('/api/online-display'),d=await r.json();document.getElementById('onlineCount').innerText=d.online;}catch(e){}
 }
-function addEmoji(e) { document.getElementById('chatInput').value += e; document.getElementById('chatInput').focus(); }
-function shareTwitter() { window.open('https://twitter.com/intent/tweet?text=📊 Rejoignez-moi sur Rick Trading !&url='+encodeURIComponent(location.href), '_blank'); }
-function shareTelegram() { window.open('https://t.me/share/url?url='+encodeURIComponent(location.href), '_blank'); }
+function addEmoji(e){document.getElementById('chatInput').value+=e;document.getElementById('chatInput').focus();}
+function shareTwitter(){window.open('https://twitter.com/intent/tweet?text=📊 Rejoignez-moi sur Rick Trading !&url='+encodeURIComponent(location.href),'_blank');}
+function shareTelegram(){window.open('https://t.me/share/url?url='+encodeURIComponent(location.href),'_blank');}
 
-async function loadChat() {
-    try { const res = await fetch('/api/chat'); const msgs = await res.json(); const container = document.getElementById('chatMessages'); container.innerHTML = msgs.map(m => `<div class="chat-msg"><span class="chat-user" style="color:${getColor(m.user)}">${escapeHtml(m.user)}</span> ${escapeHtml(m.message)}<span class="chat-time">${m.time}</span></div>`).join(''); container.scrollTop = container.scrollHeight; } catch(e) {}
+function getColor(name){
+    let colors=['#58a6ff','#3fb950','#f0883e','#a371f7','#f85149','#d29922','#79c0ff','#7ee787'];
+    let hash=0;
+    for(let i=0;i<name.length;i++) hash=((hash<<5)-hash)+name.charCodeAt(i),hash|=0;
+    return colors[Math.abs(hash)%colors.length];
 }
-async function sendChat() {
-    if (!USERNAME) { openPseudo(); return; }
-    const input = document.getElementById('chatInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-    await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg, user: USERNAME }) });
-    input.value = '';
-    loadChat();
+
+async function loadChat(){
+    try{const r=await fetch('/api/chat'),msgs=await r.json();const c=document.getElementById('chatMessages');c.innerHTML=msgs.map(m=>`<div class="chat-msg"><span class="chat-user" style="color:${getColor(m.user)}">${escapeHtml(m.user)}</span> ${escapeHtml(m.message)}<span class="chat-time">${m.time}</span></div>`).join('');c.scrollTop=c.scrollHeight;}catch(e){}
 }
-function openPseudo() {
-    if (USERNAME) return;
-    document.getElementById('pseudoModal').style.display = 'flex';
+async function sendChat(){
+    if(!USERNAME){openPseudo();return;}
+    const i=document.getElementById('chatInput'),m=i.value.trim();if(!m)return;
+    await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m,user:USERNAME})});
+    i.value='';loadChat();
 }
-function closePseudoModal() { document.getElementById('pseudoModal').style.display = 'none'; }
-function setPseudo() {
-    const name = document.getElementById('pseudoInput').value.trim();
-    if (name.length < 2) return;
-    USERNAME = name;
-    fetch('/api/pseudo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pseudo: USERNAME }) });
+function openPseudo(){if(USERNAME)return;document.getElementById('pseudoModal').style.display='flex';}
+function closePseudoModal(){document.getElementById('pseudoModal').style.display='none';}
+function setPseudo(){
+    const n=document.getElementById('pseudoInput').value.trim();if(n.length<2)return;
+    USERNAME=n;
+    fetch('/api/pseudo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pseudo:USERNAME})});
     closePseudoModal();
 }
-async function addLike() {
-    try { const res = await fetch('/api/like', { method: 'POST' }); const data = await res.json(); document.getElementById('likeCount').innerText = data.likes; } catch(e) {}
-}
-function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+async function addLike(){try{const r=await fetch('/api/like'),d=await r.json();document.getElementById('likeCount').innerText=d.likes;}catch(e){}}
+function escapeHtml(s){return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);}
 
-function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; document.getElementById('adminPass').value = ''; document.getElementById('adminError').style.display = 'none'; }
-function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
-function closeStatsModal() { document.getElementById('statsModal').style.display = 'none'; }
-async function checkAdmin() {
-    const pass = document.getElementById('adminPass').value;
-    const encoder = new TextEncoder();
-    const hash = await crypto.subtle.digest('SHA-256', encoder.encode(pass));
-    const hashHex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
-    if (hashHex === ADMIN_HASH) {
-        isAdmin = true;
+function openAdminModal(){document.getElementById('adminModal').style.display='flex';document.getElementById('adminPass').value='';document.getElementById('adminError').style.display='none';}
+function closeAdminModal(){document.getElementById('adminModal').style.display='none';}
+function closeStatsModal(){document.getElementById('statsModal').style.display='none';}
+async function checkAdmin(){
+    const p=document.getElementById('adminPass').value;
+    const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(p));
+    const hx=Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    if(hx===ADMIN_HASH){
         closeAdminModal();
-        const res = await fetch('/api/stats');
-        const data = await res.json();
-        document.getElementById('statsContent').innerHTML = `<p>👥 En ligne: ${data.online}</p><p>❤️ Likes: ${data.likes}</p><p>📊 Visiteurs: ${data.visitors}</p>`;
-        document.getElementById('statsModal').style.display = 'flex';
-    } else { document.getElementById('adminError').style.display = 'block'; }
+        const r=await fetch('/api/stats'),d=await r.json();
+        document.getElementById('statsContent').innerHTML=`<p>👥 En ligne: ${d.online}</p><p>❤️ Likes: ${d.likes}</p><p>📊 Visiteurs: ${d.visitors}</p>`;
+        document.getElementById('statsModal').style.display='flex';
+    }else{document.getElementById('adminError').style.display='block';}
 }
 
-const pseudoModalHtml = `<div id="pseudoModal" class="modal"><div class="pseudo-box"><span class="close-modal" onclick="closePseudoModal()">&times;</span><h3 id="welcomeTitle">👋 Bienvenue !</h3><p id="pseudoText">Choisissez un pseudo pour chatter</p><input type="text" id="pseudoInput" maxlength="20" placeholder="Pseudo"><button id="joinBtn" onclick="setPseudo()">Rejoindre le chat</button></div></div>`;
-document.body.insertAdjacentHTML('beforeend', pseudoModalHtml);
+const pseudoModalHtml=`<div id="pseudoModal" class="modal"><div class="pseudo-box"><span class="close-modal" onclick="closePseudoModal()">&times;</span><h3 id="welcomeTitle">👋 Bienvenue !</h3><p id="pseudoText">Choisissez un pseudo pour chatter</p><input type="text" id="pseudoInput" maxlength="20" placeholder="Pseudo"><button id="joinBtn" onclick="setPseudo()">Rejoindre le chat</button></div></div>`;
+document.body.insertAdjacentHTML('beforeend',pseudoModalHtml);
 
-updateOnline(); setInterval(updateOnline, 35000);
-loadChat(); setInterval(loadChat, 4000);
+updateOnline();setInterval(updateOnline,35000);
+loadChat();setInterval(loadChat,4000);
 updateAppLanguage();
 </script>
-<script src="/static/chat-colors.js"></script>
 <script src="/static/chart.js"></script>
 </body>
 </html>
