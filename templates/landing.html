@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Rick Trading - Accueil officiel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="/static/translations.js"></script>
     <style>
         * {
@@ -15,286 +15,378 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            background: #0a0a0a;
             color: #ffffff;
             min-height: 100vh;
-            overflow-y: auto;
-            position: relative;
+            overflow-x: hidden;
         }
 
-        /* Image de fond */
-        .hero-image {
-            position: fixed;
+        /* Hero section avec animation */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle at 20% 50%, #1a1a2e 0%, #0a0a0a 100%);
+            overflow: hidden;
+        }
+
+        /* Image de fond animée */
+        .hero-bg {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.12;
+            opacity: 0.1;
+            z-index: 0;
+            animation: slowZoom 25s ease-in-out infinite;
+        }
+
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        /* Particules flottantes */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 0;
         }
 
-        /* Conteneur principal - tout visible sans scroll */
-        .main-container {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 1rem;
+        .particle {
+            position: absolute;
+            background: rgba(245,158,11,0.3);
+            border-radius: 50%;
+            filter: blur(8px);
+            animation: floatParticle 8s ease-in-out infinite;
         }
 
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 0.75rem;
-            background: linear-gradient(135deg, #fff, #f59e0b);
+        @keyframes floatParticle {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+            50% { transform: translateY(-30px) translateX(20px); opacity: 0.6; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            width: 90%;
+            margin: 0 auto;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* Titre principal */
+        .main-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f59e0b 40%, #ffedd5 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 0px rgba(245,158,11,0); }
+            50% { text-shadow: 0 0 25px rgba(245,158,11,0.4); }
         }
 
         .subtitle {
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: #94a3b8;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             max-width: 550px;
             margin-left: auto;
             margin-right: auto;
         }
 
-        .btn-primary {
-            display: inline-block;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #fff;
-            padding: 0.8rem 2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: all 0.3s;
-            margin-bottom: 1.5rem;
-        }
-
-        .btn-primary:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 20px rgba(245,158,11,0.4);
-        }
-
+        /* Badge en ligne */
         .online-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(26, 26, 46, 0.8);
-            backdrop-filter: blur(8px);
-            padding: 5px 16px;
-            border-radius: 50px;
-            margin-bottom: 1.5rem;
-            border: 1px solid #3fb950;
+            gap: 10px;
+            background: rgba(26, 26, 46, 0.6);
+            backdrop-filter: blur(12px);
+            padding: 8px 24px;
+            border-radius: 60px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(63,185,80,0.5);
+            transition: all 0.3s;
+        }
+
+        .online-badge:hover {
+            border-color: #3fb950;
+            transform: scale(1.02);
         }
 
         .online-dot {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             background: #3fb950;
             border-radius: 50%;
-            box-shadow: 0 0 6px #3fb950;
+            box-shadow: 0 0 8px #3fb950;
             animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
         }
 
-        /* Grille des fonctionnalités - compacte */
-        .features-row {
+        /* Bouton principal */
+        .btn-primary {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 14px 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 60px;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 8px 25px rgba(245,158,11,0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(245,158,11,0.4);
+        }
+
+        /* Fonctionnalités en cartes élégantes */
+        .features-cards {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
         }
 
-        .feature-pill {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(8px);
-            padding: 0.5rem 1.2rem;
-            border-radius: 40px;
+        .feature-card {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(12px);
+            padding: 0.8rem 1.8rem;
+            border-radius: 60px;
             border: 1px solid rgba(255,255,255,0.08);
-            transition: all 0.2s;
+            transition: all 0.3s;
+            cursor: default;
         }
 
-        .feature-pill:hover {
-            transform: translateY(-2px);
+        .feature-card:hover {
+            transform: translateY(-5px);
             border-color: #f59e0b;
             background: rgba(245,158,11,0.1);
         }
 
         .feature-icon {
+            font-size: 1.3rem;
+            margin-right: 8px;
+        }
+
+        .feature-card span {
             font-size: 1rem;
-            margin-right: 6px;
-        }
-
-        .feature-pill span {
-            font-size: 0.85rem;
             font-weight: 500;
-            color: #c9d1d9;
         }
 
-        /* Deux cartes côte à côte - visibles immédiatement */
-        .cards-row {
+        /* Deux cartes principales */
+        .main-cards {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 1.5rem;
             justify-content: center;
-            max-width: 700px;
+            max-width: 750px;
             margin: 0 auto;
         }
 
-        .info-card {
+        .card {
             flex: 1;
-            min-width: 240px;
-            max-width: 280px;
-            background: rgba(13, 17, 23, 0.7);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.08);
+            min-width: 260px;
+            background: rgba(13, 17, 23, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            border: 1px solid rgba(255,255,255,0.06);
             overflow: hidden;
-            transition: all 0.3s;
+            transition: all 0.4s;
         }
 
-        .info-card:hover {
-            transform: translateY(-4px);
+        .card:hover {
+            transform: translateY(-8px);
             border-color: #f59e0b;
+            box-shadow: 0 25px 40px -15px rgba(0,0,0,0.5);
         }
 
         .card-header {
-            background: rgba(22, 27, 34, 0.8);
-            padding: 0.6rem;
+            background: rgba(22, 27, 34, 0.7);
+            padding: 0.8rem;
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-weight: 700;
             color: #f59e0b;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
         }
 
         .card-body {
-            padding: 0.8rem;
+            padding: 1rem;
             text-align: center;
         }
 
         .card-body img {
             max-width: 100%;
-            border-radius: 14px;
-            background: #0a0a0a;
-            max-height: 140px;
-            object-fit: cover;
+            border-radius: 18px;
+            transition: transform 0.4s;
+        }
+
+        .card:hover .card-body img {
+            transform: scale(1.02);
         }
 
         .update-time {
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: #8b949e;
-            margin-top: 0.4rem;
+            margin-top: 0.5rem;
         }
 
         .empty-card {
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 140px;
-            color: #8b949e;
-            text-align: center;
+            min-height: 150px;
             flex-direction: column;
             gap: 0.5rem;
         }
 
-        .empty-card .emoji-big {
-            font-size: 2rem;
+        .empty-card .emoji {
+            font-size: 2.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
 
         .language-selector {
             position: fixed;
-            top: 15px;
-            right: 15px;
-            background: rgba(30, 41, 59, 0.9);
-            backdrop-filter: blur(8px);
-            border: 1px solid #f59e0b;
-            border-radius: 30px;
-            padding: 0.3rem 0.7rem;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(245,158,11,0.5);
+            border-radius: 40px;
+            padding: 6px 14px;
             color: #f59e0b;
             cursor: pointer;
             z-index: 100;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .language-selector:hover {
+            background: #f59e0b;
+            color: #0a0a0a;
+            border-color: #f59e0b;
         }
 
         footer {
-            margin-top: 1rem;
+            margin-top: 2rem;
             color: #64748b;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             text-align: center;
-            padding: 0.5rem;
+            padding: 1rem;
         }
 
-        @media (max-width: 700px) {
-            h1 { font-size: 2rem; }
-            .subtitle { font-size: 0.85rem; }
-            .cards-row { flex-direction: column; align-items: center; }
-            .info-card { max-width: 100%; }
-            .feature-pill { padding: 0.4rem 1rem; }
+        @media (max-width: 768px) {
+            .main-title { font-size: 2.2rem; }
+            .subtitle { font-size: 0.9rem; }
+            .feature-card { padding: 0.5rem 1.2rem; }
+            .feature-card span { font-size: 0.8rem; }
+            .main-cards { flex-direction: column; align-items: center; }
         }
     </style>
 </head>
 <body>
-    <img src="/static/rick.jpeg" alt="Rick Trading" class="hero-image">
+    <img src="/static/rick.jpeg" alt="Rick Trading" class="hero-bg">
+    
+    <!-- Particules flottantes -->
+    <div class="particles" id="particles"></div>
+
     <select id="languageSelect" class="language-selector" onchange="changeLanguage()">
         <option value="fr">🇫🇷 FR</option><option value="en">🇬🇧 EN</option><option value="es">🇪🇸 ES</option>
         <option value="pt">🇵🇹 PT</option><option value="ru">🇷🇺 RU</option><option value="it">🇮🇹 IT</option>
         <option value="de">🇩🇪 DE</option><option value="zh">🇨🇳 中文</option><option value="ja">🇯🇵 JP</option>
     </select>
 
-    <div class="main-container">
-        <h1 id="title"></h1>
-        <p id="subtitle" class="subtitle"></p>
-        
-        <div class="online-badge">
-            <span class="online-dot"></span>
-            <span id="onlineCount" style="font-weight:bold;">0</span>
-            <span id="onlineLabel"></span>
-        </div>
-        
-        <a href="/app" id="launchBtn" class="btn-primary"></a>
+    <div class="hero">
+        <div class="container">
+            <h1 class="main-title" id="title"></h1>
+            <p class="subtitle" id="subtitle"></p>
+            
+            <div class="online-badge">
+                <span class="online-dot"></span>
+                <span id="onlineCount" style="font-weight:700;">0</span>
+                <span id="onlineLabel"></span>
+            </div>
+            
+            <a href="/app" id="launchBtn" class="btn-primary"></a>
 
-        <div class="features-row">
-            <div class="feature-pill"><span class="feature-icon">📈</span><span id="feature1"></span></div>
-            <div class="feature-pill"><span class="feature-icon">🔔</span><span id="feature2"></span></div>
-            <div class="feature-pill"><span class="feature-icon">💬</span><span id="feature3"></span></div>
-        </div>
+            <div class="features-cards">
+                <div class="feature-card"><span class="feature-icon">📈</span><span id="feature1"></span></div>
+                <div class="feature-card"><span class="feature-icon">🔔</span><span id="feature2"></span></div>
+                <div class="feature-card"><span class="feature-icon">💬</span><span id="feature3"></span></div>
+            </div>
 
-        <div class="cards-row">
-            <div class="info-card">
-                <div class="card-header"><span id="marketPreview"></span></div>
-                <div class="card-body">
-                    <img id="chartPreview" src="" alt="Graphique">
-                    <div class="update-time" id="chartUpdateTime"></div>
+            <div class="main-cards">
+                <div class="card">
+                    <div class="card-header"><span id="marketPreview"></span></div>
+                    <div class="card-body">
+                        <img id="chartPreview" src="" alt="Graphique">
+                        <div class="update-time" id="chartUpdateTime"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><span id="partnerSpace"></span></div>
+                    <div class="card-body empty-card">
+                        <div class="emoji">⚡</div>
+                        <div>À venir</div>
+                    </div>
                 </div>
             </div>
-            <div class="info-card">
-                <div class="card-header"><span id="partnerSpace"></span></div>
-                <div class="card-body empty-card">
-                    <div class="emoji-big">⚡</div>
-                    <div>À venir</div>
-                </div>
-            </div>
+            
+            <footer><p id="footer"></p></footer>
         </div>
-        
-        <footer><p id="footer"></p></footer>
     </div>
 
     <script>
+        // Génération des particules
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const size = Math.random() * 40 + 10;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                particle.style.animationDuration = Math.random() * 10 + 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
         function updatePage() {
             document.getElementById('title').textContent = t('title');
             document.getElementById('subtitle').textContent = t('subtitle');
@@ -308,14 +400,34 @@
             document.getElementById('onlineLabel').textContent = t('online');
             document.getElementById('languageSelect').value = getCurrentLanguage();
         }
-        function changeLanguage() { setLanguage(document.getElementById('languageSelect').value); }
+
+        function changeLanguage() {
+            setLanguage(document.getElementById('languageSelect').value);
+        }
+
         async function updateOnlineCount() {
-            try { const res = await fetch('/api/online-display'); const data = await res.json(); document.getElementById('onlineCount').innerText = data.online; } catch(e) {}
+            try {
+                const res = await fetch('/api/online-display');
+                const data = await res.json();
+                document.getElementById('onlineCount').innerText = data.online;
+            } catch(e) {}
         }
+
         async function updateChartPreview() {
-            try { const res = await fetch('/api/chart-screenshot'); const data = await res.json(); const img = document.getElementById('chartPreview'); if (img && data.image_url) { img.src = data.image_url + '?t=' + new Date().getTime(); document.getElementById('chartUpdateTime').innerHTML = '🕒 ' + data.updated_at; } } catch(e) {}
+            try {
+                const res = await fetch('/api/chart-screenshot');
+                const data = await res.json();
+                const img = document.getElementById('chartPreview');
+                if (img && data.image_url) {
+                    img.src = data.image_url + '?t=' + new Date().getTime();
+                    document.getElementById('chartUpdateTime').innerHTML = '🕒 ' + data.updated_at;
+                }
+            } catch(e) {}
         }
-        updatePage(); updateOnlineCount(); updateChartPreview();
+
+        updatePage();
+        updateOnlineCount();
+        updateChartPreview();
         setInterval(updateOnlineCount, 35000);
         setInterval(updateChartPreview, 600000);
     </script>
