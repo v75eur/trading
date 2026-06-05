@@ -126,6 +126,7 @@ async function updateOnline(){
 function addEmoji(e){document.getElementById('chatInput').value+=e;document.getElementById('chatInput').focus();}
 function shareTwitter(){window.open('https://twitter.com/intent/tweet?text=📊 Rejoignez-moi sur Rick Trading !&url='+encodeURIComponent(location.href),'_blank');}
 function shareTelegram(){window.open('https://t.me/share/url?url='+encodeURIComponent(location.href),'_blank');}
+function shareWhatsApp(){ window.open("https://wa.me/?text="+encodeURIComponent("📊 Rejoignez-moi sur Rick Trading ! ")+encodeURIComponent(location.href), "_blank"); }
 
 function getColor(name){
     let colors=['#58a6ff','#3fb950','#f0883e','#a371f7','#f85149','#d29922','#79c0ff','#7ee787'];
@@ -179,3 +180,8 @@ updateAppLanguage();
 <script src="/static/chart.js"></script>
 </body>
 </html>
+<style>
+.share-btns { display: flex; gap: 8px; }
+.share-btn { background: rgba(88,166,255,0.1); border: none; color: #8b949e; font-size: 1.2rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
+.share-btn:hover { background: rgba(88,166,255,0.3); color: #58a6ff; transform: scale(1.05); }
+</style>
