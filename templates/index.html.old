@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <script src="/static/translations.js"></script>
 <meta charset="UTF-8">
 <title>Rick Trading</title>
-<script src="/static/translations.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:flex;height:100vh}
@@ -43,45 +43,56 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 
 /* PSEUDO MODAL */
 #pseudoModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:99999;display:none;justify-content:center;align-items:center;backdrop-filter:blur(5px)}
-.pseudo-box{background:#1a1a2e;border:2px solid #58a6ff;border-radius:20px;padding:2.5rem 2rem;width:90%;max-width:380px;text-align:center}
+.pseudo-box{background:#1a1a2e;border:2px solid #58a6ff;border-radius:20px;padding:2.5rem 2rem;width:90%;max-width:380px;text-align:center;position:relative;box-shadow:0 0 40px rgba(88,166,255,0.2)}
 .pseudo-box h3{color:#58a6ff;margin-bottom:0.5rem;font-size:1.5rem}
 .pseudo-box p{color:#8b949e;font-size:13px;margin-bottom:1rem}
-.pseudo-box input{width:100%;padding:12px;background:#0d1117;color:white;border:2px solid #30363d;border-radius:12px;text-align:center;font-size:16px;margin-bottom:1rem}
-.pseudo-box button{width:100%;padding:12px;background:linear-gradient(135deg,#58a6ff,#3fb950);color:white;border:none;border-radius:12px;cursor:pointer;font-size:16px;font-weight:bold}
+.pseudo-box input{width:100%;padding:12px;background:#0d1117;color:white;border:2px solid #30363d;border-radius:12px;text-align:center;font-size:16px;margin-bottom:1rem;transition:0.3s}
+.pseudo-box button{width:100%;padding:12px;background:linear-gradient(135deg,#58a6ff,#3fb950);color:white;border:none;border-radius:12px;cursor:pointer;font-size:16px;font-weight:bold;transition:0.3s}
+.pseudo-box button:hover{transform:scale(1.02);box-shadow:0 0 20px rgba(88,166,255,0.4)}
 
 .like-container{position:fixed;bottom:20px;right:340px;z-index:9999;display:flex;align-items:center;gap:8px}
 .like-btn{background:rgba(22,27,34,0.95);border:2px solid #f85149;color:#f85149;font-size:22px;width:50px;height:50px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .like-btn:hover{background:#f85149;color:white}
 .like-btn.liked{background:#f85149;color:white;cursor:default}
 .like-count{background:rgba(22,27,34,0.95);color:white;padding:8px 14px;border-radius:20px;font-weight:bold;font-size:15px;border:1px solid #30363d}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+.like-count.up{animation:pulse 0.5s}
 
 #adminTrigger{position:fixed;bottom:10px;left:10px;z-index:9999;width:22px;height:22px;border-radius:50%;background:rgba(22,27,34,0.8);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.2);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 #adminTrigger:hover{background:rgba(22,27,34,1);border-color:#d29922;color:#d29922}
 #adminOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:99999;display:none;justify-content:center;align-items:center}
-.admin-box{background:#161b22;border:1px solid #d29922;border-radius:15px;padding:2rem;width:90%;max-width:400px;text-align:center}
+.admin-box{background:#161b22;border:1px solid #d29922;border-radius:15px;padding:2rem;width:90%;max-width:400px;text-align:center;position:relative}
 .admin-box h3{color:#d29922;margin-bottom:1rem}
-.admin-box input{width:100%;padding:0.8rem;margin:0.5rem 0;background:#0d1117;color:white;border:1px solid #30363d;border-radius:8px;text-align:center}
+.admin-box input{width:100%;padding:0.8rem;margin:0.5rem 0;background:#0d1117;color:white;border:1px solid #30363d;border-radius:8px;text-align:center;font-size:1rem}
 .admin-box button{padding:0.8rem 2rem;background:#d29922;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;margin-top:0.5rem}
 .admin-box .stats{text-align:left;margin-top:1rem;padding:1rem;background:#0d1117;border-radius:8px;line-height:2.2}
+.admin-box .stats span{color:#58a6ff;font-weight:bold}
 #closeAdmin{position:absolute;top:8px;right:12px;color:#666;cursor:pointer;font-size:1.2rem;background:none;border:none}
 #closeAdmin:hover{color:white}
 </style>
 </head>
 <body>
-
-<!-- BANDEAU ERREUR WEBSOCKET -->
-<div id="wsErrorBanner" style="display:none; background:#f85149; color:white; text-align:center; padding:8px; font-size:14px; position:fixed; top:0; left:0; width:100%; z-index:9999;">
-⚠️ Serveur de données temporairement indisponible. Reconnexion automatique en cours...
-</div>
-
-<!-- BULLE TOKEN GITHUB EXPIRE -->
-<div id="tokenWarning" style="display:none; background:#d29922; color:#0a0a0a; text-align:center; padding:6px 12px; font-size:13px; position:fixed; top:10px; right:10px; border-radius:30px; z-index:9999; box-shadow:0 2px 8px rgba(0,0,0,0.2);">
-🔐 Token GitHub expire dans <span id="tokenDaysLeft"></span> jours
-</div>
-
 <div class="left">
 <div class="top">
-    <h1 id="appTitle">📊 Rick Trading</h1>
+    <select id="langSelect" style="background:#21262d;color:#c9d1d9;border:1px solid #f59e0b;border-radius:6px;padding:5px 10px;margin-left:10px;" onchange="changeAppLanguage(this.value)">
+        <option value="fr">🇫🇷 FR</option>
+        <option value="en">🇬🇧 EN</option>
+        <option value="es">🇪🇸 ES</option>
+        <option value="pt">🇵🇹 PT</option>
+        <option value="ru">🇷🇺 RU</option>
+    </select>
+    <select id="languageSelect" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:4px 8px;margin-left:auto;" onchange="changeLanguage()">
+        <option value="fr">🇫🇷 FR</option>
+        <option value="en">🇬🇧 EN</option>
+        <option value="es">🇪🇸 ES</option>
+        <option value="pt">🇵🇹 PT</option>
+        <option value="ru">🇷🇺 RU</option>
+        <option value="it">🇮🇹 IT</option>
+        <option value="de">🇩🇪 DE</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="ja">🇯🇵 日本語</option>
+    </select>
+    <h1>📊 Rick Trading</h1>
     <div class="ctrls">
         <select id="sym" onchange="changeSymbol()">
             <option value="R_75">Volatility 75</option>
@@ -95,58 +106,47 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
         <span class="live" id="price">---</span>
         <button onclick="zoomIn()">+</button><button onclick="zoomOut()">-</button><button onclick="resetZoom()">↺</button>
     </div>
-    <select id="langSelect" style="background:#21262d;color:#f59e0b;border:1px solid #f59e0b;border-radius:6px;padding:5px 10px;margin-left:auto;" onchange="changeAppLanguage(this.value)">
-        <option value="fr">🇫🇷 FR</option>
-        <option value="en">🇬🇧 EN</option>
-        <option value="es">🇪🇸 ES</option>
-        <option value="pt">🇵🇹 PT</option>
-        <option value="ru">🇷🇺 RU</option>
-        <option value="it">🇮🇹 IT</option>
-        <option value="de">🇩🇪 DE</option>
-        <option value="zh">🇨🇳 中文</option>
-        <option value="ja">🇯🇵 JP</option>
-    </select>
 </div>
 <div id="loader"><div class="spinner"></div></div>
 <canvas id="chart"></canvas>
 <div class="trend-bar" id="trendGeneral">--</div>
 <div class="info">
-    <span id="canal"><span id="canalLabel"></span>: --</span>
-    <span id="sr"><span id="srLabel"></span>: --</span>
-    <span id="pat"><span id="signalsLabel"></span>: --</span>
-    <span id="stats"><span id="statsLabel"></span>: --</span>
+    <span id="canal">Canal: --</span>
+    <span id="sr">S/R: --</span>
+    <span id="pat">Signaux: --</span>
+    <span id="stats">Stats: --</span>
 </div>
 </div>
 
 <!-- CHAT -->
 <div class="chat-panel">
     <div class="chat-header">
-        <span id="chatTitle">💬 Chat Live</span>
+        💬 Chat Live
         <div class="share-btns">
-            <button onclick="share('twitter')">𝕏</button>
-            <button onclick="share('facebook')">📘</button>
-            <button onclick="share('telegram')">📱</button>
+            <button onclick="share('twitter')" title="Twitter">𝕏</button>
+            <button onclick="share('facebook')" title="Facebook">📘</button>
+            <button onclick="share('telegram')" title="Telegram">📱</button>
         </div>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-area">
         <div class="emoji-bar">
-            <button onclick="addEmoji('🚀')">🚀</button><button onclick="addEmoji('📈')">📈</button>
-            <button onclick="addEmoji('📉')">📉</button><button onclick="addEmoji('💰')">💰</button>
-            <button onclick="addEmoji('🔥')">🔥</button><button onclick="addEmoji('👀')">👀</button>
-            <button onclick="addEmoji('💎')">💎</button><button onclick="addEmoji('✅')">✅</button>
+            <button onclick="addEmoji('🚀')">🚀</button><button onclick="addEmoji('📈')">📈</button><button onclick="addEmoji('📉')">📉</button><button onclick="addEmoji('💰')">💰</button>
+            <button onclick="addEmoji('🔥')">🔥</button><button onclick="addEmoji('👀')">👀</button><button onclick="addEmoji('💎')">💎</button><button onclick="addEmoji('✅')">✅</button>
         </div>
-        <input type="text" id="chatInput" placeholder="" onkeypress="if(event.key==='Enter')sendChat()" onclick="openPseudoIfNeeded()">
-        <button id="sendBtn" onclick="sendChat()">ENVOYER</button>
+        <input type="text" id="chatInput" placeholder="Votre message..." onkeypress="if(event.key==='Enter')sendChat()" onclick="openPseudoIfNeeded()">
+        <button onclick="sendChat()">ENVOYER</button>
     </div>
 </div>
 
+<!-- PSEUDO MODAL -->
 <div id="pseudoModal">
-    <div class="pseudo-box"><button onclick="document.getElementById('pseudoModal').style.display='none'" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.1);border:none;color:#8b949e;font-size:20px;cursor:pointer;width:32px;height:32px;border-radius:50%">✕</button>
-        <h3 id="welcomeTitle">👋 Bienvenue !</h3>
-        <p id="pseudoText">Choisissez un pseudo pour chatter</p>
-        <input type="text" id="pseudoInput" placeholder="" maxlength="20">
-        <button id="joinBtn" onclick="setPseudo()">Rejoindre le chat</button>
+    <div class="pseudo-box"><button onclick="document.getElementById('pseudoModal').style.display='none'" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.1);border:none;color:#8b949e;font-size:20px;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:0.3s" onmouseover="this.style.background='rgba(248,81,73,0.3)';this.style.color='#f85149'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='#8b949e'">✕</button>
+        <h3>👋 Bienvenue !</h3>
+        <br>
+        <p>Choisissez un pseudo pour chatter</p>
+        <input type="text" id="pseudoInput" placeholder="Votre pseudo..." maxlength="20">
+        <button onclick="setPseudo()">Rejoindre le chat</button>
     </div>
 </div>
 
@@ -155,20 +155,22 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
     <button class="like-btn" id="likeBtn" onclick="addLike()" title="J'aime">❤️</button>
 </div>
 
+<!-- ENGRENAGE -->
 <button id="adminTrigger" title="Admin">⚙</button>
+
 <div id="adminOverlay">
     <div class="admin-box">
         <button id="closeAdmin" onclick="closeAdminPopup()">✕</button>
-        <h3 id="adminTitle">⚙️ Administration</h3>
+        <h3>⚙️ Administration</h3>
         <div id="loginForm">
             <input type="password" id="adminPass" placeholder="Mot de passe">
-            <button id="adminAccessBtn" onclick="checkAdminPass()">🔓 Accéder</button>
+            <button onclick="checkAdminPass()">🔓 Accéder</button>
             <p id="adminError" style="color:#f85149;display:none;">Mot de passe incorrect</p>
         </div>
         <div id="adminStats" style="display:none;">
-            <div class="stats"><p>👥 <span id="onlineNow">0</span> <span id="onlineLabel">en ligne</span></p>
-            <p>❤️ <span id="totalLikes">112</span> <span id="likesLabel">likes</span></p>
-            <p>📊 <span id="totalVisitors">0</span> <span id="visitorsLabel">visiteurs</span></p></div>
+            <div class="stats"><p>👥 <span id="onlineNow">0</span> en ligne</p><p>❤️ <span id="totalLikes">112</span> likes</p><p>📊 <span id="totalVisitors">0</span> visiteurs</p></div>
+<p>📋 <span id="visitorsHistory">Chargement...</span></p>
+<p>📋 <span id="visitorsHistory">Chargement...</span></p>
             <button onclick="closeAdminPopup()" style="background:#30363d;">Fermer</button>
         </div>
     </div>
@@ -176,38 +178,8 @@ body{font-family:Arial;background:#0d1117;color:#c9d1d9;overflow:hidden;display:
 
 <script>
 // ============================================
-// TRADUCTIONS POUR LA PAGE APP
-// ============================================
-function updateAppLanguage() {
-    const lang = getCurrentLanguage();
-    const t = translations[lang];
-    if (t) {
-        document.getElementById('appTitle').innerHTML = t.app_title || '📊 Rick Trading';
-        document.getElementById('canalLabel').innerHTML = t.canal || 'Canal';
-        document.getElementById('srLabel').innerHTML = t.sr || 'S/R';
-        document.getElementById('signalsLabel').innerHTML = t.signals || 'Signaux';
-        document.getElementById('statsLabel').innerHTML = t.stats || 'Stats';
-        document.getElementById('chatTitle').innerHTML = t.chat_title || '💬 Chat Live';
-        document.getElementById('chatInput').placeholder = t.chat_placeholder || 'Votre message...';
-        document.getElementById('sendBtn').innerHTML = t.chat_send || 'ENVOYER';
-        document.getElementById('welcomeTitle').innerHTML = '👋 ' + (t.chat_welcome || 'Bienvenue !');
-        document.getElementById('pseudoText').innerHTML = t.chat_pseudo || 'Choisissez un pseudo pour chatter';
-        document.getElementById('joinBtn').innerHTML = t.chat_join || 'Rejoindre le chat';
-        document.getElementById('adminTitle').innerHTML = '⚙️ ' + (t.admin_title || 'Administration');
-        document.getElementById('adminAccessBtn').innerHTML = t.admin_access || '🔓 Accéder';
-        document.getElementById('adminPass').placeholder = t.admin_pass || 'Mot de passe';
-        document.getElementById('onlineLabel').innerHTML = t.online || 'en ligne';
-        document.getElementById('likesLabel').innerHTML = t.likes || 'likes';
-        document.getElementById('visitorsLabel').innerHTML = 'visiteurs';
-    }
-    document.getElementById('langSelect').value = getCurrentLanguage();
-}
-
-function changeAppLanguage(lang) {
-    setLanguage(lang);
-}
-
 // SONS
+// ============================================
 var audioCtx = null;
 function playSound(freq, type, duration) {
     try {
@@ -228,6 +200,9 @@ function soundNewMessage() { playSound(800, 'sine', 0.15); }
 function soundAlertUp() { playSound(600, 'square', 0.1); setTimeout(function(){playSound(900, 'square', 0.15);}, 150); }
 function soundAlertDown() { playSound(400, 'square', 0.1); setTimeout(function(){playSound(200, 'square', 0.15);}, 150); }
 
+// ============================================
+// PSEUDO + COULEURS
+// ============================================
 var USERNAME = "";
 var userColors = {};
 var colors = ['#58a6ff','#3fb950','#f0883e','#a371f7','#f85149','#d29922','#79c0ff','#7ee787'];
@@ -249,12 +224,15 @@ function openPseudoIfNeeded() {
 
 function setPseudo() {
     var name = document.getElementById('pseudoInput').value.trim();
-    if (name.length < 2) return alert('Pseudo trop court');
+    if (name.length < 2) return alert('Pseudo trop court (min 2 caractères)');
     USERNAME = name;
     fetch("/api/pseudo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pseudo:name})});
     document.getElementById('pseudoModal').style.display = 'none';
 }
 
+// ============================================
+// EMOJIS + SHARE
+// ============================================
 function addEmoji(emoji) { document.getElementById('chatInput').value += emoji; document.getElementById('chatInput').focus(); }
 function share(platform) {
     var url = encodeURIComponent('https://trading-ilfh.onrender.com');
@@ -263,6 +241,9 @@ function share(platform) {
     window.open(links[platform], '_blank', 'width=600,height=400');
 }
 
+// ============================================
+// STATS + LIKES + ADMIN
+// ============================================
 var IS_ADMIN=false;
 var _k=null;
 (async function(){var _d=new TextEncoder().encode('AlidaBerenice1994');var _h=await crypto.subtle.digest('SHA-256',_d);_k=Array.from(new Uint8Array(_h)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');})();
@@ -275,23 +256,14 @@ async function loadVisitorsLog(){try{var res=await fetch("/api/visitors-log");va
 async function checkAdminPass(){var _p=document.getElementById('adminPass').value;var _e=new TextEncoder().encode(_p);var _h=await crypto.subtle.digest('SHA-256',_e);var _s=Array.from(new Uint8Array(_h)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');if(_s===_k){IS_ADMIN=true;await registerVisit();document.getElementById('loginForm').style.display='none';document.getElementById('adminStats').style.display='block';var res=await fetch('/api/stats');var data=await res.json();document.getElementById('onlineNow').textContent=data.online;document.getElementById('totalLikes').textContent=data.likes;document.getElementById('totalVisitors').textContent=data.visitors;}else{document.getElementById('adminError').style.display='block';}}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAdminPopup();});
 
+// ============================================
+// CHAT
+// ============================================
 var lastMsgCount = 0;
 async function loadChat(){try{var res=await fetch('/api/chat');var msgs=await res.json();if(msgs.length>lastMsgCount&&lastMsgCount>0){soundNewMessage();}lastMsgCount=msgs.length;var el=document.getElementById('chatMessages');el.innerHTML=msgs.map(function(m){var u=m.user||'Anonyme';var color=getColor(u);return'<div class="chat-msg"><span class="online-dot" style="background:'+color+'"></span><span class="user" style="color:'+color+'">'+u+'</span>'+m.message+'<span class="time">'+m.time+'</span></div>';}).join('');el.scrollTop=el.scrollHeight;}catch(e){}}
 async function sendChat(){if(!USERNAME){openPseudoIfNeeded();return;}var input=document.getElementById('chatInput');var msg=input.value.trim();if(!msg)return;await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,user:USERNAME})});input.value='';loadChat();}
-
-// TOKEN GITHUB EXPIRE
-fetch('/api/token-status')
-  .then(r => r.json())
-  .then(data => {
-    if (data.warning_needed && data.expires_in_days > 0) {
-      document.getElementById('tokenDaysLeft').innerText = data.expires_in_days;
-      document.getElementById('tokenWarning').style.display = 'block';
-    }
-  });
-
 loadChat();setInterval(loadChat,3000);
 registerVisit();loadStats();setInterval(loadStats,10000);
-updateAppLanguage();
 </script>
 <script src="/static/chart.js"></script>
 </body>
