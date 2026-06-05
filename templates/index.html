@@ -83,8 +83,17 @@ body{font-family:system-ui,'Segoe UI',Roboto,sans-serif;background:#0d1117;color
         </div>
     </div>
     <div class="chat-panel">
-        <div class="chat-header"><span id="chatTitle"></span><div><button onclick="shareTwitter()">𝕏</button><button onclick="shareTelegram()">📱</button></div></div>
-        <div class="chat-messages" id="chatMessages"></div>
+<div class="chat-header">
+    <span id="chatTitle"></span>
+    <div class="share-dropdown">
+        <button class="share-btn" onclick="toggleShareMenu()">🔗</button>
+        <div class="share-menu" id="shareMenu">
+            <a href="#" onclick="shareFacebook(); return false;">📘 Facebook</a>
+            <a href="#" onclick="shareWhatsApp(); return false;">💬 WhatsApp</a>
+            <a href="#" onclick="shareTelegram(); return false;">📱 Telegram</a>
+        </div>
+    </div>
+</div>
         <div class="chat-input-area">
             <div class="emoji-bar"><button onclick="addEmoji('🚀')">🚀</button><button onclick="addEmoji('📈')">📈</button><button onclick="addEmoji('📉')">📉</button><button onclick="addEmoji('💰')">💰</button><button onclick="addEmoji('🔥')">🔥</button></div>
             <input type="text" id="chatInput" placeholder="" onkeypress="if(event.key==='Enter')sendChat()" onclick="openPseudo()">
@@ -187,3 +196,77 @@ updateAppLanguage();
 .share-icon { background: rgba(88,166,255,0.1); border: none; color: #8b949e; font-size: 1rem; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
 .share-icon:hover { background: rgba(88,166,255,0.3); color: #58a6ff; transform: scale(1.05); }
 </style>
+<style>
+.share-dropdown {
+    position: relative;
+    display: inline-block;
+}
+.share-btn {
+    background: rgba(88,166,255,0.1);
+    border: none;
+    color: #8b949e;
+    font-size: 1rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.share-btn:hover {
+    background: rgba(88,166,255,0.3);
+    color: #58a6ff;
+    transform: scale(1.05);
+}
+.share-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 8px 0;
+    min-width: 140px;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+.share-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    color: #c9d1d9;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+.share-menu a:hover {
+    background: #1e293b;
+    color: #58a6ff;
+}
+.share-menu.show {
+    display: flex;
+}
+</style>
+<script>
+function toggleShareMenu() {
+    const menu = document.getElementById('shareMenu');
+    menu.classList.toggle('show');
+}
+function shareFacebook() { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.href), '_blank'); toggleShareMenu(); }
+function shareWhatsApp() { window.open('https://wa.me/?text=' + encodeURIComponent('📊 Rejoignez-moi sur Rick Trading ! ' + location.href), '_blank'); toggleShareMenu(); }
+function shareTelegram() { window.open('https://t.me/share/url?url=' + encodeURIComponent(location.href) + '&text=' + encodeURIComponent('📊 Rejoignez-moi sur Rick Trading !'), '_blank'); toggleShareMenu(); }
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('shareMenu');
+    const btn = document.querySelector('.share-btn');
+    if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.remove('show');
+    }
+});
+</script>
