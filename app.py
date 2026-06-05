@@ -3,7 +3,6 @@ import json, os, time, random, base64, re
 
 app = Flask(__name__)
 
-# Fichiers de données
 STATS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'stats.json')
 CHAT_FILE = os.path.join(os.path.dirname(__file__), 'data', 'chat.json')
 PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
@@ -37,7 +36,6 @@ def load_pseudos():
             return json.load(f)
     return {}
 
-# Compteur en ligne avec variation humaine
 online_cache = {"value": 12, "last_update": 0}
 
 @app.route('/api/online-display')
@@ -68,7 +66,6 @@ def online_display():
         online_cache["last_update"] = now
     return jsonify({"online": online_cache["value"]})
 
-# Capture écran
 latest_screenshot = {"filename": "default_chart.png", "timestamp": 0}
 @app.route('/api/chart-screenshot')
 def chart_screenshot():
@@ -96,7 +93,6 @@ def upload_screenshot():
             return jsonify({"status": "ok"})
     return jsonify({"status": "error"}), 400
 
-# Routes principales
 @app.route('/')
 def landing():
     return render_template('landing.html')

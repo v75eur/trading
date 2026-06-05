@@ -219,11 +219,13 @@ function changeSymbol(){
     if(ws) ws.close();
     connect();
 }
+
 function changeTF(){
     tf = parseInt(document.getElementById('tf').value);
     if(ws) ws.close();
     connect();
 }
+
 function zoomIn(){ cw=Math.min(30,cw+2); }
 function zoomOut(){ cw=Math.max(2,cw-2); }
 function resetZoom(){ cw=8; }

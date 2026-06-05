@@ -1,0 +1,6 @@
+// Remplacer la fonction changeTF existante par :
+function changeTF(){
+    tf = parseInt(document.getElementById('tf').value);
+    if(ws) ws.close();
+    connect();
+}
