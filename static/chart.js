@@ -43,6 +43,7 @@ function connect(){
     document.getElementById('loader') && (document.getElementById('loader').style.display='flex');
     ws=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
     ws.onopen=()=>{
+        resetWsErrorCount();
         hideWsError();
         let granularity = getGranularity();
         ws.send(JSON.stringify({ticks_history:sym,count:500,end:'latest',start:1,style:'candles',granularity:granularity}));
@@ -229,3 +230,32 @@ function zoomOut(){ cw=Math.max(2,cw-2); }
 function resetZoom(){ cw=8; }
 
 window.addEventListener('load',init);
+
+// Compteur d'erreurs WebSocket
+let wsErrorCount = 0;
+const MAX_WS_ERRORS = 3;
+
+// Fonction de redirection vers maintenance
+function redirectToMaintenance() {
+    if (window.location.pathname !== '/maintenance') {
+        window.location.href = '/maintenance';
+    }
+}
+
+// Remplacer la fonction showWsError existante
+function showWsError() {
+    let banner = document.getElementById('wsError');
+    if (banner) banner.style.display = 'block';
+    
+    wsErrorCount++;
+    if (wsErrorCount >= MAX_WS_ERRORS) {
+        redirectToMaintenance();
+    }
+}
+
+// Réinitialiser le compteur en cas de succès
+function resetWsErrorCount() {
+    wsErrorCount = 0;
+    let banner = document.getElementById('wsError');
+    if (banner) banner.style.display = 'none';
+}
