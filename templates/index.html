@@ -106,6 +106,7 @@ body{font-family:system-ui,'Segoe UI',Roboto,sans-serif;background:#0d1117;color
 
 <script>
 let USERNAME = "";
+let sending = false;
 let ADMIN_HASH = "d0695d2f4b6487fb81c7047ba01d06d5065aa1a9f18f89633389e1e9b5d85fd6";
 
 function updateAppLanguage(){
@@ -141,11 +142,19 @@ function getColor(name){
 async function loadChat(){
     try{const r=await fetch('/api/chat'),msgs=await r.json();const c=document.getElementById('chatMessages');c.innerHTML=msgs.map(m=>`<div class="chat-msg"><span class="chat-user" style="color:${getColor(m.user)}">${escapeHtml(m.user)}</span> ${escapeHtml(m.message)}<span class="chat-time">${m.time}</span></div>`).join('');c.scrollTop=c.scrollHeight;}catch(e){}
 }
-async function sendChat(){
-    if(!USERNAME){openPseudo();return;}
-    const i=document.getElementById('chatInput'),m=i.value.trim();if(!m)return;
-    await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m,user:USERNAME})});
-    i.value='';loadChat();
+async function sendChat() {
+    if (sending) return;
+    if (!USERNAME) { openPseudo(); return; }
+    const input = document.getElementById("chatInput");
+    const msg = input.value.trim();
+    if (!msg) return;
+    sending = true;
+    try {
+        await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: msg, user: USERNAME }) });
+        input.value = "";
+        loadChat();
+    } catch(e) {}
+    setTimeout(() => { sending = false; }, 1000);
 }
 function openPseudo(){if(USERNAME)return;document.getElementById('pseudoModal').style.display='flex';}
 function closePseudoModal(){document.getElementById('pseudoModal').style.display='none';}
