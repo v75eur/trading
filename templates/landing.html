@@ -7,80 +7,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="/static/translations.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: #0a0a0a;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
             color: #ffffff;
             min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Spinner de chargement */
-        .loader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            gap: 1rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .loader-overlay.active {
-            display: flex;
-            opacity: 1;
-        }
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 3px solid rgba(245,158,11,0.2);
-            border-top: 3px solid #f59e0b;
-            border-right: 3px solid #f59e0b;
-            border-radius: 50%;
-            animation: spin 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .loader-text {
-            color: #f59e0b;
-            font-size: 0.9rem;
-            font-weight: 500;
-            letter-spacing: 1px;
-            animation: pulseText 1.5s ease-in-out infinite;
-        }
-        @keyframes pulseText {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        .hero {
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             text-align: center;
-            padding: 1rem;
+            padding: 2rem;
             position: relative;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-            will-change: transform;
         }
-
         .hero-image {
             position: absolute;
             top: 0;
@@ -88,372 +28,154 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0;
-            z-index: 0;
-            transition: opacity 1.5s ease-out;
-        }
-
-        .hero-image.loaded {
             opacity: 0.15;
+            z-index: 0;
         }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            max-width: 1100px;
-            width: 100%;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-
-        .hero-content.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        h1 {
-            font-size: 3.8rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #fff, #f59e0b);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            transition: text-shadow 0.3s ease;
-        }
-
-        h1:hover {
-            text-shadow: 0 0 30px rgba(245,158,11,0.3);
-        }
-
-        .subtitle {
-            font-size: 1.15rem;
-            color: #94a3b8;
-            margin-bottom: 1.8rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            transition: color 0.3s ease;
-        }
-
+        .content { position: relative; z-index: 1; max-width: 1200px; width: 100%; }
+        h1 { font-size: 4rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, #fff, #f59e0b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .subtitle { font-size: 1.2rem; color: #94a3b8; margin-bottom: 2rem; }
         .btn-primary {
             display: inline-block;
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #fff;
-            padding: 0.85rem 2.2rem;
-            font-size: 1rem;
+            padding: 0.9rem 2.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             border-radius: 50px;
             text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            margin-bottom: 1.8rem;
-            box-shadow: 0 4px 15px rgba(245,158,11,0.3);
+            transition: all 0.3s;
+            margin: 0.5rem;
+        }
+        .btn-primary:hover { transform: scale(1.03); }
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1e293b;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 0.5rem;
+            color: #f59e0b;
             cursor: pointer;
-            border: none;
+            z-index: 100;
+            font-size: 0.9rem;
         }
-
-        .btn-primary:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(245,158,11,0.4);
+        .features {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 3rem 0;
         }
-
+        .feature {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+            padding: 1.8rem;
+            border-radius: 24px;
+            width: 200px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+        .feature:hover { transform: translateY(-5px); border-color: #f59e0b; }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+        .feature h3 { font-size: 1.1rem; color: #f59e0b; margin-bottom: 0.5rem; }
+        footer { margin-top: 4rem; color: #64748b; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; }
         .online-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(26, 26, 46, 0.7);
-            backdrop-filter: blur(12px);
-            padding: 6px 18px;
-            border-radius: 50px;
-            margin-bottom: 1.8rem;
-            border: 1px solid rgba(63,185,80,0.5);
-            transition: all 0.3s ease;
-        }
-
-        .online-badge:hover {
-            transform: scale(1.02);
-            border-color: #3fb950;
             background: rgba(26, 26, 46, 0.9);
-        }
-
-        .online-dot {
-            width: 10px;
-            height: 10px;
-            background: #3fb950;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #3fb950;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.1); }
-        }
-
-        .features-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1.2rem;
-            margin-bottom: 2rem;
-        }
-
-        .feature-item {
-            background: rgba(255,255,255,0.03);
             backdrop-filter: blur(10px);
-            padding: 0.7rem 1.6rem;
-            border-radius: 60px;
-            border: 1px solid rgba(255,255,255,0.08);
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            cursor: default;
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin: 20px 0;
+            border: 1px solid #3fb950;
         }
-
-        .feature-item:hover {
-            transform: translateY(-3px);
-            border-color: #f59e0b;
-            background: rgba(245,158,11,0.1);
-        }
-
-        .feature-icon {
-            font-size: 1.2rem;
-            margin-right: 8px;
-        }
-
-        .feature-item h3 {
-            font-size: 0.9rem;
-            font-weight: 500;
-            display: inline;
-            color: #c9d1d9;
-        }
-
-        .cards-row {
+        .online-dot { width: 10px; height: 10px; background: #3fb950; border-radius: 50%; box-shadow: 0 0 6px #3fb950; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .cards-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.8rem;
+            gap: 2rem;
             justify-content: center;
-            margin-top: 0.5rem;
+            margin: 3rem 0;
         }
-
-        .info-card {
+        .card {
             flex: 1;
-            min-width: 260px;
-            max-width: 320px;
-            background: rgba(13, 17, 23, 0.6);
-            backdrop-filter: blur(12px);
-            border-radius: 28px;
-            border: 1px solid rgba(255,255,255,0.06);
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            cursor: pointer;
-        }
-
-        .info-card:hover {
-            transform: translateY(-8px);
-            border-color: #f59e0b;
-            box-shadow: 0 25px 35px -12px rgba(0,0,0,0.4);
+            min-width: 280px;
             background: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid #30363d;
+            overflow: hidden;
+            transition: all 0.3s;
         }
-
+        .card:hover { transform: translateY(-4px); border-color: #f59e0b; }
         .card-header {
-            background: rgba(22, 27, 34, 0.7);
-            padding: 0.8rem;
+            background: rgba(22, 27, 34, 0.9);
+            padding: 0.9rem;
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid #30363d;
             font-weight: 600;
             color: #f59e0b;
-            font-size: 0.9rem;
-            letter-spacing: 0.3px;
-            transition: background 0.3s ease;
+            font-size: 1rem;
         }
-
-        .info-card:hover .card-header {
-            background: rgba(22, 27, 34, 0.9);
-        }
-
-        .card-body {
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .card-body img {
-            max-width: 100%;
-            border-radius: 18px;
-            background: #0a0a0a;
-            transition: transform 0.5s ease;
-        }
-
-        .info-card:hover .card-body img {
-            transform: scale(1.02);
-        }
-
-        .update-time {
-            font-size: 0.65rem;
-            color: #8b949e;
-            margin-top: 0.6rem;
-        }
-
-        .empty-card-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 160px;
-            color: #8b949e;
-            text-align: center;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-
-        .empty-card-content .emoji-big {
-            font-size: 2.5rem;
-            transition: transform 0.3s ease;
-        }
-
-        .info-card:hover .empty-card-content .emoji-big {
-            transform: scale(1.1);
-        }
-
-        .language-selector {
-            position: fixed;
-            top: 18px;
-            right: 18px;
-            background: rgba(30, 41, 59, 0.85);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(245,158,11,0.5);
-            border-radius: 30px;
-            padding: 0.4rem 0.9rem;
-            color: #f59e0b;
-            cursor: pointer;
-            z-index: 100;
-            font-size: 0.8rem;
-            transition: all 0.2s ease;
-        }
-
-        .language-selector:hover {
-            background: rgba(245,158,11,0.9);
-            color: #0a0a0a;
-            border-color: #f59e0b;
-        }
-
-        footer {
-            margin-top: 1.5rem;
-            color: #64748b;
-            font-size: 0.7rem;
-            text-align: center;
-            padding: 0.5rem;
-            transition: color 0.3s ease;
-        }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 2.2rem; }
-            .subtitle { font-size: 0.9rem; }
-            .feature-item { padding: 0.4rem 1.2rem; }
-            .cards-row { flex-direction: column; align-items: center; }
-            .info-card { max-width: 100%; }
-            .btn-primary { padding: 0.7rem 1.8rem; font-size: 0.9rem; }
-        }
+        .card-body { padding: 1.5rem; text-align: center; }
+        .card-body img { max-width: 100%; border-radius: 16px; background: #0a0a0a; }
+        .update-time { font-size: 0.7rem; color: #8b949e; margin-top: 0.8rem; }
+        .empty-card { display: flex; align-items: center; justify-content: center; min-height: 200px; color: #8b949e; text-align: center; flex-direction: column; gap: 1rem; }
+        @media (max-width: 768px) { h1 { font-size: 2.2rem; } .features { flex-direction: column; align-items: center; } .cards-container { flex-direction: column; } }
     </style>
 </head>
 <body>
-    <!-- Spinner de chargement -->
-    <div id="loaderOverlay" class="loader-overlay">
-        <div class="spinner"></div>
-        <div class="loader-text">Chargement de la plateforme...</div>
-    </div>
-
-    <img src="/static/rick.jpeg" alt="Rick Trading" id="heroImg" class="hero-image">
+    <img src="/static/rick.jpeg" alt="Rick Trading" class="hero-image">
     <select id="languageSelect" class="language-selector" onchange="changeLanguage()">
         <option value="fr">🇫🇷 FR</option><option value="en">🇬🇧 EN</option><option value="es">🇪🇸 ES</option>
         <option value="pt">🇵🇹 PT</option><option value="ru">🇷🇺 RU</option><option value="it">🇮🇹 IT</option>
         <option value="de">🇩🇪 DE</option><option value="zh">🇨🇳 中文</option><option value="ja">🇯🇵 JP</option>
     </select>
 
-    <div class="hero">
-        <div class="hero-content" id="heroContent">
-            <h1 id="title"></h1>
-            <p id="subtitle" class="subtitle"></p>
-            
-            <div class="online-badge">
-                <span class="online-dot"></span>
-                <span id="onlineCount" style="font-weight:bold;">0</span>
-                <span id="onlineLabel"></span>
-            </div>
-            
-            <button id="launchBtn" class="btn-primary"></button>
+    <div class="content">
+        <h1 id="title"></h1>
+        <p id="subtitle" class="subtitle"></p>
+        
+        <div class="online-badge">
+            <span class="online-dot"></span>
+            <span id="onlineCount" style="font-weight:bold;">0</span>
+            <span id="onlineLabel"></span>
+        </div>
+        
+        <div>
+            <a href="/app" id="launchBtn" class="btn-primary"></a>
+        </div>
+        
+        <div class="features">
+            <div class="feature"><div class="feature-icon">📈</div><h3 id="feature1"></h3></div>
+            <div class="feature"><div class="feature-icon">🔔</div><h3 id="feature2"></h3></div>
+            <div class="feature"><div class="feature-icon">💬</div><h3 id="feature3"></h3></div>
+        </div>
 
-            <div class="features-grid">
-                <div class="feature-item">
-                    <span class="feature-icon">📈</span>
-                    <h3 id="feature1"></h3>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">🔔</span>
-                    <h3 id="feature2">APK 📱</h3>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">💬</span>
-                    <h3 id="feature3"></h3>
+        <div class="cards-container">
+            <div class="card">
+                <div class="card-header"><span id="marketPreview"></span></div>
+                <div class="card-body">
+                    <img id="chartPreview" src="" alt="Graphique">
+                    <div class="update-time" id="chartUpdateTime"></div>
                 </div>
             </div>
-
-            <div class="cards-row">
-                <div class="info-card">
-                    <div class="card-header"><span id="marketPreview"></span></div>
-                    <div class="card-body">
-                        <img id="chartPreview" src="" alt="Graphique">
-                        <div class="update-time" id="chartUpdateTime"></div>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <div class="card-header"><span id="partnerSpace"></span></div>
-                    <div class="card-body empty-card-content">
-                        <div class="emoji-big">⚡</div>
-                        <div id="partnerContent">Contenu à venir</div>
-                    </div>
+            <div class="card">
+                <div class="card-header"><span id="partnerSpace"></span></div>
+                <div class="card-body empty-card">
+                    <div style="font-size: 3rem;">⚡</div>
+                    <div>Contenu à venir</div>
                 </div>
             </div>
         </div>
+        
+        <footer><p id="footer"></p></footer>
     </div>
 
-    <footer><p id="footer"></p></footer>
-
     <script>
-        // Gestion du spinner de chargement
-        const loaderOverlay = document.getElementById('loaderOverlay');
-        const launchBtn = document.getElementById('launchBtn');
-
-        function showLoader() {
-            loaderOverlay.classList.add('active');
-        }
-
-        function hideLoader() {
-            loaderOverlay.classList.remove('active');
-        }
-
-        // Redirection avec spinner
-        function redirectToPlatform() {
-            showLoader();
-            setTimeout(() => {
-                window.location.href = '/app';
-            }, 300);
-        }
-
-        // Attacher l'événement au bouton
-        if (launchBtn) {
-            launchBtn.addEventListener('click', redirectToPlatform);
-        }
-
-        // Animation fluide au chargement
-        window.addEventListener('DOMContentLoaded', () => {
-            const img = document.getElementById('heroImg');
-            img.classList.add('loaded');
-            
-            const content = document.getElementById('heroContent');
-            setTimeout(() => {
-                content.classList.add('visible');
-            }, 100);
-        });
-
         function updatePage() {
             document.getElementById('title').textContent = t('title');
             document.getElementById('subtitle').textContent = t('subtitle');
@@ -465,37 +187,16 @@
             document.getElementById('marketPreview').textContent = t('market_preview');
             document.getElementById('partnerSpace').textContent = t('partner_space');
             document.getElementById('onlineLabel').textContent = t('online');
-            document.getElementById('partnerContent').textContent = t('partner_content') || 'Contenu à venir';
             document.getElementById('languageSelect').value = getCurrentLanguage();
         }
-
-        function changeLanguage() {
-            setLanguage(document.getElementById('languageSelect').value);
-        }
-
+        function changeLanguage() { setLanguage(document.getElementById('languageSelect').value); }
         async function updateOnlineCount() {
-            try {
-                const res = await fetch('/api/online-display');
-                const data = await res.json();
-                document.getElementById('onlineCount').innerText = data.online;
-            } catch(e) {}
+            try { const res = await fetch('/api/online-display'); const data = await res.json(); document.getElementById('onlineCount').innerText = data.online; } catch(e) {}
         }
-
         async function updateChartPreview() {
-            try {
-                const res = await fetch('/api/chart-screenshot');
-                const data = await res.json();
-                const img = document.getElementById('chartPreview');
-                if (img && data.image_url) {
-                    img.src = data.image_url + '?t=' + new Date().getTime();
-                    document.getElementById('chartUpdateTime').innerHTML = '🕒 ' + data.updated_at;
-                }
-            } catch(e) {}
+            try { const res = await fetch('/api/chart-screenshot'); const data = await res.json(); const img = document.getElementById('chartPreview'); if (img && data.image_url) { img.src = data.image_url + '?t=' + new Date().getTime(); document.getElementById('chartUpdateTime').innerHTML = '🕒 ' + data.updated_at; } } catch(e) {}
         }
-
-        updatePage();
-        updateOnlineCount();
-        updateChartPreview();
+        updatePage(); updateOnlineCount(); updateChartPreview();
         setInterval(updateOnlineCount, 35000);
         setInterval(updateChartPreview, 600000);
     </script>
