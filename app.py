@@ -14,7 +14,6 @@ def load_stats():
     if os.path.exists(STATS_FILE):
         with open(STATS_FILE, 'r') as f:
             return json.load(f)
-    return {'likes': 112, 'visitors': 0, 'online': {}, 'liked_ips': []}
 def save_stats(s):
     with open(STATS_FILE, 'w') as f:
         json.dump(s, f)
@@ -129,9 +128,7 @@ def api_visit():
 def api_like():
     stats = load_stats()
     ip = request.remote_addr
-    if ip not in stats.get('liked_ips', []):
         stats['likes'] = stats.get('likes',112) + 1
-        stats.setdefault('liked_ips', []).append(ip)
         save_stats(stats)
         return jsonify({'status':'ok', 'likes': stats['likes']})
     return jsonify({'status':'already', 'likes': stats.get('likes',112)})

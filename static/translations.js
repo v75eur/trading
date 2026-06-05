@@ -22,7 +22,6 @@ const translations = {
         admin_pass: "Mot de passe",
         admin_access: "🔓 Accéder",
         online: "en ligne",
-        likes: "j'aime",
         market_preview: "📸 Aperçu du marché",
         partner_space: "🎯 Espace partenaire",
         visitors: "visiteurs"
@@ -50,7 +49,6 @@ const translations = {
         admin_pass: "Password",
         admin_access: "🔓 Access",
         online: "online",
-        likes: "likes",
         market_preview: "📸 Market preview",
         partner_space: "🎯 Partner space",
         visitors: "visitors"
@@ -78,7 +76,6 @@ const translations = {
         admin_pass: "Contraseña",
         admin_access: "🔓 Acceder",
         online: "en línea",
-        likes: "me gusta",
         market_preview: "📸 Vista previa del mercado",
         partner_space: "🎯 Espacio para socios",
         visitors: "visitantes"
@@ -106,7 +103,6 @@ const translations = {
         admin_pass: "Senha",
         admin_access: "🔓 Acessar",
         online: "online",
-        likes: "curtidas",
         market_preview: "📸 Pré-visualização do mercado",
         partner_space: "🎯 Espaço do parceiro",
         visitors: "visitantes"
@@ -134,7 +130,6 @@ const translations = {
         admin_pass: "Пароль",
         admin_access: "🔓 Войти",
         online: "онлайн",
-        likes: "лайков",
         market_preview: "📸 Обзор рынка",
         partner_space: "🎯 Партнерское пространство",
         visitors: "посетителей"
@@ -162,7 +157,6 @@ const translations = {
         admin_pass: "Password",
         admin_access: "🔓 Accedi",
         online: "online",
-        likes: "mi piace",
         market_preview: "📸 Anteprima del mercato",
         partner_space: "🎯 Spazio partner",
         visitors: "visitatori"
@@ -190,7 +184,6 @@ const translations = {
         admin_pass: "Passwort",
         admin_access: "🔓 Zugang",
         online: "online",
-        likes: "Gefällt mir",
         market_preview: "📸 Marktvorschau",
         partner_space: "🎯 Partnerbereich",
         visitors: "Besucher"
@@ -218,7 +211,6 @@ const translations = {
         admin_pass: "密码",
         admin_access: "🔓 访问",
         online: "在线",
-        likes: "点赞",
         market_preview: "📸 市场预览",
         partner_space: "🎯 合作伙伴空间",
         visitors: "访客"
@@ -246,7 +238,6 @@ const translations = {
         admin_pass: "パスワード",
         admin_access: "🔓 アクセス",
         online: "オンライン",
-        likes: "いいね",
         market_preview: "📸 マーケットプレビュー",
         partner_space: "🎯 パートナースペース",
         visitors: "訪問者"
