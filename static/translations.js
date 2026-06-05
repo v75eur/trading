@@ -1,4 +1,3 @@
-// Fichier central des traductions pour tout le site
 const translations = {
     fr: {
         title: "📊 Rick Trading",
@@ -8,7 +7,7 @@ const translations = {
         feature2: "Notifications APK",
         feature3: "Chat communautaire",
         footer: "© 2025 Rick Trading - Le trading comporte des risques",
-        app_title: "Rick Trading",
+        app_title: "📊 Rick Trading",
         price: "Prix",
         canal: "Canal",
         sr: "S/R",
@@ -17,8 +16,16 @@ const translations = {
         chat_title: "💬 Chat Live",
         chat_placeholder: "Votre message...",
         chat_send: "ENVOYER",
+        chat_welcome: "Bienvenue !",
+        chat_pseudo: "Choisissez un pseudo pour chatter",
+        chat_join: "Rejoindre le chat",
+        admin_title: "Administration",
+        admin_pass: "Mot de passe",
+        admin_access: "🔓 Accéder",
         online: "en ligne",
-        likes: "j'aime"
+        likes: "j'aime",
+        market_preview: "📸 Aperçu du marché (actualisé toutes les heures)",
+        partner_space: "🎯 Espace partenaire"
     },
     en: {
         title: "📊 Rick Trading",
@@ -28,7 +35,7 @@ const translations = {
         feature2: "APK notifications",
         feature3: "Community chat",
         footer: "© 2025 Rick Trading - Trading involves risks",
-        app_title: "Rick Trading",
+        app_title: "📊 Rick Trading",
         price: "Price",
         canal: "Channel",
         sr: "S/R",
@@ -37,8 +44,16 @@ const translations = {
         chat_title: "💬 Live Chat",
         chat_placeholder: "Your message...",
         chat_send: "SEND",
+        chat_welcome: "Welcome!",
+        chat_pseudo: "Choose a nickname to chat",
+        chat_join: "Join the chat",
+        admin_title: "Administration",
+        admin_pass: "Password",
+        admin_access: "🔓 Access",
         online: "online",
-        likes: "likes"
+        likes: "likes",
+        market_preview: "📸 Market preview (updated hourly)",
+        partner_space: "🎯 Partner space"
     },
     es: {
         title: "📊 Rick Trading",
@@ -48,7 +63,7 @@ const translations = {
         feature2: "Notificaciones APK",
         feature3: "Chat comunitario",
         footer: "© 2025 Rick Trading - El trading implica riesgos",
-        app_title: "Rick Trading",
+        app_title: "📊 Rick Trading",
         price: "Precio",
         canal: "Canal",
         sr: "S/R",
@@ -57,8 +72,16 @@ const translations = {
         chat_title: "💬 Chat en vivo",
         chat_placeholder: "Tu mensaje...",
         chat_send: "ENVIAR",
+        chat_welcome: "¡Bienvenido!",
+        chat_pseudo: "Elige un apodo",
+        chat_join: "Unirse al chat",
+        admin_title: "Administración",
+        admin_pass: "Contraseña",
+        admin_access: "🔓 Acceder",
         online: "en línea",
-        likes: "me gusta"
+        likes: "me gusta",
+        market_preview: "📸 Vista previa del mercado (actualizada cada hora)",
+        partner_space: "🎯 Espacio para socios"
     },
     pt: {
         title: "📊 Rick Trading",
@@ -68,7 +91,7 @@ const translations = {
         feature2: "Notificações APK",
         feature3: "Chat comunitário",
         footer: "© 2025 Rick Trading - Negociação envolve riscos",
-        app_title: "Rick Trading",
+        app_title: "📊 Rick Trading",
         price: "Preço",
         canal: "Canal",
         sr: "S/R",
@@ -77,8 +100,16 @@ const translations = {
         chat_title: "💬 Chat ao vivo",
         chat_placeholder: "Sua mensagem...",
         chat_send: "ENVIAR",
+        chat_welcome: "Bem-vindo!",
+        chat_pseudo: "Escolha um apelido",
+        chat_join: "Entrar no chat",
+        admin_title: "Administração",
+        admin_pass: "Senha",
+        admin_access: "🔓 Acessar",
         online: "online",
-        likes: "curtidas"
+        likes: "curtidas",
+        market_preview: "📸 Pré-visualização do mercado (atualizada a cada hora)",
+        partner_space: "🎯 Espaço do parceiro"
     },
     ru: {
         title: "📊 Rick Trading",
@@ -88,7 +119,7 @@ const translations = {
         feature2: "APK уведомления",
         feature3: "Чат сообщества",
         footer: "© 2025 Rick Trading - Торговля сопряжена с рисками",
-        app_title: "Rick Trading",
+        app_title: "📊 Rick Trading",
         price: "Цена",
         canal: "Канал",
         sr: "Уровни",
@@ -97,8 +128,16 @@ const translations = {
         chat_title: "💬 Чат",
         chat_placeholder: "Ваше сообщение...",
         chat_send: "ОТПРАВИТЬ",
+        chat_welcome: "Добро пожаловать!",
+        chat_pseudo: "Выберите никнейм",
+        chat_join: "Присоединиться",
+        admin_title: "Администрирование",
+        admin_pass: "Пароль",
+        admin_access: "🔓 Войти",
         online: "онлайн",
-        likes: "лайков"
+        likes: "лайков",
+        market_preview: "📸 Обзор рынка (обновляется каждый час)",
+        partner_space: "🎯 Партнерское пространство"
     },
     it: {
         title: "📊 Rick Trading",
@@ -108,7 +147,7 @@ const translations = {
         feature2: "Notifiche APK",
         feature3: "Chat community",
         footer: "© 2025 Rick Trading - Il trading comporta rischi",
-        app_title: "Rick Trading",
+        app_title: "📊 Rick Trading",
         price: "Prezzo",
         canal: "Canale",
         sr: "S/R",
@@ -117,8 +156,16 @@ const translations = {
         chat_title: "💬 Chat Live",
         chat_placeholder: "Il tuo messaggio...",
         chat_send: "INVIA",
+        chat_welcome: "Benvenuto!",
+        chat_pseudo: "Scegli un nickname",
+        chat_join: "Unisciti alla chat",
+        admin_title: "Amministrazione",
+        admin_pass: "Password",
+        admin_access: "🔓 Accedi",
         online: "online",
-        likes: "mi piace"
+        likes: "mi piace",
+        market_preview: "📸 Anteprima del mercato (aggiornata ogni ora)",
+        partner_space: "🎯 Spazio partner"
     },
     de: {
         title: "📊 Rick Trading",
@@ -128,7 +175,7 @@ const translations = {
         feature2: "APK-Benachrichtigungen",
         feature3: "Community-Chat",
         footer: "© 2025 Rick Trading - Handel ist riskant",
-        app_title: "Rick Trading",
+        app_title: "📊 Rick Trading",
         price: "Preis",
         canal: "Kanal",
         sr: "U/S",
@@ -137,8 +184,16 @@ const translations = {
         chat_title: "💬 Live-Chat",
         chat_placeholder: "Deine Nachricht...",
         chat_send: "SENDEN",
+        chat_welcome: "Willkommen!",
+        chat_pseudo: "Wähle einen Spitznamen",
+        chat_join: "Chat beitreten",
+        admin_title: "Administration",
+        admin_pass: "Passwort",
+        admin_access: "🔓 Zugang",
         online: "online",
-        likes: "Gefällt mir"
+        likes: "Gefällt mir",
+        market_preview: "📸 Marktvorschau (stündlich aktualisiert)",
+        partner_space: "🎯 Partnerbereich"
     },
     zh: {
         title: "📊 Rick Trading",
@@ -148,7 +203,7 @@ const translations = {
         feature2: "APK通知",
         feature3: "社区聊天",
         footer: "© 2025 Rick Trading - 交易涉及风险",
-        app_title: "Rick Trading",
+        app_title: "📊 Rick Trading",
         price: "价格",
         canal: "通道",
         sr: "支撑/阻力",
@@ -157,8 +212,16 @@ const translations = {
         chat_title: "💬 聊天室",
         chat_placeholder: "您的消息...",
         chat_send: "发送",
+        chat_welcome: "欢迎！",
+        chat_pseudo: "选择昵称",
+        chat_join: "加入聊天",
+        admin_title: "管理",
+        admin_pass: "密码",
+        admin_access: "🔓 访问",
         online: "在线",
-        likes: "点赞"
+        likes: "点赞",
+        market_preview: "📸 市场预览（每小时更新）",
+        partner_space: "🎯 合作伙伴空间"
     },
     ja: {
         title: "📊 Rick Trading",
@@ -168,7 +231,7 @@ const translations = {
         feature2: "APK通知",
         feature3: "コミュニティチャット",
         footer: "© 2025 Rick Trading - 取引にはリスクが伴います",
-        app_title: "Rick Trading",
+        app_title: "📊 Rick Trading",
         price: "価格",
         canal: "チャネル",
         sr: "サポート/レジスタンス",
@@ -177,8 +240,16 @@ const translations = {
         chat_title: "💬 ライブチャット",
         chat_placeholder: "メッセージ...",
         chat_send: "送信",
+        chat_welcome: "ようこそ！",
+        chat_pseudo: "ニックネームを入力",
+        chat_join: "チャットに参加",
+        admin_title: "管理",
+        admin_pass: "パスワード",
+        admin_access: "🔓 アクセス",
         online: "オンライン",
-        likes: "いいね"
+        likes: "いいね",
+        market_preview: "📸 マーケットプレビュー（毎時更新）",
+        partner_space: "🎯 パートナースペース"
     }
 };
 

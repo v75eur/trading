@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request, make_response
-import json, os, time, random, base64
+import json, os, time, random, base64, re
 from datetime import datetime
 
 app = Flask(__name__)
@@ -80,62 +80,79 @@ def check_daily_limit():
         json.dump(data, f)
     return True
 
-# Cache pour le compteur en ligne
-online_cache = {"value": 0, "last_update": 0}
+# Cache pour le compteur en ligne (variation humaine)
+online_cache = {"value": 12, "last_update": 0}
 
 @app.route('/api/online-display')
 def online_display():
     global online_cache
     now = time.time()
     
-    if now - online_cache["last_update"] > 120:
+    # Mise à jour toutes les 30 secondes pour plus de réalisme
+    if now - online_cache["last_update"] > 30:
         stats = load_stats()
         real_online = len([k for k, v in stats.get('online', {}).items() if now - v < 300])
         
+        # Base fictive selon l'heure (avec variation naturelle)
         hour = time.localtime().tm_hour
         if hour < 8:
-            fake_base = 3
+            fake_base = random.randint(2, 5)
         elif hour < 12:
-            fake_base = 6
+            fake_base = random.randint(5, 12)
         elif hour < 18:
-            fake_base = 12
+            fake_base = random.randint(12, 25)
         elif hour < 22:
-            fake_base = 18
+            fake_base = random.randint(18, 35)
         else:
-            fake_base = 7
+            fake_base = random.randint(4, 10)
         
         total = min(real_online + fake_base, 50)
         
+        # Variation humaine : ne change pas trop vite
         if online_cache["value"] == 0:
             online_cache["value"] = total
         else:
-            diff = total - online_cache["value"]
-            step = max(-1, min(1, diff))
-            online_cache["value"] += step
+            # 40% de chance de rester identique
+            if random.random() < 0.4:
+                pass
+            else:
+                diff = total - online_cache["value"]
+                if diff > 0:
+                    step = random.choice([0, 1, 1, 2])
+                elif diff < 0:
+                    step = random.choice([0, -1, -1, -2])
+                else:
+                    step = random.choice([-1, 0, 1])
+                online_cache["value"] += step
+                online_cache["value"] = max(2, min(50, online_cache["value"]))
         
         online_cache["last_update"] = now
     
     return jsonify({"online": online_cache["value"]})
 
-# Route pour l'image du graphique (capture simulée pour l'instant)
-# Plus tard : vraie capture du canvas
+# Route pour l'image du graphique
+latest_screenshot = {"filename": "default_chart.png", "timestamp": 0}
+
 @app.route('/api/chart-screenshot')
 def chart_screenshot():
-    # Pour l'instant, retourne une image par défaut
-    # La vraie capture sera faite côté client et envoyée via POST
+    global latest_screenshot
+    # Cherche la dernière capture
+    files = sorted([f for f in os.listdir(SCREENSHOT_FOLDER) if f.endswith(('.png', '.jpg', '.jpeg'))], reverse=True)
+    if files:
+        latest_screenshot["filename"] = files[0]
+        latest_screenshot["timestamp"] = os.path.getmtime(os.path.join(SCREENSHOT_FOLDER, files[0]))
+    
     return jsonify({
-        "image_url": "/static/screenshots/default_chart.png",
-        "updated_at": time.strftime('%Y-%m-%d %H:%M:%S')
+        "image_url": f"/static/screenshots/{latest_screenshot['filename']}",
+        "updated_at": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(latest_screenshot['timestamp']))
     })
 
-# Route pour recevoir la capture d'écran depuis le client
+# Route pour recevoir la capture d'écran
 @app.route('/api/upload-screenshot', methods=['POST'])
 def upload_screenshot():
     data = request.get_json()
     image_data = data.get('image', '')
     if image_data and image_data.startswith('data:image'):
-        # Extraire le base64
-        import re
         match = re.match(r'data:image/(png|jpeg);base64,(.*)', image_data)
         if match:
             ext = match.group(1)
@@ -145,24 +162,21 @@ def upload_screenshot():
             with open(filepath, 'wb') as f:
                 f.write(base64.b64decode(img_data))
             
-            # Garder seulement les 10 dernières captures
+            # Garder seulement les 6 dernières captures (rotation)
             files = sorted(os.listdir(SCREENSHOT_FOLDER))
-            for old_file in files[:-10]:
+            for old_file in files[:-6]:
                 os.remove(os.path.join(SCREENSHOT_FOLDER, old_file))
             
             return jsonify({"status": "ok", "filename": filename})
     return jsonify({"status": "error"}), 400
 
 # ============================================
-# PAGE D'ACCUEIL (LANDING)
+# ROUTES PRINCIPALES
 # ============================================
 @app.route('/')
 def landing():
     return render_template('landing.html')
 
-# ============================================
-# APPLICATION PRINCIPALE (TRADING)
-# ============================================
 @app.route('/app')
 def index():
     if not check_daily_limit():
@@ -171,7 +185,7 @@ def index():
 
 @app.route('/ping')
 def ping():
-    return 'pong', 200, {'Content-Type': 'text/plain'}
+    return 'pong', 200
 
 @app.route('/api/stats')
 def api_stats():
