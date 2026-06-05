@@ -101,7 +101,7 @@ def online_display():
         else:
             fake_base = 7
         
-        total = min(real_online + fake_base, 30)
+        total = min(real_online + fake_base, 50)
         
         # Variation douce
         if online_cache["value"] == 0:
