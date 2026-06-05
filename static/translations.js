@@ -273,3 +273,22 @@ function t(key) {
     const lang = getCurrentLanguage();
     return translations[lang][key] || translations['fr'][key] || key;
 }
+// Ajout/supplément des messages d'urgence pour toutes les langues
+const urgentMessages = {
+    fr: "⚠️ Conseil mobile : Pour une meilleure expérience sur smartphone, activez le mode PC / bureau dans votre navigateur (Chrome : ⋮ → « Site Web pour ordinateur »).",
+    en: "⚠️ Mobile tip: For a better experience on smartphone, enable Desktop mode in your browser (Chrome: ⋮ → 'Desktop site').",
+    es: "⚠️ Consejo móvil: Para una mejor experiencia en smartphone, active el modo PC / escritorio en su navegador (Chrome: ⋮ → 'Sitio web para ordenador').",
+    pt: "⚠️ Dica móvel: Para uma melhor experiência no smartphone, ative o modo PC / desktop no seu navegador (Chrome: ⋮ → 'Site para computador').",
+    ru: "⚠️ Мобильный совет: Для лучшего опыта на смартфоне включите режим ПК / рабочего стола в браузере (Chrome: ⋮ → «Компьютерная версия сайта»).",
+    it: "⚠️ Consiglio mobile: Per una migliore esperienza su smartphone, attiva la modalità PC / desktop nel tuo browser (Chrome: ⋮ → 'Sito per computer').",
+    de: "⚠️ Mobil-Tipp: Für ein besseres Erlebnis auf dem Smartphone aktivieren Sie den PC- / Desktop-Modus in Ihrem Browser (Chrome: ⋮ → 'Computerwebsite').",
+    zh: "⚠️ 移动提示：为了在智能手机上获得更好的体验，请在浏览器中启用PC /桌面模式（Chrome：⋮→“电脑版网站”）。",
+    ja: "⚠️ モバイルヒント：スマートフォンでより良い体験をするために、ブラウザでPC /デスクトップモードを有効にしてください（Chrome：⋮→「コンピューターサイト」）。"
+};
+
+// Appliquer les messages d'urgence
+for (const lang in urgentMessages) {
+    if (translations[lang]) {
+        translations[lang].urgent_message = urgentMessages[lang];
+    }
+}

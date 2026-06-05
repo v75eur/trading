@@ -524,3 +524,73 @@ updatePage = function() {
     checkUrgentBanner();
 };
 </script>
+<script>
+// Fermeture du bandeau d'urgence
+function closeUrgentBanner() {
+    document.getElementById('urgentBanner').style.display = 'none';
+    localStorage.setItem('urgentClosed', 'true');
+}
+
+function checkUrgentBanner() {
+    if (localStorage.getItem('urgentClosed') === 'true') {
+        document.getElementById('urgentBanner').style.display = 'none';
+    }
+}
+
+// Mise à jour du message d'urgence selon la langue courante
+function updateUrgentMessage() {
+    const msg = t('urgent_message');
+    const msgElement = document.getElementById('urgentMessage');
+    if (msgElement) msgElement.textContent = msg;
+}
+
+// Sauvegarde de la fonction original
+const originalChangeLanguage = changeLanguage;
+changeLanguage = function() {
+    originalChangeLanguage();
+    setTimeout(() => {
+        updateUrgentMessage();
+    }, 100);
+};
+
+// Appel initial
+setTimeout(() => {
+    updateUrgentMessage();
+    checkUrgentBanner();
+}, 200);
+</script>
+<script>
+// Fermeture du bandeau d'urgence
+function closeUrgentBanner() {
+    document.getElementById('urgentBanner').style.display = 'none';
+    localStorage.setItem('urgentClosed', 'true');
+}
+
+function checkUrgentBanner() {
+    if (localStorage.getItem('urgentClosed') === 'true') {
+        document.getElementById('urgentBanner').style.display = 'none';
+    }
+}
+
+// Mise à jour du message d'urgence selon la langue courante
+function updateUrgentMessage() {
+    const msg = t('urgent_message');
+    const msgElement = document.getElementById('urgentMessage');
+    if (msgElement) msgElement.textContent = msg;
+}
+
+// Sauvegarde de la fonction original
+const originalChangeLanguage = changeLanguage;
+changeLanguage = function() {
+    originalChangeLanguage();
+    setTimeout(() => {
+        updateUrgentMessage();
+    }, 100);
+};
+
+// Appel initial
+setTimeout(() => {
+    updateUrgentMessage();
+    checkUrgentBanner();
+}, 200);
+</script>
