@@ -203,8 +203,18 @@ function loop(){
     requestAnimationFrame(loop);
 }
 function changeSymbol(){ sym=document.getElementById('sym').value; connect(); }
-function changeTF(){ tf=parseInt(document.getElementById('tf').value); connect(); }
-function zoomIn(){ cw=Math.min(30,cw+2); }
+function changeTF(){
+    tf = parseInt(document.getElementById("tf").value);
+    if(ws) ws.close();
+    connect();
+}
 function zoomOut(){ cw=Math.max(2,cw-2); }
 function resetZoom(){ cw=8; }
 window.addEventListener('load',init);
+
+// Forcer la reconnexion avec le nouveau timeframe
+function changeTF(){
+    tf = parseInt(document.getElementById("tf").value);
+    if(ws) ws.close();
+    connect();
+}
