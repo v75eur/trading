@@ -36,10 +36,43 @@
         .language-selector { position: fixed; top: 16px; right: 16px; background: rgba(30,41,59,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(245,158,11,0.5); border-radius: 40px; padding: 5px 12px; color: #f59e0b; cursor: pointer; z-index: 100; font-size: 0.75rem; }
         .language-selector:hover { background: #f59e0b; color: #0a0a0a; }
         footer { margin-top: 1.5rem; color: #64748b; font-size: 0.65rem; text-align: center; padding: 0.8rem; }
-        @media (max-width: 700px) { .main-title { font-size: 2.2rem; } .cards-row { flex-direction: column; align-items: center; } .card { max-width: 100%; } }
+        /* Bandeau urgence */
+        .urgent-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #f85149, #d32f2f);
+            color: white;
+            padding: 8px 40px 8px 16px;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 500;
+            z-index: 1001;
+            backdrop-filter: blur(8px);
+            animation: blinkWarning 1.2s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        @keyframes blinkWarning { 0%,100% { background: linear-gradient(135deg, #f85149, #d32f2f); opacity: 1; } 50% { background: linear-gradient(135deg, #d32f2f, #b71c1c); opacity: 0.95; } }
+        .urgent-icon { font-size: 1rem; animation: shake 0.5s ease-in-out infinite; }
+        @keyframes shake { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+        .urgent-close { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.3); border: none; color: white; font-size: 0.9rem; cursor: pointer; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .urgent-close:hover { background: rgba(0,0,0,0.5); }
+        @media (max-width: 700px) { .main-title { font-size: 2.2rem; } .cards-row { flex-direction: column; align-items: center; } .card { max-width: 100%; } .urgent-banner { font-size: 0.65rem; padding: 6px 35px 6px 12px; } }
     </style>
 </head>
 <body>
+    <!-- Bandeau urgence avec traduction -->
+    <div class="urgent-banner" id="urgentBanner">
+        <span class="urgent-icon">⚠️</span>
+        <span class="urgent-text" id="urgentMessage"></span>
+        <button class="urgent-close" onclick="closeUrgentBanner()">✕</button>
+    </div>
+
     <img src="/static/rick.jpeg" alt="Rick Trading" class="hero-bg">
     <select id="languageSelect" class="language-selector" onchange="changeLanguage()">
         <option value="fr">🇫🇷 FR</option><option value="en">🇬🇧 EN</option><option value="es">🇪🇸 ES</option>
@@ -83,6 +116,37 @@
     </div>
 
     <script>
+        // Traductions du message d'urgence
+        const urgentMessages = {
+            fr: "⚠️ Conseil mobile : activez le mode PC / bureau dans votre navigateur (Chrome : ⋮ → « Site Web pour ordinateur »).",
+            en: "⚠️ Mobile tip: enable Desktop mode in your browser (Chrome: ⋮ → 'Desktop site').",
+            es: "⚠️ Consejo móvil: active el modo PC / escritorio en su navegador (Chrome: ⋮ → 'Sitio web para ordenador').",
+            pt: "⚠️ Dica móvel: ative o modo PC / desktop no seu navegador (Chrome: ⋮ → 'Site para computador').",
+            ru: "⚠️ Мобильный совет: включите режим ПК / рабочего стола в браузере (Chrome: ⋮ → «Компьютерная версия сайта»).",
+            it: "⚠️ Consiglio mobile: attiva la modalità PC / desktop nel tuo browser (Chrome: ⋮ → 'Sito per computer').",
+            de: "⚠️ Mobil-Tipp: aktivieren Sie den PC- / Desktop-Modus in Ihrem Browser (Chrome: ⋮ → 'Computerwebsite').",
+            zh: "⚠️ 移动提示：在浏览器中启用PC /桌面模式（Chrome：⋮→“电脑版网站”）。",
+            ja: "⚠️ モバイルヒント：ブラウザでPC /デスクトップモードを有効にしてください（Chrome：⋮→「コンピューターサイト」）。"
+        };
+
+        function updateUrgentMessage() {
+            const lang = getCurrentLanguage();
+            const msg = urgentMessages[lang] || urgentMessages.fr;
+            const msgElement = document.getElementById('urgentMessage');
+            if (msgElement) msgElement.textContent = msg;
+        }
+
+        function closeUrgentBanner() {
+            document.getElementById('urgentBanner').style.display = 'none';
+            localStorage.setItem('urgentClosed', 'true');
+        }
+
+        function checkUrgentBanner() {
+            if (localStorage.getItem('urgentClosed') === 'true') {
+                document.getElementById('urgentBanner').style.display = 'none';
+            }
+        }
+
         function updatePage() {
             document.getElementById('title').textContent = t('title');
             document.getElementById('subtitle').textContent = t('subtitle');
@@ -95,10 +159,13 @@
             document.getElementById('partnerSpace').textContent = t('partner_space');
             document.getElementById('onlineLabel').textContent = t('online');
             document.getElementById('languageSelect').value = getCurrentLanguage();
+            updateUrgentMessage();
         }
 
         function changeLanguage() {
-            setLanguage(document.getElementById('languageSelect').value);
+            const lang = document.getElementById('languageSelect').value;
+            setLanguage(lang);
+            setTimeout(() => updateUrgentMessage(), 50);
         }
 
         async function updateOnlineCount() {
@@ -124,6 +191,7 @@
         updatePage();
         updateOnlineCount();
         updateChartPreview();
+        checkUrgentBanner();
         setInterval(updateOnlineCount, 35000);
         setInterval(updateChartPreview, 600000);
     </script>
