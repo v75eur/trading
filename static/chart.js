@@ -27,7 +27,6 @@ function resize(){ canvas.width=window.innerWidth-350; canvas.height=window.inne
 
 function getGranularity() {
     let val = parseInt(document.getElementById('tf').value);
-    // Mapping Deriv : M5=300, M15=900, H1=3600, H4=14400
     switch(val) {
         case 5: return 300;
         case 15: return 900;
@@ -214,13 +213,21 @@ function loop(){
     }
     requestAnimationFrame(loop);
 }
-function changeSymbol(){ sym=document.getElementById('sym').value; connect(); }
-function changeTF(){ 
+
+function changeSymbol(){
+    sym = document.getElementById('sym').value;
+    if(ws) ws.close();
+    connect();
+}
+
+function changeTF(){
     tf = parseInt(document.getElementById('tf').value);
     if(ws) ws.close();
     connect();
 }
+
 function zoomIn(){ cw=Math.min(30,cw+2); }
 function zoomOut(){ cw=Math.max(2,cw-2); }
 function resetZoom(){ cw=8; }
+
 window.addEventListener('load',init);
