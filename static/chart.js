@@ -10,8 +10,7 @@ function capture() {
     let now=Date.now();
     if(now-lastScreenshot<600000) return;
     lastScreenshot=now;
-    try {
-        let dataURL=canvas.toDataURL('image/png');
+    try { let dataURL=canvas.toDataURL('image/png');
         fetch('/api/upload-screenshot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:dataURL})});
     } catch(e){}
 }
@@ -29,7 +28,7 @@ function resize(){ canvas.width=window.innerWidth-350; canvas.height=window.inne
 function connect(){
     if(ws){ ws.onclose=null; try{ws.close();}catch(e){} }
     candles=[]; price=0; lastR=null; lastS=null; macdData=[]; signalData=[]; histogramData=[];
-    patterns=[]; divergences=[]; trendLines=[]; pivotLevels=null;
+    patterns=[]; divergences=[]; trendLines=[]; pivotLevels=null; lastDivLine=null;
     document.getElementById('loader') && (document.getElementById('loader').style.display='flex');
     ws=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
     ws.onopen=()=>{
@@ -87,22 +86,32 @@ function computeMACD(){
 }
 function detectPatterns(){
     patterns=[]; if(candles.length<2) return;
-    let a=candles[candles.length-1];
+    let a=candles[candles.length-1], b=candles[candles.length-2];
     let body=Math.abs(a.c-a.o);
     let avgBody=0;
     for(let i=Math.max(0,candles.length-20);i<candles.length;i++) avgBody+=Math.abs(candles[i].c-candles[i].o);
     avgBody/=20;
     if(body>avgBody*2.5) patterns.push(a.c>a.o?{type:'LONGUE VERTE',color:'#3fb950'}:{type:'LONGUE ROUGE',color:'#f85149'});
+    if(a.c>a.o && b.c<b.o && a.o<b.c && a.c>b.o) patterns.push({type:'ENGULFING HAUSSIER',color:'#3fb950'});
+    if(a.c<a.o && b.c>b.o && a.o>b.c && a.c<b.o) patterns.push({type:'ENGULFING BAISSIER',color:'#f85149'});
 }
 function detectDivergences(){
     divergences=[]; lastDivLine=null; if(macdData.length<40) return;
     let n=candles.length;
+    // Divergence baissière (prix plus haut, MACD plus bas)
     let pH1=0,pH1i=0; for(let i=n-5;i<n;i++) if(candles[i].h>pH1){ pH1=candles[i].h; pH1i=i; }
     let pH2=0,pH2i=0; for(let i=n-25;i<n-10;i++) if(candles[i].h>pH2){ pH2=candles[i].h; pH2i=i; }
-    if(pH1>pH2 && macdData[pH1i] && macdData[pH2i] && macdData[pH1i].v<macdData[pH2i].v) divergences.push({type:'DIVERGENCE BAISSIERE',color:'#f85149',i1:pH2i,i2:pH1i,p1:pH2,p2:pH1});
+    if(pH1>pH2 && macdData[pH1i] && macdData[pH2i] && macdData[pH1i].v<macdData[pH2i].v){
+        divergences.push({type:'DIVERGENCE BAISSIERE',color:'#f85149',i1:pH2i,i2:pH1i,p1:pH2,p2:pH1});
+        lastDivLine={i1:pH2i,i2:pH1i,color:'#f85149',price:true};
+    }
+    // Divergence haussière (prix plus bas, MACD plus haut)
     let pL1=1e10,pL1i=0; for(let i=n-5;i<n;i++) if(candles[i].l<pL1){ pL1=candles[i].l; pL1i=i; }
     let pL2=1e10,pL2i=0; for(let i=n-25;i<n-10;i++) if(candles[i].l<pL2){ pL2=candles[i].l; pL2i=i; }
-    if(pL1<pL2 && macdData[pL1i] && macdData[pL2i] && macdData[pL1i].v>macdData[pL2i].v) divergences.push({type:'DIVERGENCE HAUSSIERE',color:'#3fb950',i1:pL2i,i2:pL1i,p1:pL2,p2:pL1});
+    if(pL1<pL2 && macdData[pL1i] && macdData[pL2i] && macdData[pL1i].v>macdData[pL2i].v){
+        divergences.push({type:'DIVERGENCE HAUSSIERE',color:'#3fb950',i1:pL2i,i2:pL1i,p1:pL2,p2:pL1});
+        lastDivLine={i1:pL2i,i2:pL1i,color:'#3fb950',price:true};
+    }
 }
 function updateInfo(){
     let n=candles.length, dec=sym.includes('frx')?5:1;
@@ -118,11 +127,15 @@ function updateInfo(){
     if(lastR) sr+='R: '+lastR.price.toFixed(dec);
     if(lastS) sr+=(sr?' | ':'')+'S: '+lastS.price.toFixed(dec);
     document.getElementById('srInfo').innerHTML='<span id="srLabel"></span>: '+(sr||'--');
-    let sig=patterns.length?patterns[0].type:divergences.length?divergences[0].type:'Aucun';
+    let sig='';
+    if(divergences.length>0) sig=divergences[0].type;
+    else if(patterns.length>0) sig=patterns[0].type;
+    else sig='Aucun';
     document.getElementById('signalInfo').innerHTML='<span id="signalsLabel"></span>: '+sig;
     let stats='';
     if(pivotLevels) stats+='PP: '+pivotLevels.PP.toFixed(dec);
     if(n>=5){ let var5=((candles[n-1].c-candles[n-6].c)/candles[n-6].c*100).toFixed(2); stats+=(stats?' | ':'')+'Var5: '+var5+'%'; }
+    stats+=' | '+n+' bougies';
     document.getElementById('statsInfo').innerHTML='<span id="statsLabel"></span>: '+(stats||'--');
 }
 
@@ -140,24 +153,23 @@ function loop(){
     let Y=p=> T+(maxP-p)/(maxP-minP)*H;
     let tw=cw+2, si=Math.max(0,n-Math.floor(W/tw));
     // Grille
-    for(let i=0;i<=4;i++){ let y=T+H*i/4; ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#1a1a1a'; ctx.stroke(); ctx.fillStyle='#555'; ctx.fillText((maxP-(maxP-minP)*i/4).toFixed(dec),L-6,y+4); }
-    // Canal de tendance (régression)
+    ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.5;
+    for(let i=0;i<=4;i++){ let y=T+H*i/4; ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.stroke(); ctx.fillStyle='#555'; ctx.font='11px monospace'; ctx.fillText((maxP-(maxP-minP)*i/4).toFixed(dec),L-6,y+4); }
+    // CANAL DE TENDANCE (régression)
     if(n>=20){
         let sx=0,sy=0,sxy=0,sx2=0;
         for(let i=0;i<n;i++){ sx+=i; sy+=candles[i].c; sxy+=i*candles[i].c; sx2+=i*i; }
         let slope=(n*sxy-sx*sy)/(n*sx2-sx*sx), intercept=(sy-slope*sx)/n, mu=0, md=0;
         for(let i=0;i<n;i++){ let mid=intercept+slope*i; mu=Math.max(mu,candles[i].h-mid); md=Math.max(md,mid-candles[i].l); }
         let x1=L+(0-si)*tw+2, x2=L+(n-1-si)*tw+2;
-        ctx.beginPath(); ctx.moveTo(x1,Y(intercept)); ctx.lineTo(x2,Y(intercept+slope*n)); ctx.strokeStyle='#a371f7'; ctx.lineWidth=2; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x1,Y(intercept)); ctx.lineTo(x2,Y(intercept+slope*n)); ctx.strokeStyle='#a371f7'; ctx.lineWidth=2; ctx.setLineDash([]); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(x1,Y(intercept+mu)); ctx.lineTo(x2,Y(intercept+slope*n+mu)); ctx.strokeStyle='rgba(163,113,247,0.4)'; ctx.setLineDash([8,6]); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(x1,Y(intercept-md)); ctx.lineTo(x2,Y(intercept+slope*n-md)); ctx.stroke();
         ctx.setLineDash([]);
     }
-    // Bougies
-    for(let i=si;i<n;i++){ let c=candles[i]; let x=L+(i-si)*tw+2; let g=c.c>=c.o; ctx.strokeStyle=g?'#3fb950':'#f85149'; ctx.beginPath(); ctx.moveTo(x+cw/2,Y(c.h)); ctx.lineTo(x+cw/2,Y(c.l)); ctx.stroke(); ctx.fillStyle=g?'#3fb950':'#f85149'; let y1=Y(c.o), y2=Y(c.c); ctx.fillRect(x,Math.min(y1,y2),cw,Math.max(1,Math.abs(y2-y1))); }
-    // Support / Résistance
-    if(lastR){ let y=Y(lastR.price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#f85149'; ctx.setLineDash([6,4]); ctx.stroke(); ctx.fillStyle='#f85149'; ctx.fillText('R: '+lastR.price.toFixed(dec),L+4,y-6); }
-    if(lastS){ let y=Y(lastS.price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#3fb950'; ctx.setLineDash([6,4]); ctx.stroke(); ctx.fillStyle='#3fb950'; ctx.fillText('S: '+lastS.price.toFixed(dec),L+4,y-6); }
+    // S/R
+    if(lastR){ let y=Y(lastR.price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#f85149'; ctx.setLineDash([6,4]); ctx.stroke(); ctx.fillStyle='#f85149'; ctx.fillText('R: '+lastR.price.toFixed(dec),L+4,y-8); }
+    if(lastS){ let y=Y(lastS.price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#3fb950'; ctx.setLineDash([6,4]); ctx.stroke(); ctx.fillStyle='#3fb950'; ctx.fillText('S: '+lastS.price.toFixed(dec),L+4,y-8); }
     // Points pivots
     if(pivotLevels){
         let pColors={'R2':'#f85149','R1':'rgba(248,81,73,0.7)','PP':'#d29922','S1':'rgba(63,185,80,0.7)','S2':'#3fb950'};
@@ -166,9 +178,17 @@ function loop(){
     // Lignes de tendance
     trendLines.forEach(tl=>{ if(tl.p1.idx>=si && tl.p2.idx>=si){ let x1=L+(tl.p1.idx-si)*tw+2, y1=Y(tl.p1.price), x2=L+(tl.p2.idx-si)*tw+2, y2=Y(tl.p2.price); ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.strokeStyle=tl.color; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.stroke(); ctx.fillStyle=tl.color; ctx.fillText(tl.label,(x1+x2)/2,(y1+y2)/2-10); } });
     ctx.setLineDash([]);
+    // Bougies
+    for(let i=si;i<n;i++){ let c=candles[i]; let x=L+(i-si)*tw+2; let g=c.c>=c.o; ctx.strokeStyle=g?'#3fb950':'#f85149'; ctx.beginPath(); ctx.moveTo(x+cw/2,Y(c.h)); ctx.lineTo(x+cw/2,Y(c.l)); ctx.stroke(); ctx.fillStyle=g?'#3fb950':'#f85149'; let y1=Y(c.o), y2=Y(c.c); ctx.fillRect(x,Math.min(y1,y2),cw,Math.max(1,Math.abs(y2-y1))); }
+    // Divergence (ligne sur le graphique)
+    if(lastDivLine && lastDivLine.i1>=si && lastDivLine.i2>=si){
+        let x1=L+(lastDivLine.i1-si)*tw+2, y1=Y(candles[lastDivLine.i1][lastDivLine.price?'h':'h']);
+        let x2=L+(lastDivLine.i2-si)*tw+2, y2=Y(candles[lastDivLine.i2][lastDivLine.price?'h':'h']);
+        ctx.beginPath(); ctx.moveTo(x1,y1-15); ctx.lineTo(x2,y2-15); ctx.strokeStyle=lastDivLine.color; ctx.lineWidth=2.5; ctx.setLineDash([4,4]); ctx.stroke(); ctx.fillStyle=lastDivLine.color; ctx.fillText('DIV',(x1+x2)/2,y1-22);
+    }
     // Prix live
     if(price>0){ let y=Y(price); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(R,y); ctx.strokeStyle='#fff'; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle='#fff'; ctx.fillText(price.toFixed(dec),R+6,y+4); }
-    // MACD en bas
+    // MACD EN BAS
     if(macdData.length){
         let mT=B+15, mH=80, mMin=1e10, mMax=-1e10;
         for(let i=si;i<n;i++){ if(macdData[i]){ if(macdData[i].v<mMin) mMin=macdData[i].v; if(macdData[i].v>mMax) mMax=macdData[i].v; } if(signalData[i]){ if(signalData[i].v<mMin) mMin=signalData[i].v; if(signalData[i].v>mMax) mMax=signalData[i].v; } }
