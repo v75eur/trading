@@ -7,6 +7,7 @@ function showWsError(){let b=document.getElementById('wsError');if(b)b.style.dis
 function hideWsError(){let b=document.getElementById('wsError');if(b)b.style.display='none';}
 function capture(){let n=Date.now();if(n-lastScreenshot<600000)return;lastScreenshot=n;try{let d=canvas.toDataURL('image/png');fetch('/api/upload-screenshot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:d})});}catch(e){}}
 function init(){canvas=document.getElementById('chart');ctx=canvas.getContext('2d');resize();window.addEventListener('resize',resize);canvas.addEventListener('wheel',e=>{e.preventDefault();cw+=e.deltaY>0?-1:1;cw=Math.max(2,Math.min(30,cw));});connect();requestAnimationFrame(loop);setInterval(capture,600000);}
+    updateSMA10();
 function resize(){canvas.width=window.innerWidth-350;canvas.height=window.innerHeight-120;}
 function getGranularity(){let v=parseInt(document.getElementById('tf').value);switch(v){case 5:return 300;case 15:return 900;case 60:return 3600;case 240:return 14400;default:return 300;}}
 function connect(){if(ws){ws.onclose=null;try{ws.close();}catch(e){}}candles=[];price=0;lastR=null;lastS=null;macdData=[];signalData=[];histogramData=[];patterns=[];divergences=[];trendLines=[];pivotLevels=null;lastDivLine=null;if(document.getElementById('loader'))document.getElementById('loader').style.display='flex';ws=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');ws.onopen=()=>{hideWsError();let g=getGranularity();ws.send(JSON.stringify({ticks_history:sym,count:500,end:'latest',start:1,style:'candles',granularity:g}));ws.send(JSON.stringify({ticks:sym,subscribe:1}));};ws.onmessage=(m)=>{let d=JSON.parse(m.data);if(d.candles){candles=[];for(let i=0;i<d.candles.length;i++){let c=d.candles[i];candles.push({t:c.epoch,o:+c.open,h:+c.high,l:+c.low,c:+c.close});}if(candles.length>200)candles=candles.slice(-200);findLastSR();computePivots();computeTrendLines();computeMACD();detectPatterns();detectDivergences();updateInfo();if(document.getElementById('loader'))document.getElementById('loader').style.display='none';}if(d.tick){price=+d.tick.quote;document.getElementById('price').innerText=price.toFixed(sym.includes('frx')?5:2);if(candles.length>0){let last=candles[candles.length-1];last.c=price;if(price>last.h)last.h=price;if(price<last.l)last.l=price;computeMACD();detectDivergences();updateInfo();}}};ws.onerror=()=>{showWsError();};ws.onclose=()=>{showWsError();setTimeout(connect,5000);};}
@@ -25,6 +26,7 @@ function zoomIn(){cw=Math.min(30,cw+2);}
 function zoomOut(){cw=Math.max(2,cw-2);}
 function resetZoom(){cw=8;}
 window.addEventListener('load',init);
+    updateSMA10();
 
 // Calcul de la moyenne mobile simple sur 10 périodes
 function calculateSMA10() {
@@ -70,4 +72,33 @@ const originalUpdateInfo = updateInfo;
 updateInfo = function() {
     originalUpdateInfo();
     sma10Data = calculateSMA10();
+};
+
+// ============================================
+// MOYENNE MOBILE SMA10
+// ============================================
+let sma10Values = [];
+
+function calculateSMA10() {
+    let sma = [];
+    if (candles.length < 10) return sma;
+    for (let i = 9; i < candles.length; i++) {
+        let sum = 0;
+        for (let j = i - 9; j <= i; j++) {
+            sum += candles[j].c;
+        }
+        sma.push({ idx: i, value: sum / 10 });
+    }
+    return sma;
+}
+
+function updateSMA10() {
+    sma10Values = calculateSMA10();
+}
+
+// Surcharger updateInfo pour recalculer SMA10
+const originalUpdateInfo = updateInfo;
+updateInfo = function() {
+    originalUpdateInfo();
+    updateSMA10();
 };
