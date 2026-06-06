@@ -25,3 +25,20 @@ function zoomIn(){cw=Math.min(30,cw+2);}
 function zoomOut(){cw=Math.max(2,cw-2);}
 function resetZoom(){cw=8;}
 window.addEventListener('load',init);
+
+// Calcul de la moyenne mobile simple sur 10 périodes
+function calculateSMA10() {
+    if (candles.length < 10) return [];
+    let sma10 = [];
+    for (let i = 9; i < candles.length; i++) {
+        let sum = 0;
+        for (let j = i - 9; j <= i; j++) {
+            sum += candles[j].c;
+        }
+        sma10.push({ index: i, value: sum / 10 });
+    }
+    return sma10;
+}
+
+// Tracer la SMA10 sur le graphique (dans loop())
+// On ajoute cette section après le tracé des bougies
