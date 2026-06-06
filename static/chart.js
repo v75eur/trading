@@ -212,7 +212,7 @@ function loop(){
         ctx.stroke();
     }
     // Tendances
-    for(let k=0;k<trendLines.length;k++){let tl=trendLines[k];if(tl.p1.idx>=si&&tl.p2.idx>=si){let x1=L+(tl.p1.idx-si)*tw+2,y1=Y(tl.p1.price),x2=L+(tl.p2.idx-si)*tw+2,y2=Y(tl.p2.price);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=tl.color;ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.stroke();ctx.fillStyle=tl.color;ctx.fillText(tl.label,(x1+x2)/2,(y1+y2)/2-10);}}
+    for(let k=0;k<trendLines.length;k++){let tl=trendLines[k];if(tl.p1.idx>=si&&tl.p2.idx>=si){let x1=L+(tl.p1.idx-si)*tw+2,y1=Y(tl.p1.price),x2=L+(tl.p2.idx-si)*tw+2,y2=Y(tl.p2.price);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=tl.color;ctx.lineWidth=2;ctx.setLineDash([]);ctx.stroke();ctx.fillStyle=tl.color;ctx.fillText(tl.label,(x1+x2)/2,(y1+y2)/2-10);}}
     ctx.setLineDash([]);
     // Bougies
     for(let i=si;i<n;i++){let c=candles[i];let x=L+(i-si)*tw+2;let g=c.c>=c.o;ctx.strokeStyle=g?'#3fb950':'#f85149';ctx.beginPath();ctx.moveTo(x+cw/2,Y(c.h));ctx.lineTo(x+cw/2,Y(c.l));ctx.stroke();ctx.fillStyle=g?'#3fb950':'#f85149';let y1=Y(c.o),y2=Y(c.c);ctx.fillRect(x,Math.min(y1,y2),cw,Math.max(1,Math.abs(y2-y1)));}
@@ -220,10 +220,10 @@ function loop(){
     if(lastDivLine&&lastDivLine.i1>=si&&lastDivLine.i2>=si){
         let x1=L+(lastDivLine.i1-si)*tw+2,y1=Y(candles[lastDivLine.i1][lastDivLine.price?'h':'h']);
         let x2=L+(lastDivLine.i2-si)*tw+2,y2=Y(candles[lastDivLine.i2][lastDivLine.price?'h':'h']);
-        ctx.beginPath();ctx.moveTo(x1,y1-15);ctx.lineTo(x2,y2-15);ctx.strokeStyle=lastDivLine.color;ctx.lineWidth=2.5;ctx.setLineDash([4,4]);ctx.stroke();ctx.fillStyle=lastDivLine.color;ctx.fillText('DIV',(x1+x2)/2,y1-22);
+        ctx.beginPath();ctx.moveTo(x1,y1-15);ctx.lineTo(x2,y2-15);ctx.strokeStyle=lastDivLine.color;ctx.lineWidth=2.5;ctx.setLineDash([]);ctx.stroke();ctx.fillStyle=lastDivLine.color;ctx.fillText('DIV',(x1+x2)/2,y1-22);
     }
     // Prix live
-    if(price>0){let y=Y(price);ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(R,y);ctx.strokeStyle='#fff';ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.fillText(price.toFixed(dec),R+6,y+4);}
+    if(price>0){let y=Y(price);ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(R,y);ctx.strokeStyle='#fff';ctx.setLineDash([]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.fillText(price.toFixed(dec),R+6,y+4);}
     // MACD
     if(macdData.length){
         let mT=B+15,mH=80,mMin=1e10,mMax=-1e10;
