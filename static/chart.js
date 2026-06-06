@@ -42,3 +42,32 @@ function calculateSMA10() {
 
 // Tracer la SMA10 sur le graphique (dans loop())
 // On ajoute cette section après le tracé des bougies
+
+// Calcul de la moyenne mobile simple sur 10 périodes
+function calculateSMA10() {
+    let sma10 = [];
+    if (candles.length < 10) return sma10;
+    
+    for (let i = 9; i < candles.length; i++) {
+        let sum = 0;
+        for (let j = i - 9; j <= i; j++) {
+            sum += candles[j].c;
+        }
+        sma10.push({ 
+            index: i, 
+            price: sum / 10,
+            time: candles[i].t 
+        });
+    }
+    return sma10;
+}
+
+// Stocker les valeurs SMA10
+let sma10Data = [];
+
+// Modifier updateInfo pour recalculer SMA10 à chaque mise à jour
+const originalUpdateInfo = updateInfo;
+updateInfo = function() {
+    originalUpdateInfo();
+    sma10Data = calculateSMA10();
+};
