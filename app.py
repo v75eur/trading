@@ -179,3 +179,7 @@ def coming_soon():
 @app.route('/formation')
 def formation():
     return render_template('formation.html')
+
+@app.route('/formation2')
+def formation2():
+    return render_template('formation2.html')
