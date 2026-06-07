@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rick Trading – Formation gratuite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e2e8f0; line-height: 1.5; }
+        .hero { background: linear-gradient(135deg, #0f172a, #020617); border-bottom: 2px solid #f59e0b; padding: 2rem 1.5rem; text-align: center; }
+        .hero h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #fbbf24, #f59e0b); background-clip: text; color: transparent; }
+        .hero p { margin-top: 0.5rem; color: #94a3b8; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.2rem; }
+        .chapter { background: #0f0f17; border: 1px solid #1e293b; border-radius: 1.5rem; margin-bottom: 2rem; overflow: hidden; }
+        .chapter h2 { background: #111827; padding: 0.8rem 1.5rem; font-size: 1.3rem; color: #fbbf24; border-left: 5px solid #f59e0b; }
+        .chapter-content { padding: 1.5rem; }
+        .schema { background: #020617; border-radius: 1rem; padding: 1rem; font-family: monospace; white-space: pre; overflow-x: auto; font-size: 0.8rem; border: 1px solid #1e293b; margin: 1rem 0; }
+        .badge { background: #f59e0b20; border-left: 3px solid #f59e0b; padding: 0.75rem 1rem; border-radius: 0.75rem; margin: 1rem 0; }
+        .tip { background: #3fb95020; border-left: 3px solid #3fb950; padding: 0.75rem 1rem; border-radius: 0.75rem; margin: 1rem 0; }
+        .warning { background: #f8514920; border-left: 3px solid #f85149; padding: 0.75rem 1rem; border-radius: 0.75rem; margin: 1rem 0; }
+        .btn-group { margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn { background: #f59e0b; color: #0a0a0a; padding: 0.7rem 1.8rem; border-radius: 2rem; text-decoration: none; font-weight: 700; }
+        .btn-secondary { background: transparent; border: 1px solid #f59e0b; color: #f59e0b; }
+        footer { text-align: center; padding: 2rem; border-top: 1px solid #1e293b; color: #64748b; font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>📘 Formation gratuite de trading</h1>
+    <p>De débutant à trader autonome – cours complet</p>
+</div>
+
+<div class="container">
+
+    <!-- INTRODUCTION -->
+    <div class="chapter">
+        <h2>📖 Qu’est-ce que le trading ?</h2>
+        <div class="chapter-content">
+            <p>Le trading, c’est <strong>acheter ou vendre un actif</strong> pour gagner de l’argent sur la <strong>différence de prix</strong>.</p>
+            <div class="badge">Exemple : acheter une voiture 5 000 € et la revendre 6 000 € → trading</div>
+            <div class="tip">💡 Astuce : commence toujours par un compte démo (10 000 $ virtuels).</div>
+        </div>
+    </div>
+
+    <!-- ACTIFS -->
+    <div class="chapter">
+        <h2>📊 Les actifs sur Rick Trading</h2>
+        <div class="chapter-content">
+            <ul>
+                <li><strong>EUR/USD</strong> – idéal débutant</li>
+                <li><strong>XAU/USD (Or)</strong> – valeur refuge</li>
+                <li><strong>Volatilité 75</strong> – très réactif (plus tard)</li>
+            </ul>
+            <div class="tip">💡 Commence par l’EUR/USD, c’est le plus simple.</div>
+        </div>
+    </div>
+
+    <!-- TIMEFRAMES -->
+    <div class="chapter">
+        <h2>⏱️ Timeframes (M5, M15, H1, H4)</h2>
+        <div class="chapter-content">
+            <ul>
+                <li><strong>H1/H4</strong> → débutant</li>
+                <li><strong>M5</strong> → trop rapide</li>
+            </ul>
+            <div class="tip">💡 H4 est le plus fiable.</div>
+        </div>
+    </div>
+
+    <!-- BOUIES -->
+    <div class="chapter">
+        <h2>🕯️ Lire une bougie japonaise</h2>
+        <div class="chapter-content">
+            <div class="schema">
+                Bougie VERTE = hausse
+                Bougie ROUGE = baisse
+                Longue mèche haute = rejet de la hausse
+                Longue mèche basse = rejet de la baisse
+            </div>
+            <div class="tip">💡 Mèche basse + bougie verte = signal d’achat possible.</div>
+        </div>
+    </div>
+
+    <!-- S&R -->
+    <div class="chapter">
+        <h2>📐 Supports (vert) et Résistances (rouge)</h2>
+        <div class="chapter-content">
+            <div class="schema">
+                RÉSISTANCE (rouge) → zone de vente
+                SUPPORT (vert) → zone d’achat
+            </div>
+            <div class="badge">📌 Exemple : support touché 5 fois → acheter, stop sous le support.</div>
+        </div>
+    </div>
+
+    <!-- MACD -->
+    <div class="chapter">
+        <h2>📉 Le MACD (indicateur en bas du graphique)</h2>
+        <div class="chapter-content">
+            <div class="schema">
+                MACD > Signal → haussier (achats)
+                MACD < Signal → baissier (ventes)
+                Croisement → signal d’entrée
+            </div>
+        </div>
+    </div>
+
+    <!-- DIVERGENCES -->
+    <div class="chapter">
+        <h2>⚡ Divergences (tracées automatiquement)</h2>
+        <div class="chapter-content">
+            <div class="schema">
+                Divergence HAUSSIÈRE : prix ↘, MACD ↗ → achat
+                Divergence BAISSIÈRE : prix ↗, MACD ↘ → vente
+            </div>
+            <div class="tip">💡 Une divergence est un signal puissant.</div>
+        </div>
+    </div>
+
+    <!-- STRATÉGIE -->
+    <div class="chapter">
+        <h2>🎯 Stratégie : rebond sur support + MACD</h2>
+        <div class="chapter-content">
+            <div class="schema">
+                1) Support solide
+                2) Bougie verte
+                3) MACD > Signal
+                4) Achat
+                5) Stop sous support
+                6) TP à la résistance suivante
+            </div>
+        </div>
+    </div>
+
+    <!-- GESTION RISQUE -->
+    <div class="chapter">
+        <h2>🛡️ Gestion du risque (1-2%)</h2>
+        <div class="chapter-content">
+            <ul>
+                <li>Stop loss OBLIGATOIRE</li>
+                <li>Risque max 2% du capital</li>
+                <li>Ratio risque/gain minimum 1:2</li>
+            </ul>
+            <div class="warning">⚠️ La gestion du risque est PLUS importante que la stratégie.</div>
+        </div>
+    </div>
+
+    <!-- DÉBUTER AVEC DERIV -->
+    <div class="chapter">
+        <h2>🔐 Débuter avec Deriv</h2>
+        <div class="chapter-content">
+            <ol>
+                <li>Compte démo 10 000 $</li>
+                <li>Entraîne-toi 2 semaines</li>
+                <li>Passe en réel avec petit dépôt</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- PREMIÈRE SEMAINE -->
+    <div class="chapter">
+        <h2>🗓️ Ta première semaine</h2>
+        <div class="chapter-content">
+            <ul>
+                <li>J1-2 : observer</li>
+                <li>J3-5 : paper trading</li>
+                <li>J6-7 : analyser</li>
+            </ul>
+            <div class="tip">💡 Tiens un journal de trades.</div>
+        </div>
+    </div>
+
+    <!-- ERREURS -->
+    <div class="chapter">
+        <h2>❌ Erreurs à éviter</h2>
+        <div class="chapter-content">
+            <ul>
+                <li>❌ Pas de stop loss</li>
+                <li>❌ Revenge trading</li>
+                <li>❌ Trader avec argent nécessaire</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- RÈGLES D’OR -->
+    <div class="chapter">
+        <h2>📌 Règles d’or</h2>
+        <div class="chapter-content">
+            <ol>
+                <li>H1 ou H4</li>
+                <li>Support/résistance</li>
+                <li>MACD</li>
+                <li>Stop loss</li>
+                <li>Risque 2%</li>
+                <li>Ratio 1:2</li>
+                <li>Journal de trades</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <a href="/" class="btn">🏠 Accueil</a>
+        <a href="/app" class="btn btn-secondary">📈 Plateforme</a>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 Rick Trading – Formation gratuite – Le trading comporte des risques</p>
+</footer>
+
+</body>
+</html>
