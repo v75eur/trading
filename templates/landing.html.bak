@@ -60,7 +60,6 @@
                 <span id="onlineLabel"></span>
             </div>
             <a href="/app" id="launchBtn" class="btn-primary"></a>
-                <a href="/formation" id="formationBtn" class="btn-primary" style="background: linear-gradient(135deg, #8B5CF6, #6D28D9);">🎓 Formation en trading avec suivi</a>
             <div class="features-row">
                 <div class="feature-pill"><span class="feature-icon">📈</span><span id="feature1"></span></div>
                 <div class="feature-pill"><span class="feature-icon">🔔</span><span id="feature2"></span></div>
