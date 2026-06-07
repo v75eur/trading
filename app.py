@@ -175,3 +175,7 @@ if __name__ == '__main__':
 @app.route('/coming-soon')
 def coming_soon():
     return render_template('coming-soon.html')
+
+@app.route('/formation')
+def formation():
+    return render_template('formation.html')
