@@ -171,3 +171,7 @@ def get_pseudo():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
+@app.route('/coming-soon')
+def coming_soon():
+    return render_template('coming-soon.html')
