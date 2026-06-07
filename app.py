@@ -187,3 +187,7 @@ def formation2():
 @app.route('/formation3')
 def formation3():
     return render_template('formation3.html')
+
+@app.route('/formation4')
+def formation4():
+    return render_template('formation4.html')
