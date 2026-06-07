@@ -87,9 +87,6 @@ body{font-family:system-ui,'Segoe UI',Roboto,sans-serif;background:#0d1117;color
     </div>
 </div>
 
-<div class="like-container"><span id="likeCount">112</span><button class="like-btn" onclick="addLike()">❤️</button></div>
-
-<div id="adminTrigger" onclick="openAdminModal()">⚙</div>
 <div id="adminModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeAdminModal()">&times;</span><h3 id="adminTitle">⚙️ Admin</h3><input type="password" id="adminPass" placeholder="" id="adminPassPlaceholder"><button id="adminAccessBtn" onclick="checkAdmin()">🔓 Accéder</button><p id="adminError" style="color:#f85149;display:none;">Mot de passe incorrect</p></div></div>
 <div id="statsModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeStatsModal()">&times;</span><h3 id="statsTitle">📊 Statistiques</h3><div id="statsContent"></div></div></div>
 
@@ -127,7 +124,6 @@ async function sendChat(){ if(!USERNAME){openPseudo();return;} const i=document.
 function openPseudo(){ if(USERNAME)return; document.getElementById('pseudoModal').style.display='flex'; }
 function closePseudoModal(){ document.getElementById('pseudoModal').style.display='none'; }
 function setPseudo(){ const n=document.getElementById('pseudoInput').value.trim(); if(n.length<2)return; USERNAME=n; fetch('/api/pseudo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pseudo:USERNAME})}); closePseudoModal(); }
-async function addLike(){ try{const r=await fetch('/api/like'),d=await r.json();document.getElementById('likeCount').innerText=d.likes;}catch(e){} }
 function escapeHtml(s){ return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 function openAdminModal(){ document.getElementById('adminModal').style.display='flex'; document.getElementById('adminPass').value=''; document.getElementById('adminError').style.display='none'; }
 function closeAdminModal(){ document.getElementById('adminModal').style.display='none'; }
