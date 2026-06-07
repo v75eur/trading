@@ -121,9 +121,47 @@ function addEmoji(e){document.getElementById('chatInput').value+=e;document.getE
 function getColor(name){ let colors=['#58a6ff','#3fb950','#f0883e','#a371f7','#f85149','#d29922','#79c0ff','#7ee787']; let h=0; for(let i=0;i<name.length;i++) h=((h<<5)-h)+name.charCodeAt(i),h|=0; return colors[Math.abs(h)%colors.length]; }
 async function loadChat(){ try{const r=await fetch('/api/chat'),msgs=await r.json();const c=document.getElementById('chatMessages');c.innerHTML=msgs.map(m=>`<div class="chat-msg"><span class="chat-user" style="color:${getColor(m.user)}">${escapeHtml(m.user)}</span> ${escapeHtml(m.message)}<span class="chat-time">${formatTime(m.time)}</span></div>`).join('');c.scrollTop=c.scrollHeight;}catch(e){} }
 async function sendChat(){ if(!USERNAME){openPseudo();return;} const i=document.getElementById('chatInput'),m=i.value.trim(); if(!m)return; await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m,user:USERNAME})}); i.value='';loadChat(); }
-function openPseudo(){ if(USERNAME)return; document.getElementById('pseudoModal').style.display='flex'; }
+
+// ========== FONCTIONS MODIFIÉES POUR LA PERSISTANCE ==========
+function openPseudo() {
+    if (USERNAME) return;
+    
+    // Vérifier si un pseudo est sauvegardé dans localStorage
+    var savedPseudo = localStorage.getItem('rick_trading_pseudo');
+    if (savedPseudo && savedPseudo.length >= 2) {
+        USERNAME = savedPseudo;
+        fetch('/api/pseudo', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({pseudo: USERNAME})
+        }).catch(console.log);
+        return;
+    }
+    
+    document.getElementById('pseudoModal').style.display = 'flex';
+}
+
 function closePseudoModal(){ document.getElementById('pseudoModal').style.display='none'; }
-function setPseudo(){ const n=document.getElementById('pseudoInput').value.trim(); if(n.length<2)return; USERNAME=n; fetch('/api/pseudo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pseudo:USERNAME})}); closePseudoModal(); }
+
+function setPseudo() {
+    var n = document.getElementById('pseudoInput').value.trim();
+    if (n.length < 2) return;
+    
+    USERNAME = n;
+    
+    // Sauvegarder dans localStorage (persistant entre sessions)
+    localStorage.setItem('rick_trading_pseudo', USERNAME);
+    
+    fetch('/api/pseudo', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({pseudo: USERNAME})
+    });
+    
+    closePseudoModal();
+}
+// ========== FIN FONCTIONS MODIFIÉES ==========
+
 function escapeHtml(s){ return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 function openAdminModal(){ document.getElementById('adminModal').style.display='flex'; document.getElementById('adminPass').value=''; document.getElementById('adminError').style.display='none'; }
 function closeAdminModal(){ document.getElementById('adminModal').style.display='none'; }
@@ -150,14 +188,13 @@ updateAppLanguage();
 </html>
 <script>
 function formatTime(timeStr) {
-    // timeStr est au format "HH:MM"
     const [msgHour, msgMinute] = timeStr.split(':').map(Number);
     const now = new Date();
     const nowHour = now.getHours();
     const nowMinute = now.getMinutes();
     
     let diffMinutes = (nowHour - msgHour) * 60 + (nowMinute - msgMinute);
-    if (diffMinutes < 0) diffMinutes += 24 * 60; // Gestion du jour suivant
+    if (diffMinutes < 0) diffMinutes += 24 * 60;
     
     if (diffMinutes < 1) return "à l'instant";
     if (diffMinutes < 60) return `il y a ${diffMinutes} min`;
