@@ -20,8 +20,34 @@
         .online-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(26,26,46,0.5); backdrop-filter: blur(8px); padding: 6px 20px; border-radius: 60px; margin-bottom: 1.8rem; border: 1px solid rgba(63,185,80,0.4); }
         .online-dot { width: 10px; height: 10px; background: #3fb950; border-radius: 50%; box-shadow: 0 0 6px #3fb950; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.1); } }
-        .btn-primary { display: inline-block; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 12px 36px; font-size: 1rem; font-weight: 700; border-radius: 60px; text-decoration: none; margin-bottom: 2rem; transition: all 0.2s; box-shadow: 0 4px 15px rgba(245,158,11,0.25); }
+        .btn-primary {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 12px 36px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 60px;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(245,158,11,0.25);
+        }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245,158,11,0.35); }
+        .btn-formation {
+            display: inline-block;
+            background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+            color: white;
+            padding: 12px 36px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 60px;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(139,92,246,0.3);
+            margin-left: 1rem;
+        }
+        .btn-formation:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(139,92,246,0.4); }
+        .buttons-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
         .features-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
         .feature-pill { background: rgba(255,255,255,0.03); backdrop-filter: blur(8px); padding: 0.5rem 1.2rem; border-radius: 40px; border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s; }
         .feature-pill:hover { transform: translateY(-2px); border-color: #f59e0b; background: rgba(245,158,11,0.1); }
@@ -59,8 +85,10 @@
                 <span id="onlineCount" style="font-weight:700;">0</span>
                 <span id="onlineLabel"></span>
             </div>
-            <a href="/app" id="launchBtn" class="btn-primary"></a>
-                <a href="/formation" id="formationBtn" class="btn-primary" style="background: linear-gradient(135deg, #8B5CF6, #6D28D9);">🎓 Formation en trading avec suivi</a>
+            <div class="buttons-group">
+                <a href="/app" id="launchBtn" class="btn-primary"></a>
+                <a href="/formation" id="formationBtn" class="btn-formation">🎓 Formation en trading avec suivi</a>
+            </div>
             <div class="features-row">
                 <div class="feature-pill"><span class="feature-icon">📈</span><span id="feature1"></span></div>
                 <div class="feature-pill"><span class="feature-icon">🔔</span><span id="feature2"></span></div>
