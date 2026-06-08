@@ -19,7 +19,6 @@
             line-height: 1.5;
         }
 
-        /* Navigation */
         .nav {
             position: fixed;
             top: 0;
@@ -66,7 +65,6 @@
             color: #2563eb;
         }
 
-        /* Hero section */
         .hero {
             max-width: 1280px;
             margin: 0 auto;
@@ -110,22 +108,20 @@
             transform: translateY(-2px);
         }
 
-        .btn-outline {
+        .btn-secondary {
             display: inline-block;
-            background: transparent;
-            color: #4b5563;
+            background: #f3f4f6;
+            color: #374151;
             padding: 0.875rem 2rem;
             border-radius: 0.75rem;
             text-decoration: none;
             font-weight: 600;
-            border: 1px solid #d1d5db;
             margin-left: 1rem;
-            transition: border-color 0.2s, color 0.2s;
+            transition: background 0.2s;
         }
 
-        .btn-outline:hover {
-            border-color: #2563eb;
-            color: #2563eb;
+        .btn-secondary:hover {
+            background: #e5e7eb;
         }
 
         .hero-stats {
@@ -139,7 +135,7 @@
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: #111827;
         }
@@ -156,7 +152,6 @@
             text-align: center;
         }
 
-        /* Features */
         .features {
             background: #f9fafb;
             padding: 5rem 2rem;
@@ -171,8 +166,14 @@
             text-align: center;
             font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 3rem;
+            margin-bottom: 1rem;
             color: #111827;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 3rem;
         }
 
         .features-grid {
@@ -204,7 +205,65 @@
             color: #6b7280;
         }
 
-        /* CTA */
+        .training-section {
+            padding: 5rem 2rem;
+            background: white;
+        }
+
+        .training-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .training-content h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .training-list {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .training-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .check {
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        .btn-training {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 0.875rem 2rem;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .training-image {
+            background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .cta {
             background: linear-gradient(135deg, #2563eb, #7c3aed);
             margin: 4rem 2rem;
@@ -233,13 +292,26 @@
             font-weight: 600;
             transition: transform 0.2s;
             display: inline-block;
+            margin: 0 0.5rem;
         }
 
-        .btn-cta:hover {
-            transform: translateY(-2px);
+        .btn-cta-outline {
+            background: transparent;
+            color: white;
+            padding: 0.875rem 2rem;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            font-weight: 600;
+            border: 1px solid white;
+            transition: background 0.2s;
+            display: inline-block;
+            margin: 0 0.5rem;
         }
 
-        /* Footer */
+        .btn-cta-outline:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
         .footer {
             border-top: 1px solid #e5e7eb;
             padding: 3rem 2rem;
@@ -249,7 +321,7 @@
         }
 
         @media (max-width: 768px) {
-            .hero {
+            .hero, .training-container {
                 grid-template-columns: 1fr;
                 text-align: center;
                 padding-top: 6rem;
@@ -263,6 +335,9 @@
             .nav-links {
                 display: none;
             }
+            .training-list li {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -274,6 +349,7 @@
         <div class="nav-links">
             <a href="/app">Plateforme</a>
             <a href="/formation">Formation</a>
+            <a href="/formation2">Formation avancée</a>
             <a href="/app" class="btn-primary" style="padding: 0.5rem 1rem;">Accéder</a>
         </div>
     </div>
@@ -285,7 +361,7 @@
         <p>Plateforme professionnelle pour traders. Graphiques interactifs, signaux automatiques, chat communautaire et formation complète.</p>
         <div>
             <a href="/app" class="btn-primary">Lancer la plateforme</a>
-            <a href="/formation" class="btn-outline">Formation gratuite</a>
+            <a href="/formation" class="btn-secondary">Formation gratuite</a>
         </div>
         <div class="hero-stats">
             <div class="stat">
@@ -319,7 +395,8 @@
 
 <section class="features">
     <div class="features-container">
-        <h2 class="section-title">Fonctionnalités</h2>
+        <h2 class="section-title">Une plateforme tout-en-un</h2>
+        <p class="section-subtitle">Tous les outils nécessaires pour analyser et trader</p>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-title">Graphiques temps réel</div>
@@ -333,18 +410,31 @@
                 <div class="feature-title">Chat communautaire</div>
                 <div class="feature-desc">Échangez avec d'autres traders en temps réel.</div>
             </div>
-            <div class="feature-card">
-                <div class="feature-title">Formation complète</div>
-                <div class="feature-desc">Cours de trading de débutant à expert.</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-title">Multiplateforme</div>
-                <div class="feature-desc">Accessible sur ordinateur, tablette et mobile.</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-title">100% gratuit</div>
-                <div class="feature-desc">Aucun frais caché, accès illimité à toutes les fonctionnalités.</div>
-            </div>
+        </div>
+    </div>
+</section>
+
+<section class="training-section">
+    <div class="training-container">
+        <div class="training-content">
+            <h2>Formation gratuite avec suivi</h2>
+            <p>Un cours complet structuré en plusieurs parties, accessible à tous les niveaux.</p>
+            <ul class="training-list">
+                <li><span class="check">✓</span> Partie 1 : Les bases du trading</li>
+                <li><span class="check">✓</span> Partie 2 : Stratégies avancées et psychologie</li>
+                <li><span class="check">✓</span> Partie 3 : Techniques expertes et backtest</li>
+                <li><span class="check">✓</span> Partie 4 : Avantages de la plateforme</li>
+            </ul>
+            <a href="/formation" class="btn-training">Accéder à la formation →</a>
+        </div>
+        <div class="training-image">
+            <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
+                <rect x="40" y="50" width="120" height="100" rx="8" stroke="#2563eb" stroke-width="2" fill="none"/>
+                <line x1="60" y1="75" x2="140" y2="75" stroke="#2563eb" stroke-width="2"/>
+                <line x1="60" y1="95" x2="120" y2="95" stroke="#2563eb" stroke-width="2"/>
+                <line x1="60" y1="115" x2="130" y2="115" stroke="#2563eb" stroke-width="2"/>
+                <path d="M130 135 L150 150 L130 165" stroke="#7c3aed" stroke-width="2" fill="none"/>
+            </svg>
         </div>
     </div>
 </section>
@@ -352,7 +442,10 @@
 <section class="cta">
     <h2>Prêt à passer à l'action ?</h2>
     <p>Rejoignez la communauté Rick Trading et commencez à analyser les marchés</p>
-    <a href="/app" class="btn-cta">Accéder à la plateforme</a>
+    <div>
+        <a href="/app" class="btn-cta">Lancer la plateforme</a>
+        <a href="/formation" class="btn-cta-outline">Formation gratuite</a>
+    </div>
 </section>
 
 <footer class="footer">
