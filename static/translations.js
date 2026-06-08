@@ -291,3 +291,43 @@ function t(key) {
     const lang = getCurrentLanguage();
     return translations[lang][key] || translations['fr'][key] || key;
 }
+
+// Ajout des traductions pour la formation avec suivi
+const trainingTranslations = {
+    fr: {
+        training_title: "Formation avec suivi",
+        training_desc: "Cours structurés du débutant à l'expert, avec progression personnalisée",
+        training_btn: "Accéder à la formation",
+        training_part1: "Les bases du trading",
+        training_part2: "Stratégies avancées",
+        training_part3: "Psychologie et gestion",
+        training_part4: "Techniques expertes"
+    },
+    en: {
+        training_title: "Training with tracking",
+        training_desc: "Structured courses from beginner to expert, with personalized progression",
+        training_btn: "Access training",
+        training_part1: "Trading basics",
+        training_part2: "Advanced strategies",
+       training_part3: "Psychology and management",
+        training_part4: "Expert techniques"
+    },
+    es: {
+        training_title: "Formación con seguimiento",
+        training_desc: "Cursos estructurados de principiante a experto, con progresión personalizada",
+        training_btn: "Acceder a la formación",
+        training_part1: "Conceptos básicos del trading",
+        training_part2: "Estrategias avanzadas",
+        training_part3: "Psicología y gestión",
+        training_part4: "Técnicas expertas"
+    }
+};
+
+// Fusionner avec les translations existantes
+for (let lang in trainingTranslations) {
+    if (translations[lang]) {
+        Object.assign(translations[lang], trainingTranslations[lang]);
+    } else {
+        translations[lang] = trainingTranslations[lang];
+    }
+}
