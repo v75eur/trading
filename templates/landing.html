@@ -10,17 +10,17 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+            background: #0a0a0f;
             color: #ffffff; 
             min-height: 100vh; 
         }
         
-        /* Navigation moderne */
+        /* Glassmorphic navigation */
         .nav {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(15, 15, 26, 0.95);
+            background: rgba(10, 10, 15, 0.8);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255,255,255,0.05);
             z-index: 1000;
@@ -54,8 +54,7 @@
         }
         .language-selector:hover {
             background: #f59e0b;
-            color: #0f0f1a;
-            border-color: #f59e0b;
+            color: #0a0a0f;
         }
         
         /* Hero section */
@@ -65,30 +64,41 @@
             align-items: center;
             justify-content: center;
             padding: 6rem 1.5rem 3rem;
+            background: radial-gradient(circle at 20% 30%, #1a1a2e 0%, #0a0a0f 100%);
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
             text-align: center;
         }
+        
+        /* Title animation */
         .main-title {
             font-size: 4rem;
             font-weight: 800;
             line-height: 1.2;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg, #ffffff 0%, #f59e0b 50%, #ffedd5 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #f59e0b 40%, #ffedd5 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            animation: fadeInUp 0.6s ease-out;
         }
+        
         .subtitle {
             font-size: 1.1rem;
             color: #94a3b8;
             max-width: 600px;
             margin: 0 auto 1.5rem;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
         }
         
-        /* Badges */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Online badge */
         .online-badge {
             display: inline-flex;
             align-items: center;
@@ -99,6 +109,7 @@
             border-radius: 60px;
             margin-bottom: 2rem;
             border: 1px solid rgba(63, 185, 80, 0.3);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
         }
         .online-dot {
             width: 8px;
@@ -107,15 +118,16 @@
             border-radius: 50%;
             animation: pulse 1.5s infinite;
         }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; transform: scale(1.2); } }
         
-        /* Boutons principaux */
+        /* Button group */
         .buttons-group {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 1rem;
             margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
         }
         .btn-primary {
             background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -125,10 +137,10 @@
             font-weight: 600;
             border-radius: 60px;
             text-decoration: none;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             box-shadow: 0 4px 15px rgba(245,158,11,0.25);
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245,158,11,0.35); }
+        .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 30px rgba(245,158,11,0.4); }
         
         .btn-formation {
             background: linear-gradient(135deg, #8B5CF6, #6D28D9);
@@ -138,18 +150,19 @@
             font-weight: 600;
             border-radius: 60px;
             text-decoration: none;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             box-shadow: 0 4px 15px rgba(139,92,246,0.3);
         }
-        .btn-formation:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(139,92,246,0.4); }
+        .btn-formation:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 30px rgba(139,92,246,0.45); }
         
-        /* Features rows */
+        /* Features row */
         .features-row {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 1rem;
             margin-bottom: 2.5rem;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
         }
         .feature-btn {
             background: rgba(255,255,255,0.03);
@@ -177,25 +190,26 @@
             justify-content: center;
             max-width: 750px;
             margin: 0 auto;
+            animation: fadeInUp 0.6s ease-out 0.5s both;
         }
         .card {
             flex: 1;
             min-width: 260px;
             max-width: 320px;
-            background: rgba(15, 20, 30, 0.6);
+            background: rgba(20, 25, 40, 0.6);
             backdrop-filter: blur(12px);
             border-radius: 24px;
             border: 1px solid rgba(255,255,255,0.06);
             overflow: hidden;
-            transition: all 0.25s;
+            transition: all 0.3s ease;
         }
         .card:hover { 
-            transform: translateY(-5px); 
+            transform: translateY(-8px); 
             border-color: #f59e0b;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
         .card-header {
-            background: rgba(22,27,34,0.7);
+            background: rgba(30, 35, 50, 0.7);
             padding: 0.8rem;
             text-align: center;
             border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -234,12 +248,15 @@
             font-size: 0.7rem;
             text-align: center;
             padding: 1rem;
+            animation: fadeInUp 0.6s ease-out 0.6s both;
         }
         
         @media (max-width: 700px) {
             .main-title { font-size: 2.2rem; }
             .cards-row { flex-direction: column; align-items: center; }
             .card { max-width: 100%; }
+            .buttons-group { flex-direction: column; align-items: center; }
+            .btn-primary, .btn-formation { width: 80%; text-align: center; margin-left: 0; }
         }
     </style>
 </head>
@@ -326,7 +343,6 @@
         document.getElementById('onlineLabel').textContent = t('online');
         document.getElementById('languageSelect').value = lang;
         
-        // Traduction bouton formation
         const trainingEl = document.getElementById('trainingFollowupTitle');
         if (trainingEl && trainingFollowupTranslations[lang]) {
             trainingEl.textContent = trainingFollowupTranslations[lang];
@@ -357,7 +373,6 @@
         } catch(e) {}
     }
     
-    // Initialisation
     updatePage();
     updateOnlineCount();
     updateChartPreview();
