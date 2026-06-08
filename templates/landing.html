@@ -4,215 +4,365 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Rick Trading - Accueil officiel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="/static/translations.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #ffffff; min-height: 100vh; overflow-x: hidden; }
-        .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; background: radial-gradient(circle at 20% 50%, #1a1a2e 0%, #0a0a0a 100%); overflow: hidden; }
-        .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.12; z-index: 0; }
-        .container { position: relative; z-index: 2; max-width: 1200px; width: 90%; margin: 0 auto; text-align: center; padding: 1rem; animation: fadeInUp 0.7s ease-out; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .main-title { font-size: 3.8rem; font-weight: 900; margin-bottom: 0.75rem; background: linear-gradient(135deg, #ffffff 0%, #f59e0b 40%, #ffedd5 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .mobile-tip { display: inline-block; background: rgba(245,158,11,0.2); border: 1px solid #f59e0b; color: #f59e0b; padding: 6px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; animation: blinkTip 1.2s ease-in-out infinite; }
-        @keyframes blinkTip { 0%,100% { opacity: 0.8; } 50% { opacity: 1; background: rgba(245,158,11,0.3); } }
-        .subtitle { font-size: 1.05rem; color: #94a3b8; margin-bottom: 1.8rem; max-width: 550px; margin-left: auto; margin-right: auto; }
-        .online-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(26,26,46,0.5); backdrop-filter: blur(8px); padding: 6px 20px; border-radius: 60px; margin-bottom: 1.8rem; border: 1px solid rgba(63,185,80,0.4); }
-        .online-dot { width: 10px; height: 10px; background: #3fb950; border-radius: 50%; box-shadow: 0 0 6px #3fb950; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.1); } }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+            color: #ffffff; 
+            min-height: 100vh; 
+        }
+        
+        /* Navigation moderne */
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 15, 26, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #f59e0b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .language-selector {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 40px;
+            padding: 0.5rem 1rem;
+            color: #f59e0b;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .language-selector:hover {
+            background: #f59e0b;
+            color: #0f0f1a;
+            border-color: #f59e0b;
+        }
+        
+        /* Hero section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 1.5rem 3rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .main-title {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f59e0b 50%, #ffedd5 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        /* Badges */
+        .online-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(63, 185, 80, 0.1);
+            backdrop-filter: blur(8px);
+            padding: 0.5rem 1.2rem;
+            border-radius: 60px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(63, 185, 80, 0.3);
+        }
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #3fb950;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        /* Boutons principaux */
+        .buttons-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
         .btn-primary {
-            display: inline-block;
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
-            padding: 12px 36px;
-            font-size: 1rem;
-            font-weight: 700;
+            padding: 0.9rem 2rem;
+            font-size: 0.95rem;
+            font-weight: 600;
             border-radius: 60px;
             text-decoration: none;
             transition: all 0.2s;
             box-shadow: 0 4px 15px rgba(245,158,11,0.25);
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245,158,11,0.35); }
+        
         .btn-formation {
-            display: inline-block;
             background: linear-gradient(135deg, #8B5CF6, #6D28D9);
             color: white;
-            padding: 12px 36px;
-            font-size: 1rem;
-            font-weight: 700;
+            padding: 0.9rem 2rem;
+            font-size: 0.95rem;
+            font-weight: 600;
             border-radius: 60px;
             text-decoration: none;
             transition: all 0.2s;
             box-shadow: 0 4px 15px rgba(139,92,246,0.3);
-            margin-left: 1rem;
         }
         .btn-formation:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(139,92,246,0.4); }
+        
+        /* Features rows */
+        .features-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
         .feature-btn {
             background: rgba(255,255,255,0.03);
             backdrop-filter: blur(8px);
-            padding: 0.5rem 1.2rem;
+            padding: 0.6rem 1.3rem;
             border-radius: 40px;
             border: 1px solid rgba(255,255,255,0.08);
             transition: all 0.2s;
-            display: inline-block;
             text-decoration: none;
             color: white;
-            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
         .feature-btn:hover {
             transform: translateY(-2px);
             border-color: #f59e0b;
             background: rgba(245,158,11,0.1);
         }
-        .feature-icon { font-size: 1rem; margin-right: 6px; }
-        .buttons-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
-        .features-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
-        .cards-row { display: flex; flex-wrap: wrap; gap: 1.2rem; justify-content: center; max-width: 750px; margin: 0 auto; }
-        .card { flex: 1; min-width: 240px; max-width: 280px; background: rgba(13,17,23,0.6); backdrop-filter: blur(10px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.06); overflow: hidden; transition: all 0.25s; }
-        .card:hover { transform: translateY(-5px); border-color: #f59e0b; }
-        .card-header { background: rgba(22,27,34,0.7); padding: 0.7rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06); font-weight: 700; color: #f59e0b; font-size: 0.85rem; }
-        .card-body { padding: 0.9rem; text-align: center; }
-        .card-body img { max-width: 100%; border-radius: 16px; max-height: 130px; object-fit: cover; }
-        .update-time { font-size: 0.6rem; color: #8b949e; margin-top: 0.4rem; }
-        .empty-card { display: flex; align-items: center; justify-content: center; min-height: 130px; flex-direction: column; gap: 0.4rem; }
-        .empty-card .emoji { font-size: 2rem; }
-        .language-selector { position: fixed; top: 16px; right: 16px; background: rgba(30,41,59,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(245,158,11,0.5); border-radius: 40px; padding: 5px 12px; color: #f59e0b; cursor: pointer; z-index: 100; font-size: 0.75rem; }
-        .language-selector:hover { background: #f59e0b; color: #0a0a0a; }
-        footer { margin-top: 1.5rem; color: #64748b; font-size: 0.65rem; text-align: center; padding: 0.8rem; }
-        @media (max-width: 700px) { .main-title { font-size: 2.2rem; } .cards-row { flex-direction: column; align-items: center; } .card { max-width: 100%; } }
+        
+        /* Cards */
+        .cards-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+        .card {
+            flex: 1;
+            min-width: 260px;
+            max-width: 320px;
+            background: rgba(15, 20, 30, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.06);
+            overflow: hidden;
+            transition: all 0.25s;
+        }
+        .card:hover { 
+            transform: translateY(-5px); 
+            border-color: #f59e0b;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .card-header {
+            background: rgba(22,27,34,0.7);
+            padding: 0.8rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-weight: 600;
+            color: #f59e0b;
+            font-size: 0.85rem;
+        }
+        .card-body {
+            padding: 1rem;
+            text-align: center;
+        }
+        .card-body img {
+            max-width: 100%;
+            border-radius: 16px;
+            max-height: 130px;
+            object-fit: cover;
+        }
+        .update-time {
+            font-size: 0.6rem;
+            color: #8b949e;
+            margin-top: 0.5rem;
+        }
+        .empty-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 130px;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        /* Footer */
+        footer {
+            margin-top: 2rem;
+            color: #64748b;
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        @media (max-width: 700px) {
+            .main-title { font-size: 2.2rem; }
+            .cards-row { flex-direction: column; align-items: center; }
+            .card { max-width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <img src="/static/rick.jpeg" alt="Rick Trading" class="hero-bg">
-    <select id="languageSelect" class="language-selector" onchange="changeLanguage()">
-        <option value="fr">🇫🇷 FR</option><option value="en">🇬🇧 EN</option><option value="es">🇪🇸 ES</option>
-        <option value="pt">🇵🇹 PT</option><option value="ru">🇷🇺 RU</option><option value="it">🇮🇹 IT</option>
-        <option value="de">🇩🇪 DE</option><option value="zh">🇨🇳 中文</option><option value="ja">🇯🇵 JP</option>
-    </select>
 
-    <div class="hero">
-        <div class="container">
-            <h1 class="main-title" id="title"></h1>
-            <div class="mobile-tip" id="mobileTip">📱 Mode PC recommandé sur mobile</div>
-            <p class="subtitle" id="subtitle"></p>
-            <div class="online-badge">
-                <span class="online-dot"></span>
-                <span id="onlineCount" style="font-weight:700;">0</span>
-                <span id="onlineLabel"></span>
-            </div>
-            <div class="buttons-group">
-                <a href="/app" id="launchBtn" class="btn-primary"></a>
-                <a href="/coming-soon" id="formationBtn" class="btn-formation"><span id="trainingFollowupTitle">Formation en trading avec suivi</span></a>
-            </div>
-            <div class="features-row">
-                <a href="/coming-soon" class="feature-btn"><span class="feature-icon">📈</span><span id="feature1"></span></a>
-                <a href="/coming-soon" class="feature-btn"><span class="feature-icon">🔔</span><span id="feature2"></span></a>
-                <a href="/formation" class="feature-btn"><span class="feature-icon">💬</span><span id="feature3">🎓 Formation gratuite de trading</span></a>
-            </div>
-            <div class="cards-row">
-                <div class="card">
-                    <div class="card-header"><span id="marketPreview"></span></div>
-                    <div class="card-body">
-                        <img id="chartPreview" src="" alt="Graphique">
-                        <div class="update-time" id="chartUpdateTime"></div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><span id="partnerSpace"></span></div>
-                    <div class="card-body empty-card">
-                        <div class="emoji">⚡</div>
-                        <div>À venir</div>
-                    </div>
-                </div>
-            </div>
-            <footer><p id="footer"></p></footer>
-        </div>
+<nav class="nav">
+    <div class="nav-container">
+        <div class="logo">Rick Trading</div>
+        <select id="languageSelect" class="language-selector" onchange="changeLanguage()">
+            <option value="fr">🇫🇷 FR</option><option value="en">🇬🇧 EN</option><option value="es">🇪🇸 ES</option>
+            <option value="pt">🇵🇹 PT</option><option value="ru">🇷🇺 RU</option><option value="it">🇮🇹 IT</option>
+            <option value="de">🇩🇪 DE</option><option value="zh">🇨🇳 中文</option><option value="ja">🇯🇵 JP</option>
+        </select>
     </div>
+</nav>
 
-    <script>
-        // Traductions pour le bouton formation avec suivi
-        const trainingFollowupTranslations = {
-            fr: "Formation en trading avec suivi",
-            en: "Trading training with follow-up",
-            es: "Formación en trading con seguimiento",
-            pt: "Formação em trading com acompanhamento",
-            ru: "Обучение трейдингу с сопровождением",
-            it: "Formazione sul trading con supporto",
-            de: "Trading Ausbildung mit Betreuung",
-            zh: "带跟进的交易培训",
-            ja: "フォローアップ付きトレーニング"
-        };
+<section class="hero">
+    <div class="container">
+        <h1 class="main-title" id="title"></h1>
+        <p class="subtitle" id="subtitle"></p>
+        
+        <div class="online-badge">
+            <span class="online-dot"></span>
+            <span id="onlineCount" style="font-weight:600;">0</span>
+            <span id="onlineLabel"></span>
+        </div>
+        
+        <div class="buttons-group">
+            <a href="/app" id="launchBtn" class="btn-primary"></a>
+            <a href="/coming-soon" id="formationBtn" class="btn-formation"><span id="trainingFollowupTitle">Formation en trading avec suivi</span></a>
+        </div>
+        
+        <div class="features-row">
+            <a href="/coming-soon" class="feature-btn"><span id="feature1"></span></a>
+            <a href="/coming-soon" class="feature-btn"><span id="feature2"></span></a>
+            <a href="/formation" class="feature-btn"><span id="feature3"></span></a>
+        </div>
+        
+        <div class="cards-row">
+            <div class="card">
+                <div class="card-header"><span id="marketPreview"></span></div>
+                <div class="card-body">
+                    <img id="chartPreview" src="" alt="Graphique">
+                    <div class="update-time" id="chartUpdateTime"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span id="partnerSpace"></span></div>
+                <div class="card-body empty-card">
+                    <div style="font-size:1.5rem;">⚡</div>
+                    <div>À venir</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer><p id="footer"></p></footer>
+    </div>
+</section>
 
-        const mobileTips = {
-            fr: "📱 Mode PC recommandé sur mobile",
-            en: "📱 Desktop mode recommended on mobile",
-            es: "📱 Modo PC recomendado en móvil",
-            pt: "📱 Modo PC recomendado no celular",
-            ru: "📱 Рекомендуется режим ПК на мобильном",
-            it: "📱 Modalità PC consigliata su mobile",
-            de: "📱 PC-Modus auf Mobilgeräten empfohlen",
-            zh: "📱 手机上推荐使用PC模式",
-            ja: "📱 モバイルではPCモード推奨"
-        };
+<script>
+    const trainingFollowupTranslations = {
+        fr: "Formation en trading avec suivi",
+        en: "Trading training with follow-up",
+        es: "Formación en trading con seguimiento",
+        pt: "Formação em trading com acompanhamento",
+        ru: "Обучение трейдингу с сопровождением",
+        it: "Formazione sul trading con supporto",
+        de: "Trading Ausbildung mit Betreuung",
+        zh: "带跟进的交易培训",
+        ja: "フォローアップ付きトレーニング"
+    };
+
+    function updatePage() {
+        const lang = getCurrentLanguage();
+        document.getElementById('title').textContent = t('title');
+        document.getElementById('subtitle').textContent = t('subtitle');
+        document.getElementById('launchBtn').innerHTML = t('launch');
+        document.getElementById('feature1').textContent = t('feature1');
+        document.getElementById('feature2').textContent = t('feature2');
+        document.getElementById('feature3').innerHTML = t('feature3');
+        document.getElementById('footer').innerHTML = t('footer');
+        document.getElementById('marketPreview').textContent = t('market_preview');
+        document.getElementById('partnerSpace').textContent = t('partner_space');
+        document.getElementById('onlineLabel').textContent = t('online');
+        document.getElementById('languageSelect').value = lang;
         
-        function updateMobileTip() {
-            const lang = getCurrentLanguage();
-            const el = document.getElementById('mobileTip');
-            if (el) el.textContent = mobileTips[lang] || mobileTips.fr;
+        // Traduction bouton formation
+        const trainingEl = document.getElementById('trainingFollowupTitle');
+        if (trainingEl && trainingFollowupTranslations[lang]) {
+            trainingEl.textContent = trainingFollowupTranslations[lang];
         }
-        
-        function updateTrainingFollowup() {
-            const lang = getCurrentLanguage();
-            const el = document.getElementById('trainingFollowupTitle');
-            if (el && trainingFollowupTranslations[lang]) {
-                el.textContent = trainingFollowupTranslations[lang];
-            } else if (el) {
-                el.textContent = trainingFollowupTranslations.fr;
-            }
-        }
-        
-        function updatePage() {
-            document.getElementById('title').textContent = t('title');
-            document.getElementById('subtitle').textContent = t('subtitle');
-            document.getElementById('launchBtn').innerHTML = t('launch');
-            document.getElementById('feature1').textContent = t('feature1');
-            document.getElementById('feature2').textContent = t('feature2');
-            document.getElementById('feature3').innerHTML = t('feature3');
-            document.getElementById('footer').innerHTML = t('footer');
-            document.getElementById('marketPreview').textContent = t('market_preview');
-            document.getElementById('partnerSpace').textContent = t('partner_space');
-            document.getElementById('onlineLabel').textContent = t('online');
-            document.getElementById('languageSelect').value = getCurrentLanguage();
-            updateMobileTip();
-            updateTrainingFollowup();
-        }
-        
-        function changeLanguage() { 
-            setLanguage(document.getElementById('languageSelect').value); 
-        }
-        
-        async function updateOnlineCount() {
-            try { const res = await fetch('/api/online-display'); const data = await res.json(); document.getElementById('onlineCount').innerText = data.online; } catch(e) {}
-        }
-        
-        async function updateChartPreview() {
-            try { const res = await fetch('/api/chart-screenshot'); const data = await res.json(); const img = document.getElementById('chartPreview'); if (img && data.image_url) { img.src = data.image_url + '?t=' + new Date().getTime(); document.getElementById('chartUpdateTime').innerHTML = '🕒 ' + data.updated_at; } } catch(e) {}
-        }
-        
-        // Initialisation
-        updatePage(); 
-        updateOnlineCount(); 
-        updateChartPreview();
-        setInterval(updateOnlineCount, 35000);
-        setInterval(updateChartPreview, 600000);
-        
-        // S'assurer que la langue change bien
-        window.addEventListener('load', function() {
-            const lang = getCurrentLanguage();
-            if (lang && trainingFollowupTranslations[lang]) {
-                document.getElementById('trainingFollowupTitle').textContent = trainingFollowupTranslations[lang];
-            }
-        });
-    </script>
+    }
+    
+    function changeLanguage() { 
+        setLanguage(document.getElementById('languageSelect').value); 
+    }
+    
+    async function updateOnlineCount() {
+        try { 
+            const res = await fetch('/api/online-display'); 
+            const data = await res.json(); 
+            document.getElementById('onlineCount').innerText = data.online; 
+        } catch(e) {}
+    }
+    
+    async function updateChartPreview() {
+        try { 
+            const res = await fetch('/api/chart-screenshot'); 
+            const data = await res.json(); 
+            const img = document.getElementById('chartPreview'); 
+            if (img && data.image_url) { 
+                img.src = data.image_url + '?t=' + new Date().getTime(); 
+                document.getElementById('chartUpdateTime').innerHTML = '🕒 ' + data.updated_at; 
+            } 
+        } catch(e) {}
+    }
+    
+    // Initialisation
+    updatePage();
+    updateOnlineCount();
+    updateChartPreview();
+    setInterval(updateOnlineCount, 35000);
+    setInterval(updateChartPreview, 600000);
+</script>
 </body>
 </html>
