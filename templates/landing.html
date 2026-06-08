@@ -102,7 +102,7 @@
             </div>
             <div class="buttons-group">
                 <a href="/app" id="launchBtn" class="btn-primary"></a>
-                <a href="/coming-soon" id="formationBtn" class="btn-formation">🎓 Formation en trading avec suivi</a>
+                <a href="/coming-soon" id="formationBtn" class="btn-formation"><span id="trainingFollowupTitle">Formation en trading avec suivi</span></a>
             </div>
             <div class="features-row">
                 <a href="/coming-soon" class="feature-btn"><span class="feature-icon">📈</span><span id="feature1"></span></a>
@@ -173,3 +173,13 @@
     </script>
 </body>
 </html>
+<script>
+// Mettre à jour la fonction changeLanguage existante pour inclure trainingFollowupTitle
+function updateTrainingTranslation(lang) {
+    const t = translations[lang];
+    if (t && t.training_followup_title) {
+        const el = document.getElementById('trainingFollowupTitle');
+        if (el) el.innerHTML = t.training_followup_title;
+    }
+}
+</script>
