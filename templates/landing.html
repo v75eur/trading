@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rick Trading | Plateforme de trading virtuel</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="/static/translations.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -31,6 +32,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
         .logo {
             font-size: 1.5rem;
@@ -55,6 +58,15 @@
             padding: 0.5rem 1.2rem;
             border-radius: 8px;
             color: #f5a623;
+        }
+        .lang-select {
+            background: #1e242c;
+            color: #f5a623;
+            border: 1px solid #2a3540;
+            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-size: 0.875rem;
         }
         
         /* Hero */
@@ -142,7 +154,7 @@
             .hero h1 { font-size: 2rem; }
             .hero-stats { justify-content: center; }
             .btn-group { justify-content: center; }
-            .nav-links { display: none; }
+            .nav-links { justify-content: center; }
         }
     </style>
 </head>
@@ -151,8 +163,19 @@
         <div class="nav-container">
             <div class="logo">Rick Trading</div>
             <div class="nav-links">
-                <a href="/formation">Formation</a>
-                <a href="/app" class="btn-nav">Plateforme</a>
+                <a href="/formation" id="navFormation">Formation</a>
+                <a href="/app" class="btn-nav" id="navPlateforme">Plateforme</a>
+                <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="es">🇪🇸 ES</option>
+                    <option value="pt">🇵🇹 PT</option>
+                    <option value="ru">🇷🇺 RU</option>
+                    <option value="it">🇮🇹 IT</option>
+                    <option value="de">🇩🇪 DE</option>
+                    <option value="zh">🇨🇳 中文</option>
+                    <option value="ja">🇯🇵 JP</option>
+                </select>
             </div>
         </div>
     </nav>
@@ -160,21 +183,21 @@
     <section class="hero">
         <div class="hero-container">
             <div>
-                <h1>Trading virtuel<br>en temps réel</h1>
-                <p>Plateforme professionnelle d'analyse technique avec signaux automatiques, graphiques TradingView et communauté active.</p>
+                <h1 id="heroTitle">Trading virtuel<br>en temps réel</h1>
+                <p id="heroDesc">Plateforme professionnelle d'analyse technique avec signaux automatiques, graphiques TradingView et communauté active.</p>
                 <div class="hero-stats">
-                    <div class="stat"><div class="stat-number">24/7</div><div class="stat-label">Marchés ouverts</div></div>
-                    <div class="stat"><div class="stat-number">9</div><div class="stat-label">Langues</div></div>
-                    <div class="stat"><div class="stat-number">100%</div><div class="stat-label">Gratuit</div></div>
+                    <div class="stat"><div class="stat-number">24/7</div><div class="stat-label" id="statMarkets">Marchés ouverts</div></div>
+                    <div class="stat"><div class="stat-number">9</div><div class="stat-label" id="statLangs">Langues</div></div>
+                    <div class="stat"><div class="stat-number">100%</div><div class="stat-label" id="statFree">Gratuit</div></div>
                 </div>
                 <div class="btn-group">
-                    <a href="/app" class="btn-primary">Lancer la plateforme</a>
-                    <a href="/formation" class="btn-secondary">Formation gratuite</a>
+                    <a href="/app" class="btn-primary" id="btnLaunch">Lancer la plateforme</a>
+                    <a href="/formation" class="btn-secondary" id="btnTraining">Formation gratuite</a>
                 </div>
             </div>
             <div class="hero-image">
                 <div style="background: #0d1117; border-radius: 12px; padding: 1rem; text-align: center;">
-                    <div style="background: #161b22; border-radius: 8px; height: 200px; display: flex; align-items: center; justify-content: center; color: #58a6ff;">
+                    <div style="background: #161b22; border-radius: 8px; height: 200px; display: flex; align-items: center; justify-content: center; color: #58a6ff;" id="chartPlaceholder">
                         Graphique TradingView
                     </div>
                 </div>
@@ -183,14 +206,44 @@
     </section>
 
     <section class="cta">
-        <h2>Prêt à améliorer vos performances ?</h2>
-        <p>Accédez gratuitement à tous les outils d'analyse.</p>
-        <a href="/app" class="btn-cta">Commencer maintenant →</a>
+        <h2 id="ctaTitle">Prêt à améliorer vos performances ?</h2>
+        <p id="ctaDesc">Accédez gratuitement à tous les outils d'analyse.</p>
+        <a href="/app" class="btn-cta" id="ctaBtn">Commencer maintenant →</a>
     </section>
 
     <footer class="footer">
-        <p>© 2025 Rick Trading - Plateforme de trading virtuel</p>
-        <p>Le trading comporte des risques. Formez-vous avant d'investir.</p>
+        <p id="footerWarning">© 2025 Rick Trading - Plateforme de trading virtuel</p>
+        <p id="footerRisk">Le trading comporte des risques. Formez-vous avant d'investir.</p>
     </footer>
+
+    <script>
+        function changeLanguage(lang) {
+            const t = translations[lang];
+            if (!t) return;
+            
+            document.getElementById('heroTitle').innerHTML = t.hero_title || "Trading virtuel<br>en temps réel";
+            document.getElementById('heroDesc').innerHTML = t.hero_desc || "Plateforme professionnelle d'analyse technique avec signaux automatiques, graphiques TradingView et communauté active.";
+            document.getElementById('statMarkets').innerHTML = t.stat_markets || "Marchés ouverts";
+            document.getElementById('statLangs').innerHTML = t.stat_langs || "Langues";
+            document.getElementById('statFree').innerHTML = t.stat_free || "Gratuit";
+            document.getElementById('btnLaunch').innerHTML = t.btn_launch || "Lancer la plateforme";
+            document.getElementById('btnTraining').innerHTML = t.btn_training || "Formation gratuite";
+            document.getElementById('navFormation').innerHTML = t.nav_formation || "Formation";
+            document.getElementById('navPlateforme').innerHTML = t.nav_plateforme || "Plateforme";
+            document.getElementById('ctaTitle').innerHTML = t.cta_title || "Prêt à améliorer vos performances ?";
+            document.getElementById('ctaDesc').innerHTML = t.cta_desc || "Accédez gratuitement à tous les outils d'analyse.";
+            document.getElementById('ctaBtn').innerHTML = t.cta_btn || "Commencer maintenant →";
+            document.getElementById('footerWarning').innerHTML = t.footer_warning || "© 2025 Rick Trading - Plateforme de trading virtuel";
+            document.getElementById('footerRisk').innerHTML = t.footer_risk || "Le trading comporte des risques. Formez-vous avant d'investir.";
+            document.getElementById('chartPlaceholder').innerHTML = t.chart_placeholder || "Graphique TradingView";
+            
+            localStorage.setItem('rick_trading_lang', lang);
+        }
+        
+        // Charger la langue sauvegardée
+        const savedLang = localStorage.getItem('rick_trading_lang') || 'fr';
+        document.getElementById('langSelect').value = savedLang;
+        changeLanguage(savedLang);
+    </script>
 </body>
 </html>
