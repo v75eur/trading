@@ -3,34 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rick Trading - Plateforme d'analyse professionnelle</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <title>Rick Trading | Plateforme de trading virtuelle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: #ffffff;
-            color: #111827;
+            background: #0a0c10;
+            color: #e8edf2;
             line-height: 1.5;
         }
-
+        
+        /* Navigation */
         .nav {
             position: fixed;
             top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255,255,255,0.95);
+            width: 100%;
+            background: rgba(10, 12, 16, 0.95);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #1e242c;
             z-index: 1000;
             padding: 1rem 2rem;
         }
-
         .nav-container {
             max-width: 1280px;
             margin: 0 auto;
@@ -38,419 +32,304 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #2563eb, #7c3aed);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: #f5a623;
         }
-
         .nav-links {
             display: flex;
             gap: 2rem;
             align-items: center;
+            flex-wrap: wrap;
         }
-
         .nav-links a {
+            color: #a0aab5;
             text-decoration: none;
-            color: #4b5563;
             font-weight: 500;
             transition: color 0.2s;
         }
-
-        .nav-links a:hover {
-            color: #2563eb;
+        .nav-links a:hover { color: #f5a623; }
+        .btn-nav {
+            border: 1px solid #f5a623;
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            color: #f5a623;
         }
-
+        
+        /* Hero */
         .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 6rem 2rem 4rem;
+            background: linear-gradient(135deg, #0a0c10 0%, #14181f 100%);
+        }
+        .hero-container {
             max-width: 1280px;
             margin: 0 auto;
-            padding: 8rem 2rem 4rem;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 4rem;
             align-items: center;
         }
-
         .hero h1 {
             font-size: 3.5rem;
             font-weight: 800;
             line-height: 1.2;
-            background: linear-gradient(135deg, #111827, #2563eb);
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff, #f5a623);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 1.5rem;
         }
-
-        .hero p {
-            font-size: 1.125rem;
-            color: #6b7280;
-            margin-bottom: 2rem;
-        }
-
+        .hero p { font-size: 1.125rem; color: #8e9aab; margin-bottom: 2rem; }
+        .hero-stats { display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: #f5a623; }
+        .stat-label { font-size: 0.875rem; color: #6b7a8a; }
+        .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; }
         .btn-primary {
-            display: inline-block;
-            background: #2563eb;
-            color: white;
+            background: #f5a623;
+            color: #0a0c10;
             padding: 0.875rem 2rem;
-            border-radius: 0.75rem;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: 600;
-            transition: background 0.2s, transform 0.2s;
+            transition: all 0.2s;
         }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
-        }
-
+        .btn-primary:hover { background: #e0950f; transform: translateY(-2px); }
         .btn-secondary {
-            display: inline-block;
-            background: #f3f4f6;
-            color: #374151;
+            border: 1px solid #2a3540;
+            background: transparent;
+            color: #e8edf2;
             padding: 0.875rem 2rem;
-            border-radius: 0.75rem;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: 600;
-            margin-left: 1rem;
-            transition: background 0.2s;
         }
-
-        .btn-secondary:hover {
-            background: #e5e7eb;
+        .btn-secondary:hover { border-color: #f5a623; color: #f5a623; }
+        .hero-image {
+            background: linear-gradient(135deg, #1a2028, #0f1419);
+            border-radius: 20px;
+            padding: 1rem;
+            border: 1px solid #2a3540;
         }
-
-        .hero-stats {
-            display: flex;
-            gap: 2rem;
+        
+        /* Section actifs virtuels */
+        .assets {
+            padding: 4rem 2rem;
+            background: #0f1217;
+        }
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
             margin-top: 2rem;
         }
-
-        .stat {
+        .asset-card {
+            background: #14181f;
+            border: 1px solid #1e242c;
+            border-radius: 16px;
+            padding: 1.5rem;
             text-align: center;
         }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #111827;
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-        .hero-image {
-            background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            text-align: center;
-        }
-
+        .asset-price { font-size: 1.5rem; font-weight: 700; color: #f5a623; margin: 0.5rem 0; }
+        .asset-change { font-size: 0.875rem; color: #3fb950; }
+        
+        /* Features */
         .features {
-            background: #f9fafb;
-            padding: 5rem 2rem;
+            padding: 6rem 2rem;
+            background: #0a0c10;
         }
-
-        .features-container {
-            max-width: 1280px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #111827;
-        }
-
-        .section-subtitle {
-            text-align: center;
-            color: #6b7280;
-            margin-bottom: 3rem;
-        }
-
+        .section-container { max-width: 1280px; margin: 0 auto; }
+        .section-title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 1rem; }
+        .section-subtitle { text-align: center; color: #8e9aab; margin-bottom: 3rem; }
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
         }
-
         .feature-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            border: 1px solid #e5e7eb;
-            transition: box-shadow 0.2s;
-        }
-
-        .feature-card:hover {
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-        }
-
-        .feature-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: #111827;
-        }
-
-        .feature-desc {
-            color: #6b7280;
-        }
-
-        .training-section {
-            padding: 5rem 2rem;
-            background: white;
-        }
-
-        .training-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .training-content h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-        }
-
-        .training-list {
-            list-style: none;
-            margin: 1.5rem 0;
-        }
-
-        .training-list li {
-            padding: 0.5rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .check {
-            color: #2563eb;
-            font-weight: 700;
-        }
-
-        .btn-training {
-            display: inline-block;
-            background: #2563eb;
-            color: white;
-            padding: 0.875rem 2rem;
-            border-radius: 0.75rem;
-            text-decoration: none;
-            font-weight: 600;
-            margin-top: 1rem;
-        }
-
-        .training-image {
-            background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
-            border-radius: 1.5rem;
-            padding: 2rem;
+            background: #14181f;
+            border: 1px solid #1e242c;
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.2s;
             text-align: center;
-            min-height: 300px;
+        }
+        .feature-card:hover { border-color: #f5a623; transform: translateY(-4px); }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .feature-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .feature-card p { color: #8e9aab; font-size: 0.875rem; }
+        
+        /* Boutons importants */
+        .actions {
+            padding: 4rem 2rem;
+            background: #0f1217;
+        }
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .action-btn {
+            background: #14181f;
+            border: 1px solid #2a3540;
+            border-radius: 60px;
+            padding: 1rem 2rem;
+            text-align: center;
+            text-decoration: none;
+            color: #e8edf2;
+            font-weight: 600;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 10px;
         }
-
+        .action-btn:hover {
+            border-color: #f5a623;
+            color: #f5a623;
+            transform: translateY(-2px);
+        }
+        
+        /* CTA */
         .cta {
-            background: linear-gradient(135deg, #2563eb, #7c3aed);
-            margin: 4rem 2rem;
-            border-radius: 1.5rem;
-            padding: 4rem 2rem;
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #f5a623, #d48a10);
             text-align: center;
-            color: white;
         }
-
-        .cta h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .cta p {
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
+        .cta h2 { font-size: 2rem; font-weight: 700; color: #0a0c10; margin-bottom: 1rem; }
+        .cta p { color: #2a1a05; margin-bottom: 2rem; }
         .btn-cta {
-            background: white;
-            color: #2563eb;
+            background: #0a0c10;
+            color: #f5a623;
             padding: 0.875rem 2rem;
-            border-radius: 0.75rem;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: 600;
-            transition: transform 0.2s;
             display: inline-block;
-            margin: 0 0.5rem;
         }
-
-        .btn-cta-outline {
-            background: transparent;
-            color: white;
-            padding: 0.875rem 2rem;
-            border-radius: 0.75rem;
-            text-decoration: none;
-            font-weight: 600;
-            border: 1px solid white;
-            transition: background 0.2s;
-            display: inline-block;
-            margin: 0 0.5rem;
-        }
-
-        .btn-cta-outline:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .footer {
-            border-top: 1px solid #e5e7eb;
-            padding: 3rem 2rem;
-            text-align: center;
-            color: #6b7280;
-            font-size: 0.875rem;
-        }
-
+        
+        /* Footer */
+        .footer { padding: 3rem 2rem; background: #080a0e; border-top: 1px solid #1e242c; text-align: center; }
+        .footer p { color: #5a6675; font-size: 0.875rem; }
+        
         @media (max-width: 768px) {
-            .hero, .training-container {
-                grid-template-columns: 1fr;
-                text-align: center;
-                padding-top: 6rem;
-            }
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            .hero-stats {
-                justify-content: center;
-            }
-            .nav-links {
-                display: none;
-            }
-            .training-list li {
-                justify-content: center;
-            }
+            .hero-container { grid-template-columns: 1fr; text-align: center; }
+            .hero h1 { font-size: 2rem; }
+            .hero-stats { justify-content: center; }
+            .btn-group { justify-content: center; }
+            .nav-links { display: none; }
         }
     </style>
 </head>
 <body>
-
-<nav class="nav">
-    <div class="nav-container">
-        <div class="logo">Rick Trading</div>
-        <div class="nav-links">
-            <a href="/app">Plateforme</a>
-            <a href="/formation">Formation</a>
-            <a href="/formation2">Formation avancée</a>
-            <a href="/app" class="btn-primary" style="padding: 0.5rem 1rem;">Accéder</a>
-        </div>
-    </div>
-</nav>
-
-<section class="hero">
-    <div>
-        <h1>Analyse de marché<br>temps réel</h1>
-        <p>Plateforme professionnelle pour traders. Graphiques interactifs, signaux automatiques, chat communautaire et formation complète.</p>
-        <div>
-            <a href="/app" class="btn-primary">Lancer la plateforme</a>
-            <a href="/formation" class="btn-secondary">Formation gratuite</a>
-        </div>
-        <div class="hero-stats">
-            <div class="stat">
-                <div class="stat-value">Volatility 75</div>
-                <div class="stat-label">Indice principal</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">EUR/USD</div>
-                <div class="stat-label">Forex</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">XAU/USD</div>
-                <div class="stat-label">Or</div>
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="logo">Rick Trading</div>
+            <div class="nav-links">
+                <a href="#features">Fonctionnalités</a>
+                <a href="#assets">Actifs</a>
+                <a href="/formation">Formation</a>
+                <a href="/app" class="btn-nav">Plateforme</a>
             </div>
         </div>
-    </div>
-    <div class="hero-image">
-        <svg width="100%" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="400" height="300" rx="16" fill="url(#gradient)" fill-opacity="0.1"/>
-            <path d="M50 200 L120 150 L180 180 L250 120 L320 160 L350 140" stroke="#2563eb" stroke-width="3" fill="none"/>
-            <path d="M50 220 L120 190 L180 210 L250 170 L320 190 L350 175" stroke="#7c3aed" stroke-width="2" fill="none" stroke-dasharray="5"/>
-            <defs>
-                <linearGradient id="gradient" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="#2563eb"/>
-                    <stop offset="100%" stop-color="#7c3aed"/>
-                </linearGradient>
-            </defs>
-        </svg>
-    </div>
-</section>
+    </nav>
 
-<section class="features">
-    <div class="features-container">
-        <h2 class="section-title">Une plateforme tout-en-un</h2>
-        <p class="section-subtitle">Tous les outils nécessaires pour analyser et trader</p>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-title">Graphiques temps réel</div>
-                <div class="feature-desc">Indices, Forex, matières premières avec mise à jour instantanée.</div>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-container">
+            <div>
+                <h1>Trading virtuel<br>en temps réel</h1>
+                <p>Plateforme professionnelle d'analyse technique avec signaux automatiques, graphiques TradingView et communauté active.</p>
+                <div class="hero-stats">
+                    <div class="stat"><div class="stat-number">24/7</div><div class="stat-label">Marchés ouverts</div></div>
+                    <div class="stat"><div class="stat-number">9</div><div class="stat-label">Langues</div></div>
+                    <div class="stat"><div class="stat-number">100%</div><div class="stat-label">Gratuit</div></div>
+                </div>
+                <div class="btn-group">
+                    <a href="/app" class="btn-primary">Lancer la plateforme</a>
+                    <a href="/formation" class="btn-secondary">Formation gratuite</a>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-title">Signaux automatiques</div>
-                <div class="feature-desc">Détection des supports, résistances et divergences MACD.</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-title">Chat communautaire</div>
-                <div class="feature-desc">Échangez avec d'autres traders en temps réel.</div>
+            <div class="hero-image">
+                <div style="background: #0d1117; border-radius: 12px; padding: 1rem; text-align: center;">
+                    <div style="background: #161b22; border-radius: 8px; height: 200px; display: flex; align-items: center; justify-content: center; color: #58a6ff;">
+                        Graphique TradingView
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="training-section">
-    <div class="training-container">
-        <div class="training-content">
-            <h2>Formation gratuite avec suivi</h2>
-            <p>Un cours complet structuré en plusieurs parties, accessible à tous les niveaux.</p>
-            <ul class="training-list">
-                <li><span class="check">✓</span> Partie 1 : Les bases du trading</li>
-                <li><span class="check">✓</span> Partie 2 : Stratégies avancées et psychologie</li>
-                <li><span class="check">✓</span> Partie 3 : Techniques expertes et backtest</li>
-                <li><span class="check">✓</span> Partie 4 : Avantages de la plateforme</li>
-            </ul>
-            <a href="/formation" class="btn-training">Accéder à la formation →</a>
+    <!-- Actifs virtuels -->
+    <section id="assets" class="assets">
+        <div class="section-container">
+            <h2 class="section-title">Actifs disponibles</h2>
+            <p class="section-subtitle">Tradez sur les marchés virtuels</p>
+            <div class="assets-grid">
+                <div class="asset-card">
+                    <div class="asset-price">Volatility 75</div>
+                    <div class="asset-change">Indice synthétique</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-price">EUR/USD</div>
+                    <div class="asset-change">Forex</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-price">XAU/USD</div>
+                    <div class="asset-change">Or</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-price">BTC/USD</div>
+                    <div class="asset-change">Bitcoin</div>
+                </div>
+            </div>
         </div>
-        <div class="training-image">
-            <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
-                <rect x="40" y="50" width="120" height="100" rx="8" stroke="#2563eb" stroke-width="2" fill="none"/>
-                <line x1="60" y1="75" x2="140" y2="75" stroke="#2563eb" stroke-width="2"/>
-                <line x1="60" y1="95" x2="120" y2="95" stroke="#2563eb" stroke-width="2"/>
-                <line x1="60" y1="115" x2="130" y2="115" stroke="#2563eb" stroke-width="2"/>
-                <path d="M130 135 L150 150 L130 165" stroke="#7c3aed" stroke-width="2" fill="none"/>
-            </svg>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features">
+        <div class="section-container">
+            <h2 class="section-title">Fonctionnalités</h2>
+            <p class="section-subtitle">Les outils pour trader efficacement</p>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon">📈</div><h3>Graphiques temps réel</h3><p>Indicateurs techniques, divergences MACD, supports/résistances</p></div>
+                <div class="feature-card"><div class="feature-icon">💬</div><h3>Chat communautaire</h3><p>Échangez avec d'autres traders en direct</p></div>
+                <div class="feature-card"><div class="feature-icon">🎓</div><h3>Formation complète</h3><p>Cours gratuits du débutant à l'expert</p></div>
+                <div class="feature-card"><div class="feature-icon">🌍</div><h3>Multilingue</h3><p>9 langues disponibles</p></div>
+                <div class="feature-card"><div class="feature-icon">📱</div><h3>Responsive</h3><p>Accédez depuis tous vos appareils</p></div>
+                <div class="feature-card"><div class="feature-icon">🔒</div><h3>Données persistantes</h3><p>Messages et pseudos sauvegardés</p></div>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="cta">
-    <h2>Prêt à passer à l'action ?</h2>
-    <p>Rejoignez la communauté Rick Trading et commencez à analyser les marchés</p>
-    <div>
-        <a href="/app" class="btn-cta">Lancer la plateforme</a>
-        <a href="/formation" class="btn-cta-outline">Formation gratuite</a>
-    </div>
-</section>
+    <!-- Boutons importants -->
+    <section class="actions">
+        <div class="actions-grid">
+            <a href="/app" class="action-btn">📊 Accéder à la plateforme</a>
+            <a href="/formation" class="action-btn">📘 Formation gratuite</a>
+            <a href="/app" class="action-btn">💬 Chat en direct</a>
+            <a href="/formation" class="action-btn">📈 Stratégies avancées</a>
+        </div>
+    </section>
 
-<footer class="footer">
-    <p>© 2025 Rick Trading - Le trading comporte des risques. Formez-vous avant d'investir.</p>
-</footer>
+    <!-- CTA -->
+    <section class="cta">
+        <h2>Prêt à améliorer vos performances ?</h2>
+        <p>Accédez gratuitement à tous les outils d'analyse.</p>
+        <a href="/app" class="btn-cta">Commencer maintenant →</a>
+    </section>
 
+    <footer class="footer">
+        <p>© 2025 Rick Trading - Plateforme de trading virtuel</p>
+        <p>Le trading comporte des risques. Formez-vous avant d'investir.</p>
+    </footer>
 </body>
 </html>
