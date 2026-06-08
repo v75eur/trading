@@ -159,6 +159,7 @@
             document.getElementById('onlineLabel').textContent = t('online');
             document.getElementById('languageSelect').value = getCurrentLanguage();
             updateMobileTip();
+            updateTrainingTranslation(getCurrentLanguage());
         }
         function changeLanguage() { setLanguage(document.getElementById('languageSelect').value); }
         async function updateOnlineCount() {
