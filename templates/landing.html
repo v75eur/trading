@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rick Trading | Plateforme de trading virtuel</title>
+    <title>Rick Trading | Plateforme de trading virtuelle</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="/static/translations.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -32,8 +31,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
         .logo {
             font-size: 1.5rem;
@@ -58,15 +55,6 @@
             padding: 0.5rem 1.2rem;
             border-radius: 8px;
             color: #f5a623;
-        }
-        .lang-select {
-            background: #1e242c;
-            color: #f5a623;
-            border: 1px solid #2a3540;
-            border-radius: 8px;
-            padding: 0.4rem 0.8rem;
-            cursor: pointer;
-            font-size: 0.875rem;
         }
         
         /* Hero */
@@ -127,6 +115,89 @@
             border: 1px solid #2a3540;
         }
         
+        /* Section actifs virtuels */
+        .assets {
+            padding: 4rem 2rem;
+            background: #0f1217;
+        }
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .asset-card {
+            background: #14181f;
+            border: 1px solid #1e242c;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .asset-price { font-size: 1.5rem; font-weight: 700; color: #f5a623; margin: 0.5rem 0; }
+        .asset-change { font-size: 0.875rem; color: #3fb950; }
+        
+        /* Features */
+        .features {
+            padding: 6rem 2rem;
+            background: #0a0c10;
+        }
+        .section-container { max-width: 1280px; margin: 0 auto; }
+        .section-title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 1rem; }
+        .section-subtitle { text-align: center; color: #8e9aab; margin-bottom: 3rem; }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .feature-card {
+            background: #14181f;
+            border: 1px solid #1e242c;
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .feature-card:hover { border-color: #f5a623; transform: translateY(-4px); }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .feature-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .feature-card p { color: #8e9aab; font-size: 0.875rem; }
+        
+        /* Boutons importants */
+        .actions {
+            padding: 4rem 2rem;
+            background: #0f1217;
+        }
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .action-btn {
+            background: #14181f;
+            border: 1px solid #2a3540;
+            border-radius: 60px;
+            padding: 1rem 2rem;
+            text-align: center;
+            text-decoration: none;
+            color: #e8edf2;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .action-btn:hover {
+            border-color: #f5a623;
+            color: #f5a623;
+            transform: translateY(-2px);
+        }
+        
         /* CTA */
         .cta {
             padding: 5rem 2rem;
@@ -154,7 +225,7 @@
             .hero h1 { font-size: 2rem; }
             .hero-stats { justify-content: center; }
             .btn-group { justify-content: center; }
-            .nav-links { justify-content: center; }
+            .nav-links { display: none; }
         }
     </style>
 </head>
@@ -163,41 +234,33 @@
         <div class="nav-container">
             <div class="logo">Rick Trading</div>
             <div class="nav-links">
-                <a href="/formation" id="navFormation">Formation</a>
-                <a href="/app" class="btn-nav" id="navPlateforme">Plateforme</a>
-                <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
-                    <option value="fr">🇫🇷 FR</option>
-                    <option value="en">🇬🇧 EN</option>
-                    <option value="es">🇪🇸 ES</option>
-                    <option value="pt">🇵🇹 PT</option>
-                    <option value="ru">🇷🇺 RU</option>
-                    <option value="it">🇮🇹 IT</option>
-                    <option value="de">🇩🇪 DE</option>
-                    <option value="zh">🇨🇳 中文</option>
-                    <option value="ja">🇯🇵 JP</option>
-                </select>
+                <a href="#features">Fonctionnalités</a>
+                <a href="#assets">Actifs</a>
+                <a href="/formation">Formation</a>
+                <a href="/app" class="btn-nav">Plateforme</a>
             </div>
         </div>
     </nav>
 
+    <!-- Hero -->
     <section class="hero">
         <div class="hero-container">
             <div>
-                <h1 id="heroTitle">Trading virtuel<br>en temps réel</h1>
-                <p id="heroDesc">Plateforme professionnelle d'analyse technique avec signaux automatiques, graphiques TradingView et communauté active.</p>
+                <h1>Trading virtuel<br>en temps réel</h1>
+                <p>Plateforme professionnelle d'analyse technique avec signaux automatiques, graphiques TradingView et communauté active.</p>
                 <div class="hero-stats">
-                    <div class="stat"><div class="stat-number">24/7</div><div class="stat-label" id="statMarkets">Marchés ouverts</div></div>
-                    <div class="stat"><div class="stat-number">9</div><div class="stat-label" id="statLangs">Langues</div></div>
-                    <div class="stat"><div class="stat-number">100%</div><div class="stat-label" id="statFree">Gratuit</div></div>
+                    <div class="stat"><div class="stat-number">24/7</div><div class="stat-label">Marchés ouverts</div></div>
+                    <div class="stat"><div class="stat-number">9</div><div class="stat-label">Langues</div></div>
+                    <div class="stat"><div class="stat-number">100%</div><div class="stat-label">Gratuit</div></div>
                 </div>
                 <div class="btn-group">
-                    <a href="/app" class="btn-primary" id="btnLaunch">Lancer la plateforme</a>
-                    <a href="/formation" class="btn-secondary" id="btnTraining">Formation gratuite</a>
+                    <a href="/app" class="btn-primary">Lancer la plateforme</a>
+                    <a href="/formation" class="btn-secondary">Formation gratuite</a>
                 </div>
             </div>
             <div class="hero-image">
                 <div style="background: #0d1117; border-radius: 12px; padding: 1rem; text-align: center;">
-                    <div style="background: #161b22; border-radius: 8px; height: 200px; display: flex; align-items: center; justify-content: center; color: #58a6ff;" id="chartPlaceholder">
+                    <div style="background: #161b22; border-radius: 8px; height: 200px; display: flex; align-items: center; justify-content: center; color: #58a6ff;">
                         Graphique TradingView
                     </div>
                 </div>
@@ -205,45 +268,68 @@
         </div>
     </section>
 
+    <!-- Actifs virtuels -->
+    <section id="assets" class="assets">
+        <div class="section-container">
+            <h2 class="section-title">Actifs disponibles</h2>
+            <p class="section-subtitle">Tradez sur les marchés virtuels</p>
+            <div class="assets-grid">
+                <div class="asset-card">
+                    <div class="asset-price">Volatility 75</div>
+                    <div class="asset-change">Indice synthétique</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-price">EUR/USD</div>
+                    <div class="asset-change">Forex</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-price">XAU/USD</div>
+                    <div class="asset-change">Or</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-price">BTC/USD</div>
+                    <div class="asset-change">Bitcoin</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features">
+        <div class="section-container">
+            <h2 class="section-title">Fonctionnalités</h2>
+            <p class="section-subtitle">Les outils pour trader efficacement</p>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon">📈</div><h3>Graphiques temps réel</h3><p>Indicateurs techniques, divergences MACD, supports/résistances</p></div>
+                <div class="feature-card"><div class="feature-icon">💬</div><h3>Chat communautaire</h3><p>Échangez avec d'autres traders en direct</p></div>
+                <div class="feature-card"><div class="feature-icon">🎓</div><h3>Formation complète</h3><p>Cours gratuits du débutant à l'expert</p></div>
+                <div class="feature-card"><div class="feature-icon">🌍</div><h3>Multilingue</h3><p>9 langues disponibles</p></div>
+                <div class="feature-card"><div class="feature-icon">📱</div><h3>Responsive</h3><p>Accédez depuis tous vos appareils</p></div>
+                <div class="feature-card"><div class="feature-icon">🔒</div><h3>Données persistantes</h3><p>Messages et pseudos sauvegardés</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Boutons importants -->
+    <section class="actions">
+        <div class="actions-grid">
+            <a href="/app" class="action-btn">📊 Accéder à la plateforme</a>
+            <a href="/formation" class="action-btn">📘 Formation gratuite</a>
+            <a href="/app" class="action-btn">💬 Chat en direct</a>
+            <a href="/formation" class="action-btn">📈 Stratégies avancées</a>
+        </div>
+    </section>
+
+    <!-- CTA -->
     <section class="cta">
-        <h2 id="ctaTitle">Prêt à améliorer vos performances ?</h2>
-        <p id="ctaDesc">Accédez gratuitement à tous les outils d'analyse.</p>
-        <a href="/app" class="btn-cta" id="ctaBtn">Commencer maintenant →</a>
+        <h2>Prêt à améliorer vos performances ?</h2>
+        <p>Accédez gratuitement à tous les outils d'analyse.</p>
+        <a href="/app" class="btn-cta">Commencer maintenant →</a>
     </section>
 
     <footer class="footer">
-        <p id="footerWarning">© 2025 Rick Trading - Plateforme de trading virtuel</p>
-        <p id="footerRisk">Le trading comporte des risques. Formez-vous avant d'investir.</p>
+        <p>© 2025 Rick Trading - Plateforme de trading virtuel</p>
+        <p>Le trading comporte des risques. Formez-vous avant d'investir.</p>
     </footer>
-
-    <script>
-        function changeLanguage(lang) {
-            const t = translations[lang];
-            if (!t) return;
-            
-            document.getElementById('heroTitle').innerHTML = t.hero_title || "Trading virtuel<br>en temps réel";
-            document.getElementById('heroDesc').innerHTML = t.hero_desc || "Plateforme professionnelle d'analyse technique avec signaux automatiques, graphiques TradingView et communauté active.";
-            document.getElementById('statMarkets').innerHTML = t.stat_markets || "Marchés ouverts";
-            document.getElementById('statLangs').innerHTML = t.stat_langs || "Langues";
-            document.getElementById('statFree').innerHTML = t.stat_free || "Gratuit";
-            document.getElementById('btnLaunch').innerHTML = t.btn_launch || "Lancer la plateforme";
-            document.getElementById('btnTraining').innerHTML = t.btn_training || "Formation gratuite";
-            document.getElementById('navFormation').innerHTML = t.nav_formation || "Formation";
-            document.getElementById('navPlateforme').innerHTML = t.nav_plateforme || "Plateforme";
-            document.getElementById('ctaTitle').innerHTML = t.cta_title || "Prêt à améliorer vos performances ?";
-            document.getElementById('ctaDesc').innerHTML = t.cta_desc || "Accédez gratuitement à tous les outils d'analyse.";
-            document.getElementById('ctaBtn').innerHTML = t.cta_btn || "Commencer maintenant →";
-            document.getElementById('footerWarning').innerHTML = t.footer_warning || "© 2025 Rick Trading - Plateforme de trading virtuel";
-            document.getElementById('footerRisk').innerHTML = t.footer_risk || "Le trading comporte des risques. Formez-vous avant d'investir.";
-            document.getElementById('chartPlaceholder').innerHTML = t.chart_placeholder || "Graphique TradingView";
-            
-            localStorage.setItem('rick_trading_lang', lang);
-        }
-        
-        // Charger la langue sauvegardée
-        const savedLang = localStorage.getItem('rick_trading_lang') || 'fr';
-        document.getElementById('langSelect').value = savedLang;
-        changeLanguage(savedLang);
-    </script>
 </body>
 </html>
