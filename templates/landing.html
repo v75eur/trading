@@ -130,6 +130,19 @@
     </div>
 
     <script>
+        // Traductions pour le bouton formation avec suivi
+        const trainingFollowupTranslations = {
+            fr: "Formation en trading avec suivi",
+            en: "Trading training with follow-up",
+            es: "Formación en trading con seguimiento",
+            pt: "Formação em trading com acompanhamento",
+            ru: "Обучение трейдингу с сопровождением",
+            it: "Formazione sul trading con supporto",
+            de: "Trading Ausbildung mit Betreuung",
+            zh: "带跟进的交易培训",
+            ja: "フォローアップ付きトレーニング"
+        };
+
         const mobileTips = {
             fr: "📱 Mode PC recommandé sur mobile",
             en: "📱 Desktop mode recommended on mobile",
@@ -141,11 +154,23 @@
             zh: "📱 手机上推荐使用PC模式",
             ja: "📱 モバイルではPCモード推奨"
         };
+        
         function updateMobileTip() {
             const lang = getCurrentLanguage();
             const el = document.getElementById('mobileTip');
             if (el) el.textContent = mobileTips[lang] || mobileTips.fr;
         }
+        
+        function updateTrainingFollowup() {
+            const lang = getCurrentLanguage();
+            const el = document.getElementById('trainingFollowupTitle');
+            if (el && trainingFollowupTranslations[lang]) {
+                el.textContent = trainingFollowupTranslations[lang];
+            } else if (el) {
+                el.textContent = trainingFollowupTranslations.fr;
+            }
+        }
+        
         function updatePage() {
             document.getElementById('title').textContent = t('title');
             document.getElementById('subtitle').textContent = t('subtitle');
@@ -159,28 +184,35 @@
             document.getElementById('onlineLabel').textContent = t('online');
             document.getElementById('languageSelect').value = getCurrentLanguage();
             updateMobileTip();
-            updateTrainingTranslation(getCurrentLanguage());
+            updateTrainingFollowup();
         }
-        function changeLanguage() { setLanguage(document.getElementById('languageSelect').value); }
+        
+        function changeLanguage() { 
+            setLanguage(document.getElementById('languageSelect').value); 
+        }
+        
         async function updateOnlineCount() {
             try { const res = await fetch('/api/online-display'); const data = await res.json(); document.getElementById('onlineCount').innerText = data.online; } catch(e) {}
         }
+        
         async function updateChartPreview() {
             try { const res = await fetch('/api/chart-screenshot'); const data = await res.json(); const img = document.getElementById('chartPreview'); if (img && data.image_url) { img.src = data.image_url + '?t=' + new Date().getTime(); document.getElementById('chartUpdateTime').innerHTML = '🕒 ' + data.updated_at; } } catch(e) {}
         }
-        updatePage(); updateOnlineCount(); updateChartPreview();
+        
+        // Initialisation
+        updatePage(); 
+        updateOnlineCount(); 
+        updateChartPreview();
         setInterval(updateOnlineCount, 35000);
         setInterval(updateChartPreview, 600000);
+        
+        // S'assurer que la langue change bien
+        window.addEventListener('load', function() {
+            const lang = getCurrentLanguage();
+            if (lang && trainingFollowupTranslations[lang]) {
+                document.getElementById('trainingFollowupTitle').textContent = trainingFollowupTranslations[lang];
+            }
+        });
     </script>
 </body>
 </html>
-<script>
-// Mettre à jour la fonction changeLanguage existante pour inclure trainingFollowupTitle
-function updateTrainingTranslation(lang) {
-    const t = translations[lang];
-    if (t && t.training_followup_title) {
-        const el = document.getElementById('trainingFollowupTitle');
-        if (el) el.innerHTML = t.training_followup_title;
-    }
-}
-</script>
