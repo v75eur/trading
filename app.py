@@ -169,9 +169,6 @@ def get_pseudo():
     pseudos = load_pseudos()
     return jsonify({'pseudo': pseudos.get(ip, '')})
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
-
 @app.route('/coming-soon')
 def coming_soon():
     return render_template('coming-soon.html')
@@ -191,3 +188,30 @@ def formation3():
 @app.route('/formation4')
 def formation4():
     return render_template('formation4.html')
+
+# ========== ROUTE NOTIFICATION NTFY (PROPRE) ==========
+@app.route('/api/notify', methods=['POST'])
+def notify():
+    try:
+        import requests
+        data = request.get_json()
+        if not data:
+            return jsonify({'status': 'error', 'message': 'No data'}), 400
+        
+        title = data.get('title', 'Rick Trading')
+        message = data.get('message', 'Signal')
+        
+        response = requests.post(
+            "https://ntfy.sh/rick_trading",
+            data=message.encode('utf-8'),
+            headers={"Title": title.encode('utf-8')},
+            timeout=10
+        )
+        return jsonify({'status': 'ok', 'ntfy_status': response.status_code})
+    except ImportError:
+        return jsonify({'status': 'error', 'message': 'requests not installed'}), 500
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
