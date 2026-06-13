@@ -189,7 +189,7 @@ def formation3():
 def formation4():
     return render_template('formation4.html')
 
-# ========== ROUTE NOTIFICATION NTFY (PROPRE) ==========
+# ========== ROUTE NOTIFICATION NTFY ==========
 @app.route('/api/notify', methods=['POST'])
 def notify():
     try:
@@ -197,10 +197,10 @@ def notify():
         data = request.get_json()
         if not data:
             return jsonify({'status': 'error', 'message': 'No data'}), 400
-        
+
         title = data.get('title', 'Rick Trading')
         message = data.get('message', 'Signal')
-        
+
         response = requests.post(
             "https://ntfy.sh/rick_trading",
             data=message.encode('utf-8'),
