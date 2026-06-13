@@ -289,7 +289,7 @@
 
     <div class="hero">
         <div class="container">
-            <div class="eyebrow" id="eyebrowTag">📡 Marché en direct · WebSocket Deriv</div>
+            <div class="eyebrow" id="eyebrowTag">📡 Marché en direct</div>
             <h1 class="main-title" id="title"></h1>
             <div class="mobile-tip" id="mobileTip">📱 Mode PC recommandé sur mobile</div>
             <p class="subtitle" id="subtitle"></p>
@@ -354,15 +354,15 @@
         };
 
         const eyebrowTranslations = {
-            fr: "📡 Marché en direct · WebSocket Deriv",
-            en: "📡 Live market · Deriv WebSocket",
-            es: "📡 Mercado en vivo · WebSocket Deriv",
-            pt: "📡 Mercado em tempo real · WebSocket Deriv",
-            ru: "📡 Рынок в реальном времени · WebSocket Deriv",
-            it: "📡 Mercato live · WebSocket Deriv",
-            de: "📡 Live-Markt · Deriv WebSocket",
-            zh: "📡 实时市场 · Deriv WebSocket",
-            ja: "📡 ライブ市場 · Deriv WebSocket"
+            fr: "📡 Marché en direct",
+            en: "📡 Live market",
+            es: "📡 Mercado en vivo",
+            pt: "📡 Mercado em tempo real",
+            ru: "📡 Рынок в реальном времени",
+            it: "📡 Mercato live",
+            de: "📡 Live-Markt",
+            zh: "📡 实时市场",
+            ja: "📡 ライブ市場"
         };
 
         function updateMobileTip() {
@@ -435,7 +435,6 @@
                 const arrow = p.dir === 'up' ? '▲' : p.dir === 'down' ? '▼' : '·';
                 return `<span>${s.label} &nbsp;<span class="${cls}">${p.value.toFixed(dec)} ${arrow}</span></span>`;
             });
-            // dupliqué pour boucle continue
             track.innerHTML = items.join('') + items.join('');
         }
 
