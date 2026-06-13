@@ -21,6 +21,10 @@ function init(){
     ctx=canvas.getContext('2d');
     resize();window.addEventListener('resize',resize);
     canvas.addEventListener('wheel',e=>{e.preventDefault();cw+=e.deltaY>0?-1:1;cw=Math.max(2,Math.min(30,cw));});
+    checkBreakout();
+    checkLongCandle();
+    checkHammer();
+    checkShootingStar();
     connect();requestAnimationFrame(loop);
     setInterval(capture,600000);
 }
@@ -162,6 +166,10 @@ function loop(){
     if(!canvas||!ctx)return;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle='#0d1117';ctx.fillRect(0,0,canvas.width,canvas.height);
+    checkBreakout();
+    checkLongCandle();
+    checkHammer();
+    checkShootingStar();
     if(candles.length<2){requestAnimationFrame(loop);return;}
     let n=candles.length,dec=sym.includes('frx')?5:1;
     let L=60,R=canvas.width-80,T=30,B=canvas.height-130,W=R-L,H=B-T;
@@ -236,6 +244,10 @@ function loop(){
         ctx.fillStyle='#58a6ff';ctx.fillText('MACD',L,mT+12);
         ctx.fillStyle='#f0883e';ctx.fillText('Signal',L+40,mT+12);
     }
+    checkBreakout();
+    checkLongCandle();
+    checkHammer();
+    checkShootingStar();
     requestAnimationFrame(loop);
 }
 
@@ -245,3 +257,116 @@ function zoomIn(){cw=Math.min(30,cw+2);}
 function zoomOut(){cw=Math.max(2,cw-2);}
 function resetZoom(){cw=8;}
 window.addEventListener('load',init);
+
+// ========== NOTIFICATIONS NTFY ==========
+var lastNotifKey = {breakout: null, longcandle: null, hammer: null, star: null};
+
+function sendNotif(title, msg) {
+    fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: title, message: msg })
+    }).catch(e => console.log("Erreur envoi notif:", e));
+}
+
+function checkBreakout() {
+    if (!lastR && !lastS) return;
+    let closed = candles.slice(0, -1);
+    let lastClosed = closed[closed.length - 1];
+    let prevClosed = closed[closed.length - 2];
+    if (!lastClosed || !prevClosed) return;
+    
+    let n = closed.length, nb = Math.min(20, n);
+    let sx = 0, sy = 0, sxy = 0, sx2 = 0;
+    for (let i = n - nb; i < n; i++) {
+        let idx = i - (n - nb);
+        sx += idx; sy += closed[i].c;
+        sxy += idx * closed[i].c; sx2 += idx * idx;
+    }
+    let slope = (nb * sxy - sx * sy) / (nb * sx2 - sx * sx);
+    let tfVal = document.getElementById('tf').value;
+    let tfName = tfVal === '5' ? 'M5' : tfVal === '15' ? 'M15' : tfVal === '60' ? 'H1' : tfVal === '240' ? 'H4' : 'M' + tfVal;
+    
+    // Anti-spam : une seule notification par bougie
+    let candleKey = lastClosed.t;
+    
+    if (slope > 0.0001 && lastR && prevClosed.h < lastR.price && lastClosed.h >= lastR.price) {
+        if (lastNotifKey.breakout !== candleKey) {
+            lastNotifKey.breakout = candleKey;
+            sendNotif('ACHAT', 'Resistance ' + lastR.price.toFixed(5) + ' cassee en tendance HAUSSIERE sur ' + tfName);
+        }
+    }
+    if (slope < -0.0001 && lastS && prevClosed.l > lastS.price && lastClosed.l <= lastS.price) {
+        if (lastNotifKey.breakout !== candleKey) {
+            lastNotifKey.breakout = candleKey;
+            sendNotif('VENTE', 'Support ' + lastS.price.toFixed(5) + ' casse en tendance BAISSIERE sur ' + tfName);
+        }
+    }
+}
+
+function checkLongCandle() {
+    let tfVal = parseInt(document.getElementById('tf').value);
+    if (tfVal !== 60) return;
+    if (candles.length < 25) return;
+    
+    let lastCandle = candles[candles.length - 1];
+    let candleKey = lastCandle.t;
+    if (lastNotifKey.longcandle === candleKey) return;
+    
+    let body = Math.abs(lastCandle.c - lastCandle.o);
+    let sum = 0;
+    for (let i = candles.length - 25; i < candles.length - 1; i++) {
+        sum += Math.abs(candles[i].c - candles[i].o);
+    }
+    let avg = sum / 24;
+    
+    if (body > avg * 2.5) {
+        lastNotifKey.longcandle = candleKey;
+        let type = lastCandle.c > lastCandle.o ? 'LONGUE BOUGIE VERTE' : 'LONGUE BOUGIE ROUGE';
+        sendNotif(type, 'Corps ' + body.toFixed(5) + ' vs moyenne ' + avg.toFixed(5) + ' (ratio ' + (body/avg).toFixed(1) + 'x) sur H1');
+    }
+}
+
+function checkHammer() {
+    let tfVal = parseInt(document.getElementById('tf').value);
+    if (tfVal !== 60) return;
+    if (candles.length < 2) return;
+    
+    let lastCandle = candles[candles.length - 1];
+    let candleKey = lastCandle.t;
+    
+    let body = Math.abs(lastCandle.c - lastCandle.o);
+    let lowerWick = Math.min(lastCandle.o, lastCandle.c) - lastCandle.l;
+    let upperWick = lastCandle.h - Math.max(lastCandle.o, lastCandle.c);
+    
+    if (body === 0) return;
+    
+    if (lowerWick > body * 2 && upperWick < body * 0.5) {
+        if (lastNotifKey.hammer !== candleKey) {
+            lastNotifKey.hammer = candleKey;
+            sendNotif('MARTEAU', 'Meche basse ' + lowerWick.toFixed(5) + ' > 2x corps (' + body.toFixed(5) + ') sur H1 - Support teste');
+        }
+    }
+}
+
+function checkShootingStar() {
+    let tfVal = parseInt(document.getElementById('tf').value);
+    if (tfVal !== 60) return;
+    if (candles.length < 2) return;
+    
+    let lastCandle = candles[candles.length - 1];
+    let candleKey = lastCandle.t;
+    
+    let body = Math.abs(lastCandle.c - lastCandle.o);
+    let lowerWick = Math.min(lastCandle.o, lastCandle.c) - lastCandle.l;
+    let upperWick = lastCandle.h - Math.max(lastCandle.o, lastCandle.c);
+    
+    if (body === 0) return;
+    
+    if (upperWick > body * 2 && lowerWick < body * 0.5) {
+        if (lastNotifKey.star !== candleKey) {
+            lastNotifKey.star = candleKey;
+            sendNotif('ETOILE FILANTE', 'Meche haute ' + upperWick.toFixed(5) + ' > 2x corps (' + body.toFixed(5) + ') sur H1 - Resistance testee');
+        }
+    }
+}
