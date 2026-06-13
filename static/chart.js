@@ -6,7 +6,6 @@ var lastScreenshot=0;
 
 // Anti-spam: mémorise le timestamp de la dernière bougie close pour laquelle
 // chaque type de signal a déjà été notifié
-var lastNotifKey={breakoutAchat:null,breakoutVente:null,longcandle:null,marteau:null,etoile:null};
 
 function showWsError(){let b=document.getElementById('wsError');if(b)b.style.display='block';}
 function hideWsError(){let b=document.getElementById('wsError');if(b)b.style.display='none';}
@@ -72,14 +71,12 @@ function connect(){
             for(let i=0;i<d.candles.length;i++){let c=d.candles[i];candles.push({t:c.epoch,o:+c.open,h:+c.high,l:+c.low,c:+c.close});}
             if(candles.length>200)candles=candles.slice(-200);
             findLastSR();computePivots();computeTrendLines();computeMACD();detectPatterns();detectDivergences();computeSMA10();updateInfo();
-            checkBreakout();checkLongCandle();checkHammer();
             if(document.getElementById('loader'))document.getElementById('loader').style.display='none';
         }
         if(d.tick){
             price=+d.tick.quote;
             document.getElementById('price').innerText=price.toFixed(sym.includes('frx')?5:2);
             if(candles.length>0){let last=candles[candles.length-1];last.c=price;if(price>last.h)last.h=price;if(price<last.l)last.l=price;computeMACD();detectDivergences();computeSMA10();updateInfo();
-                checkBreakout();checkLongCandle();checkHammer();
             }
         }
     };
@@ -253,14 +250,6 @@ function zoomOut(){cw=Math.max(2,cw-2);}
 function resetZoom(){cw=8;}
 window.addEventListener('load',init);
 
-// ========== NOTIFICATIONS NTFY ==========
-function sendNotif(title, msg) {
-    fetch('/api/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: title, message: msg })
-    }).catch(e => console.log(e));
-}
 
 function getTfName(){
     let v=document.getElementById('tf').value;
