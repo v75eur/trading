@@ -1,8 +1,12 @@
 var canvas,ctx,candles=[],price=0,ws=null,sym='R_75',tf=5,cw=8,sp=2;
 var lastR=null,lastS=null,macdData=[],signalData=[],histogramData=[];
 var patterns=[],divergences=[],pivotLevels=null,trendLines=[],lastDivLine=null;
-var sma10=[]; // Moyenne mobile sur 10 périodes
+var sma10=[];
 var lastScreenshot=0;
+
+// Anti-spam: mémorise le timestamp de la dernière bougie close pour laquelle
+// chaque type de signal a déjà été notifié
+var lastNotifKey={breakoutAchat:null,breakoutVente:null,longcandle:null,marteau:null,etoile:null};
 
 function showWsError(){let b=document.getElementById('wsError');if(b)b.style.display='block';}
 function hideWsError(){let b=document.getElementById('wsError');if(b)b.style.display='none';}
@@ -21,10 +25,6 @@ function init(){
     ctx=canvas.getContext('2d');
     resize();window.addEventListener('resize',resize);
     canvas.addEventListener('wheel',e=>{e.preventDefault();cw+=e.deltaY>0?-1:1;cw=Math.max(2,Math.min(30,cw));});
-    checkBreakout();
-    checkLongCandle();
-    checkHammer();
-    checkShootingStar();
     connect();requestAnimationFrame(loop);
     setInterval(capture,600000);
 }
@@ -72,12 +72,15 @@ function connect(){
             for(let i=0;i<d.candles.length;i++){let c=d.candles[i];candles.push({t:c.epoch,o:+c.open,h:+c.high,l:+c.low,c:+c.close});}
             if(candles.length>200)candles=candles.slice(-200);
             findLastSR();computePivots();computeTrendLines();computeMACD();detectPatterns();detectDivergences();computeSMA10();updateInfo();
+            checkBreakout();checkLongCandle();checkHammer();
             if(document.getElementById('loader'))document.getElementById('loader').style.display='none';
         }
         if(d.tick){
             price=+d.tick.quote;
             document.getElementById('price').innerText=price.toFixed(sym.includes('frx')?5:2);
-            if(candles.length>0){let last=candles[candles.length-1];last.c=price;if(price>last.h)last.h=price;if(price<last.l)last.l=price;computeMACD();detectDivergences();computeSMA10();updateInfo();}
+            if(candles.length>0){let last=candles[candles.length-1];last.c=price;if(price>last.h)last.h=price;if(price<last.l)last.l=price;computeMACD();detectDivergences();computeSMA10();updateInfo();
+                checkBreakout();checkLongCandle();checkHammer();
+            }
         }
     };
     ws.onerror=()=>{showWsError();};
@@ -166,10 +169,6 @@ function loop(){
     if(!canvas||!ctx)return;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle='#0d1117';ctx.fillRect(0,0,canvas.width,canvas.height);
-    checkBreakout();
-    checkLongCandle();
-    checkHammer();
-    checkShootingStar();
     if(candles.length<2){requestAnimationFrame(loop);return;}
     let n=candles.length,dec=sym.includes('frx')?5:1;
     let L=60,R=canvas.width-80,T=30,B=canvas.height-130,W=R-L,H=B-T;
@@ -244,10 +243,6 @@ function loop(){
         ctx.fillStyle='#58a6ff';ctx.fillText('MACD',L,mT+12);
         ctx.fillStyle='#f0883e';ctx.fillText('Signal',L+40,mT+12);
     }
-    checkBreakout();
-    checkLongCandle();
-    checkHammer();
-    checkShootingStar();
     requestAnimationFrame(loop);
 }
 
@@ -259,23 +254,29 @@ function resetZoom(){cw=8;}
 window.addEventListener('load',init);
 
 // ========== NOTIFICATIONS NTFY ==========
-var lastNotifKey = {breakout: null, longcandle: null, hammer: null, star: null};
-
 function sendNotif(title, msg) {
     fetch('/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: title, message: msg })
-    }).catch(e => console.log("Erreur envoi notif:", e));
+    }).catch(e => console.log(e));
 }
 
+function getTfName(){
+    let v=document.getElementById('tf').value;
+    return v==='5'?'M5':v==='15'?'M15':v==='60'?'H1':'M'+v;
+}
+
+// Conditions 1 & 2 : cassure de S/R confirmée à la clôture, sur M15 ou H1
 function checkBreakout() {
+    let tfVal=document.getElementById('tf').value;
+    if(tfVal!=='15'&&tfVal!=='60') return; // uniquement M15 ou H1
     if (!lastR && !lastS) return;
-    let closed = candles.slice(0, -1);
+    let closed = candles.slice(0, -1); // bougies fermées uniquement
     let lastClosed = closed[closed.length - 1];
     let prevClosed = closed[closed.length - 2];
     if (!lastClosed || !prevClosed) return;
-    
+
     let n = closed.length, nb = Math.min(20, n);
     let sx = 0, sy = 0, sxy = 0, sx2 = 0;
     for (let i = n - nb; i < n; i++) {
@@ -284,89 +285,69 @@ function checkBreakout() {
         sxy += idx * closed[i].c; sx2 += idx * idx;
     }
     let slope = (nb * sxy - sx * sy) / (nb * sx2 - sx * sx);
-    let tfVal = document.getElementById('tf').value;
-    let tfName = tfVal === '5' ? 'M5' : tfVal === '15' ? 'M15' : tfVal === '60' ? 'H1' : tfVal === '240' ? 'H4' : 'M' + tfVal;
-    
-    // Anti-spam : une seule notification par bougie
-    let candleKey = lastClosed.t;
-    
-    if (slope > 0.0001 && lastR && prevClosed.h < lastR.price && lastClosed.h >= lastR.price) {
-        if (lastNotifKey.breakout !== candleKey) {
-            lastNotifKey.breakout = candleKey;
-            sendNotif('ACHAT', 'Resistance ' + lastR.price.toFixed(5) + ' cassee en tendance HAUSSIERE sur ' + tfName);
+    let tfName = getTfName();
+    let key = lastClosed.t; // timestamp de la bougie fermée la plus récente
+
+    // ACHAT : tendance HAUSSIERE + clôture au-dessus de la résistance
+    if (slope > 0.0001 && lastR && prevClosed.c < lastR.price && lastClosed.c >= lastR.price) {
+        if (lastNotifKey.breakoutAchat !== key) {
+            sendNotif('ACHAT', 'Resistance ' + lastR.price.toFixed(5) + ' cassee en HAUSSIER sur ' + tfName + ' (' + sym + ')');
+            lastNotifKey.breakoutAchat = key;
         }
     }
-    if (slope < -0.0001 && lastS && prevClosed.l > lastS.price && lastClosed.l <= lastS.price) {
-        if (lastNotifKey.breakout !== candleKey) {
-            lastNotifKey.breakout = candleKey;
-            sendNotif('VENTE', 'Support ' + lastS.price.toFixed(5) + ' casse en tendance BAISSIERE sur ' + tfName);
+    // VENTE : tendance BAISSIERE + clôture en dessous du support
+    if (slope < -0.0001 && lastS && prevClosed.c > lastS.price && lastClosed.c <= lastS.price) {
+        if (lastNotifKey.breakoutVente !== key) {
+            sendNotif('VENTE', 'Support ' + lastS.price.toFixed(5) + ' casse en BAISSIER sur ' + tfName + ' (' + sym + ')');
+            lastNotifKey.breakoutVente = key;
         }
     }
 }
 
+// Condition 3 : longue bougie sur H1, à la clôture
 function checkLongCandle() {
-    let tfVal = parseInt(document.getElementById('tf').value);
-    if (tfVal !== 60) return;
-    if (candles.length < 25) return;
-    
-    let lastCandle = candles[candles.length - 1];
-    let candleKey = lastCandle.t;
-    if (lastNotifKey.longcandle === candleKey) return;
-    
-    let body = Math.abs(lastCandle.c - lastCandle.o);
+    let tfVal = document.getElementById('tf').value;
+    if (tfVal !== '60') return;
+    let closed = candles.slice(0, -1);
+    if (closed.length < 25) return;
+    let last = closed[closed.length - 1];
+    let body = Math.abs(last.c - last.o);
     let sum = 0;
-    for (let i = candles.length - 25; i < candles.length - 1; i++) {
-        sum += Math.abs(candles[i].c - candles[i].o);
-    }
+    for (let i = closed.length - 25; i < closed.length - 1; i++) sum += Math.abs(closed[i].c - closed[i].o);
     let avg = sum / 24;
-    
-    if (body > avg * 2.5) {
-        lastNotifKey.longcandle = candleKey;
-        let type = lastCandle.c > lastCandle.o ? 'LONGUE BOUGIE VERTE' : 'LONGUE BOUGIE ROUGE';
-        sendNotif(type, 'Corps ' + body.toFixed(5) + ' vs moyenne ' + avg.toFixed(5) + ' (ratio ' + (body/avg).toFixed(1) + 'x) sur H1');
-    }
-}
-
-function checkHammer() {
-    let tfVal = parseInt(document.getElementById('tf').value);
-    if (tfVal !== 60) return;
-    if (candles.length < 2) return;
-    
-    let lastCandle = candles[candles.length - 1];
-    let candleKey = lastCandle.t;
-    
-    let body = Math.abs(lastCandle.c - lastCandle.o);
-    let lowerWick = Math.min(lastCandle.o, lastCandle.c) - lastCandle.l;
-    let upperWick = lastCandle.h - Math.max(lastCandle.o, lastCandle.c);
-    
-    if (body === 0) return;
-    
-    if (lowerWick > body * 2 && upperWick < body * 0.5) {
-        if (lastNotifKey.hammer !== candleKey) {
-            lastNotifKey.hammer = candleKey;
-            sendNotif('MARTEAU', 'Meche basse ' + lowerWick.toFixed(5) + ' > 2x corps (' + body.toFixed(5) + ') sur H1 - Support teste');
+    if (avg > 0 && body > avg * 2.5) {
+        let key = last.t;
+        if (lastNotifKey.longcandle !== key) {
+            let type = last.c > last.o ? 'LONGUE BOUGIE VERTE' : 'LONGUE BOUGIE ROUGE';
+            sendNotif(type, 'Ratio ' + (body/avg).toFixed(1) + 'x sur H1 (' + sym + ')');
+            lastNotifKey.longcandle = key;
         }
     }
 }
 
-function checkShootingStar() {
-    let tfVal = parseInt(document.getElementById('tf').value);
-    if (tfVal !== 60) return;
-    if (candles.length < 2) return;
-    
-    let lastCandle = candles[candles.length - 1];
-    let candleKey = lastCandle.t;
-    
-    let body = Math.abs(lastCandle.c - lastCandle.o);
-    let lowerWick = Math.min(lastCandle.o, lastCandle.c) - lastCandle.l;
-    let upperWick = lastCandle.h - Math.max(lastCandle.o, lastCandle.c);
-    
+// Conditions 4 & 5 : marteau / étoile filante sur H1, à la clôture
+function checkHammer() {
+    let tfVal = document.getElementById('tf').value;
+    if (tfVal !== '60') return;
+    let closed = candles.slice(0, -1);
+    let last = closed[closed.length - 1];
+    if (!last) return;
+    let body = Math.abs(last.c - last.o);
+    let lowerWick = Math.min(last.o, last.c) - last.l;
+    let upperWick = last.h - Math.max(last.o, last.c);
     if (body === 0) return;
-    
+    let key = last.t;
+
+    if (lowerWick > body * 2 && upperWick < body * 0.5) {
+        if (lastNotifKey.marteau !== key) {
+            sendNotif('MARTEAU', 'Meche basse ' + (lowerWick/body).toFixed(1) + 'x corps sur H1 (' + sym + ')');
+            lastNotifKey.marteau = key;
+        }
+    }
     if (upperWick > body * 2 && lowerWick < body * 0.5) {
-        if (lastNotifKey.star !== candleKey) {
-            lastNotifKey.star = candleKey;
-            sendNotif('ETOILE FILANTE', 'Meche haute ' + upperWick.toFixed(5) + ' > 2x corps (' + body.toFixed(5) + ') sur H1 - Resistance testee');
+        if (lastNotifKey.etoile !== key) {
+            sendNotif('ETOILE FILANTE', 'Meche haute ' + (upperWick/body).toFixed(1) + 'x corps sur H1 (' + sym + ')');
+            lastNotifKey.etoile = key;
         }
     }
 }
