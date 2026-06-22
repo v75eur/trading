@@ -1,5 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 import json, os, time, random, base64, re
+import datetime
+import sys
 
 app = Flask(__name__)
 
@@ -9,6 +11,29 @@ PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
 SCREENSHOT_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'screenshots')
 os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
 os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
+
+# ====================================================
+# PLAGE HORAIRE : ACTIF DE 00h A 20h, MAINTENANCE DE 20h A 00h
+# ====================================================
+
+@app.before_request
+def check_business_hours():
+    """Bloque les requêtes entre 20h et 00h."""
+    now = datetime.datetime.now()
+    if now.hour >= 20:  # De 20h à 23h59
+        return render_template('maintenance.html'), 503
+
+@app.route('/_restart')
+def restart_service():
+    """Redémarre l'application à minuit."""
+    now = datetime.datetime.now()
+    if now.hour == 0 and now.minute < 5:
+        os.execv(sys.executable, ['python'] + sys.argv)
+    return "Restarting...", 200
+
+# ====================================================
+# FIN DE LA MODIFICATION
+# ====================================================
 
 def load_stats():
     if os.path.exists(STATS_FILE):
@@ -48,130 +73,120 @@ def online_display():
         hour = time.localtime().tm_hour
         if hour < 8: fake = random.randint(2, 6)
         elif hour < 12: fake = random.randint(5, 12)
-        elif hour < 18: fake = random.randint(12, 25)
-        elif hour < 22: fake = random.randint(18, 35)
+        elif hour < 18: fake = random.randint(8, 18)
+        elif hour < 22: fake = random.randint(10, 22)
         else: fake = random.randint(4, 10)
-        total = min(real_online + fake, 50)
-        if online_cache["value"] == 0:
-            online_cache["value"] = total
-        else:
-            if random.random() < 0.5:
-                diff = total - online_cache["value"]
-                step = 0
-                if diff > 0: step = random.choice([0, 1, 1, 2])
-                elif diff < 0: step = random.choice([0, -1, -1, -2])
-                else: step = random.choice([-1, 0, 1])
-                online_cache["value"] += step
-                online_cache["value"] = max(2, min(50, online_cache["value"]))
+        online_cache["value"] = real_online + fake
         online_cache["last_update"] = now
     return jsonify({"online": online_cache["value"]})
 
-latest_screenshot = {"filename": "default_chart.png", "timestamp": 0}
-@app.route('/api/chart-screenshot')
-def chart_screenshot():
-    files = sorted([f for f in os.listdir(SCREENSHOT_FOLDER) if f.endswith(('.png','.jpg','.jpeg'))], reverse=True)
-    if files:
-        latest_screenshot["filename"] = files[0]
-        latest_screenshot["timestamp"] = os.path.getmtime(os.path.join(SCREENSHOT_FOLDER, files[0]))
-    return jsonify({"image_url": f"/static/screenshots/{latest_screenshot['filename']}", "updated_at": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(latest_screenshot['timestamp']))})
-
-@app.route('/api/upload-screenshot', methods=['POST'])
-def upload_screenshot():
-    data = request.get_json()
-    img_data = data.get('image', '')
-    if img_data and img_data.startswith('data:image'):
-        match = re.match(r'data:image/(png|jpeg);base64,(.*)', img_data)
-        if match:
-            ext = match.group(1)
-            b64 = match.group(2)
-            filename = f"chart_{int(time.time())}.{ext}"
-            with open(os.path.join(SCREENSHOT_FOLDER, filename), 'wb') as f:
-                f.write(base64.b64decode(b64))
-            files = sorted(os.listdir(SCREENSHOT_FOLDER))
-            for old in files[:-6]:
-                os.remove(os.path.join(SCREENSHOT_FOLDER, old))
-            return jsonify({"status": "ok"})
-    return jsonify({"status": "error"}), 400
-
-@app.route('/')
-def landing():
-    return render_template('landing.html')
-
-@app.route('/app')
-def index():
-    return render_template('index.html')
-
-@app.route('/maintenance')
-def maintenance():
-    return render_template('maintenance.html')
+@app.route('/api/ping')
+def ping():
+    return "pong"
 
 @app.route('/api/stats')
-def api_stats():
+def stats():
     stats = load_stats()
-    now = time.time()
-    stats['online'] = {k:v for k,v in stats.get('online',{}).items() if now - v < 300}
-    save_stats(stats)
-    return jsonify({'likes': stats.get('likes',112), 'visitors': stats.get('visitors',0), 'online': len(stats['online'])})
-
-@app.route('/api/visit', methods=['POST'])
-def api_visit():
-    stats = load_stats()
-    ip = request.remote_addr
-    now = time.time()
-    stats['online'] = {k:v for k,v in stats.get('online',{}).items() if now - v < 300}
-    if ip not in stats['online']:
-        stats['visitors'] = stats.get('visitors',0) + 1
-    stats['online'][ip] = now
-    save_stats(stats)
-    return jsonify({'status':'ok'})
+    return jsonify({"likes": stats.get('likes', 0), "visitors": stats.get('visitors', 0)})
 
 @app.route('/api/like', methods=['POST'])
-def api_like():
-    stats = load_stats()
+def like():
     ip = request.remote_addr
-    if ip not in stats.get('liked_ips', []):
-        stats['likes'] = stats.get('likes',112) + 1
-        stats.setdefault('liked_ips', []).append(ip)
-        save_stats(stats)
-        return jsonify({'status':'ok', 'likes': stats['likes']})
-    return jsonify({'status':'already', 'likes': stats.get('likes',112)})
+    stats = load_stats()
+    liked = stats.get('liked_ips', [])
+    if ip in liked:
+        return jsonify({"liked": True, "likes": stats.get('likes', 0)})
+    liked.append(ip)
+    stats['likes'] = stats.get('likes', 0) + 1
+    stats['liked_ips'] = liked
+    save_stats(stats)
+    return jsonify({"liked": True, "likes": stats['likes']})
+
+@app.route('/api/visit', methods=['POST'])
+def visit():
+    ip = request.remote_addr
+    stats = load_stats()
+    stats['visitors'] = stats.get('visitors', 0) + 1
+    now = time.time()
+    if 'online' not in stats: stats['online'] = {}
+    stats['online'][ip] = now
+    # Nettoyer les vieux
+    stats['online'] = {k: v for k, v in stats['online'].items() if now - v < 300}
+    save_stats(stats)
+    return jsonify({"ok": True})
+
+@app.route('/api/screenshot', methods=['POST'])
+def upload_screenshot():
+    try:
+        data = request.json
+        if not data or 'image' not in data:
+            return jsonify({"error": "missing image"}), 400
+        img_data = data['image']
+        if img_data.startswith('data:image/png;base64,'):
+            img_data = img_data.replace('data:image/png;base64,', '')
+        img_bytes = base64.b64decode(img_data)
+        # Nettoyer le nom pour éviter les injections
+        clean = re.sub(r'[^a-zA-Z0-9]', '_', datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+        filename = f"screenshot_{clean}.png"
+        filepath = os.path.join(SCREENSHOT_FOLDER, filename)
+        with open(filepath, 'wb') as f:
+            f.write(img_bytes)
+        return jsonify({"success": True, "filename": filename})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/chat', methods=['GET'])
 def get_chat():
-    return jsonify(load_chat())
+    messages = load_chat()
+    return jsonify(messages)
 
 @app.route('/api/chat', methods=['POST'])
 def post_chat():
-    msgs = load_chat()
-    data = request.get_json()
-    msg = data.get('message','').strip()
-    if msg and len(msg) <= 200:
-        msgs.append({'message': msg, 'user': data.get('user','Anonyme'), 'time': time.strftime('%H:%M')})
-        save_chat(msgs)
-    return jsonify({'status':'ok'})
+    data = request.json
+    if not data or 'pseudo' not in data or 'message' not in data:
+        return jsonify({"error": "missing fields"}), 400
+    pseudo = data['pseudo'][:20]
+    message = data['message'][:200]
+    messages = load_chat()
+    messages.append({
+        'pseudo': pseudo,
+        'message': message,
+        'time': time.strftime('%H:%M')
+    })
+    save_chat(messages)
+    return jsonify({"success": True})
 
 @app.route('/api/pseudo', methods=['POST'])
 def set_pseudo():
-    data = request.get_json()
-    pseudo = data.get('pseudo','').strip()
+    data = request.json
+    if not data or 'pseudo' not in data:
+        return jsonify({"error": "missing pseudo"}), 400
+    pseudo = data['pseudo'][:20]
     ip = request.remote_addr
-    if pseudo and len(pseudo) >= 2:
-        pseudos = load_pseudos()
-        pseudos[ip] = pseudo
-        with open(PSEUDOS_FILE, 'w') as f:
-            json.dump(pseudos, f)
-        return jsonify({'status':'ok'})
-    return jsonify({'status':'error'})
+    pseudos = load_pseudos()
+    pseudos[ip] = pseudo
+    with open(PSEUDOS_FILE, 'w') as f:
+        json.dump(pseudos, f)
+    return jsonify({"success": True})
 
 @app.route('/api/pseudo', methods=['GET'])
 def get_pseudo():
     ip = request.remote_addr
     pseudos = load_pseudos()
-    return jsonify({'pseudo': pseudos.get(ip, '')})
+    return jsonify({"pseudo": pseudos.get(ip, None)})
 
-@app.route('/coming-soon')
-def coming_soon():
-    return render_template('coming-soon.html')
+@app.route('/api/admin/clear-chat', methods=['POST'])
+def clear_chat():
+    save_chat([])
+    return jsonify({"success": True})
+
+@app.route('/app')
+def app_page():
+    return render_template('index.html')
+
+@app.route('/')
+def landing():
+    return render_template('landing.html')
 
 @app.route('/formation')
 def formation():
@@ -189,3 +204,5 @@ def formation3():
 def formation4():
     return render_template('formation4.html')
 
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
