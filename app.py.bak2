@@ -1,7 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 import json, os, time, random, base64, re
 import datetime
-import pytz
 import sys
 
 app = Flask(__name__)
@@ -14,26 +13,26 @@ os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
 os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
 
 # ====================================================
-# PLAGE HORAIRE BÉNIN : OUVERT 8H-00H, FERMÉ 00H-8H
+# PLAGE HORAIRE : ACTIF DE 00h A 20h, MAINTENANCE DE 20h A 00h
 # ====================================================
-
-def heure_benin():
-    tz = pytz.timezone('Africa/Porto-Novo')
-    return datetime.datetime.now(tz).hour
 
 @app.before_request
 def check_business_hours():
-    h = heure_benin()
-    # Ignorer les pings cron-job.org la nuit (pour laisser Render dormir)
-    if 'cron-job.org' in request.headers.get('User-Agent', ''):
-        if h < 8:
-            return 'SLEEP', 503
-    # Bloquer les visiteurs entre 00h et 8h
-    if h < 8:
+    """Bloque les requêtes entre 20h et 00h."""
+    now = datetime.datetime.now()
+    if now.hour >= 20:  # De 20h à 23h59
         return render_template('maintenance.html'), 503
 
+@app.route('/_restart')
+def restart_service():
+    """Redémarre l'application à minuit."""
+    now = datetime.datetime.now()
+    if now.hour == 0 and now.minute < 5:
+        os.execv(sys.executable, ['python'] + sys.argv)
+    return "Restarting...", 200
+
 # ====================================================
-# FIN MODIFICATION
+# FIN DE LA MODIFICATION
 # ====================================================
 
 def load_stats():
@@ -71,11 +70,11 @@ def online_display():
     if now - online_cache["last_update"] > 35:
         stats = load_stats()
         real_online = len([k for k, v in stats.get('online', {}).items() if now - v < 300])
-        h = heure_benin()
-        if h < 8: fake = 0
-        elif h < 12: fake = random.randint(5, 12)
-        elif h < 18: fake = random.randint(8, 18)
-        elif h < 24: fake = random.randint(10, 22)
+        hour = time.localtime().tm_hour
+        if hour < 8: fake = random.randint(2, 6)
+        elif hour < 12: fake = random.randint(5, 12)
+        elif hour < 18: fake = random.randint(8, 18)
+        elif hour < 22: fake = random.randint(10, 22)
         else: fake = random.randint(4, 10)
         online_cache["value"] = real_online + fake
         online_cache["last_update"] = now
@@ -111,6 +110,7 @@ def visit():
     now = time.time()
     if 'online' not in stats: stats['online'] = {}
     stats['online'][ip] = now
+    # Nettoyer les vieux
     stats['online'] = {k: v for k, v in stats['online'].items() if now - v < 300}
     save_stats(stats)
     return jsonify({"ok": True})
@@ -125,6 +125,7 @@ def upload_screenshot():
         if img_data.startswith('data:image/png;base64,'):
             img_data = img_data.replace('data:image/png;base64,', '')
         img_bytes = base64.b64decode(img_data)
+        # Nettoyer le nom pour éviter les injections
         clean = re.sub(r'[^a-zA-Z0-9]', '_', datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
         filename = f"screenshot_{clean}.png"
         filepath = os.path.join(SCREENSHOT_FOLDER, filename)
@@ -202,10 +203,6 @@ def formation3():
 @app.route('/formation4')
 def formation4():
     return render_template('formation4.html')
-
-@app.route('/coming-soon')
-def coming_soon():
-    return render_template('coming-soon.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
