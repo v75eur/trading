@@ -14,26 +14,36 @@ os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
 os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
 
 # ====================================================
-# PLAGE HORAIRE BÉNIN : OUVERT 8H-00H, FERMÉ 00H-8H
+# HEURE BÉNIN
 # ====================================================
 
 def heure_benin():
     tz = pytz.timezone('Africa/Porto-Novo')
     return datetime.datetime.now(tz).hour
 
+# ====================================================
+# HEALTH CHECK - TOUJOURS 200 pour Render
+# ====================================================
+
+@app.route('/health')
+def health():
+    h = heure_benin()
+    status = "OK - Ouvert" if h >= 8 else "PAUSE - Reprise 8H Benin"
+    return status, 200
+
+# ====================================================
+# BLOQUER VISITEURS 00H-8H (mais pas le health check)
+# ====================================================
+
 @app.before_request
 def check_business_hours():
+    # Ne jamais bloquer health check et ping
+    if request.path in ('/health', '/api/ping'):
+        return None
     h = heure_benin()
-    # Ignorer les pings cron-job.org la nuit (pour laisser Render dormir)
-    if request.headers.get('User-Agent', '') or request.headers.get('X-Forwarded-For', ''):
-        if h < 8:
-            return 'SLEEP', 503
-    # Bloquer les visiteurs entre 00h et 8h
     if h < 8:
         return render_template('maintenance.html'), 503
 
-# ====================================================
-# FIN MODIFICATION
 # ====================================================
 
 def load_stats():
@@ -41,6 +51,7 @@ def load_stats():
         with open(STATS_FILE, 'r') as f:
             return json.load(f)
     return {'likes': 112, 'visitors': 0, 'online': {}, 'liked_ips': []}
+
 def save_stats(s):
     with open(STATS_FILE, 'w') as f:
         json.dump(s, f)
@@ -50,6 +61,7 @@ def load_chat():
         with open(CHAT_FILE, 'r') as f:
             return json.load(f)
     return []
+
 def save_chat(messages):
     if len(messages) > 30:
         messages = messages[-30:]
