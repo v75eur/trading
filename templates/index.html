@@ -87,12 +87,27 @@ body{font-family:system-ui,'Segoe UI',Roboto,sans-serif;background:#0d1117;color
     </div>
 </div>
 
-<div id="adminModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeAdminModal()">&times;</span><h3 id="adminTitle">⚙️ Admin</h3><input type="password" id="adminPass" placeholder="" id="adminPassPlaceholder"><button id="adminAccessBtn" onclick="checkAdmin()">🔓 Accéder</button><p id="adminError" style="color:#f85149;display:none;">Mot de passe incorrect</p></div></div>
+<div id="adminModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeAdminModal()">&times;</span><h3 id="adminTitle">⚙️ Admin</h3><input type="password" id="adminPass" placeholder="Mot de passe"><button id="adminAccessBtn" onclick="checkAdmin()">🔓 Accéder</button><p id="adminError" style="color:#f85149;display:none;">Mot de passe incorrect</p></div></div>
 <div id="statsModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeStatsModal()">&times;</span><h3 id="statsTitle">📊 Statistiques</h3><div id="statsContent"></div></div></div>
 
 <script>
 let USERNAME = "";
 let ADMIN_HASH = "d0695d2f4b6487fb81c7047ba01d06d5065aa1a9f18f89633389e1e9b5d85fd6";
+
+function formatTime(timeStr) {
+    const [msgHour, msgMinute] = timeStr.split(':').map(Number);
+    const now = new Date();
+    const nowHour = now.getHours();
+    const nowMinute = now.getMinutes();
+    let diffMinutes = (nowHour - msgHour) * 60 + (nowMinute - msgMinute);
+    if (diffMinutes < 0) diffMinutes += 24 * 60;
+    if (diffMinutes < 1) return "à l'instant";
+    if (diffMinutes < 60) return `il y a ${diffMinutes} min`;
+    const hours = Math.floor(diffMinutes / 60);
+    if (hours < 24) return `il y a ${hours} h`;
+    const days = Math.floor(hours / 24);
+    return `il y a ${days} j`;
+}
 
 function updateAppLanguage(){
     const lang=getCurrentLanguage(),t=translations[lang];
@@ -109,63 +124,79 @@ function updateAppLanguage(){
         document.getElementById('homeText').innerHTML=t.home;
         document.getElementById('adminTitle').innerHTML="⚙️ " + t.admin_title;
         document.getElementById('statsTitle').innerHTML="📊 " + t.stats_title;
-        document.getElementById('adminPassPlaceholder').placeholder=t.admin_pass;
         document.getElementById('adminAccessBtn').innerHTML=t.admin_access;
     }
     document.getElementById('langSelect').value=getCurrentLanguage();
 }
-function changeAppLanguage(lang){setLanguage(lang);}
 
-async function updateOnline(){ try{const r=await fetch('/api/online-display'),d=await r.json();document.getElementById('onlineCount').innerText=d.online;}catch(e){} }
-function addEmoji(e){document.getElementById('chatInput').value+=e;document.getElementById('chatInput').focus();}
-function getColor(name){ let colors=['#58a6ff','#3fb950','#f0883e','#a371f7','#f85149','#d29922','#79c0ff','#7ee787']; let h=0; for(let i=0;i<name.length;i++) h=((h<<5)-h)+name.charCodeAt(i),h|=0; return colors[Math.abs(h)%colors.length]; }
-async function loadChat(){ try{const r=await fetch('/api/chat'),msgs=await r.json();const c=document.getElementById('chatMessages');c.innerHTML=msgs.map(m=>`<div class="chat-msg"><span class="chat-user" style="color:${getColor(m.user)}">${escapeHtml(m.user)}</span> ${escapeHtml(m.message)}<span class="chat-time">${formatTime(m.time)}</span></div>`).join('');c.scrollTop=c.scrollHeight;}catch(e){} }
-async function sendChat(){ if(!USERNAME){openPseudo();return;} const i=document.getElementById('chatInput'),m=i.value.trim(); if(!m)return; await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m,user:USERNAME})}); i.value='';loadChat(); }
+function changeAppLanguage(lang){ setLanguage(lang); }
 
-// ========== FONCTIONS MODIFIÉES POUR LA PERSISTANCE ==========
-function openPseudo() {
-    if (USERNAME) return;
-    
-    // Vérifier si un pseudo est sauvegardé dans localStorage
-    var savedPseudo = localStorage.getItem('rick_trading_pseudo');
-    if (savedPseudo && savedPseudo.length >= 2) {
-        USERNAME = savedPseudo;
-        fetch('/api/pseudo', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({pseudo: USERNAME})
-        }).catch(console.log);
+async function updateOnline(){
+    try{
+        const r=await fetch('/api/online-display'),d=await r.json();
+        document.getElementById('onlineCount').innerText=d.online;
+    }catch(e){}
+}
+
+function addEmoji(e){
+    document.getElementById('chatInput').value+=e;
+    document.getElementById('chatInput').focus();
+}
+
+function getColor(name){
+    let colors=['#58a6ff','#3fb950','#f0883e','#a371f7','#f85149','#d29922','#79c0ff','#7ee787'];
+    let h=0;
+    for(let i=0;i<name.length;i++) h=((h<<5)-h)+name.charCodeAt(i),h|=0;
+    return colors[Math.abs(h)%colors.length];
+}
+
+// CORRECTION : m.pseudo au lieu de m.user
+async function loadChat(){
+    try{
+        const r=await fetch('/api/chat'),msgs=await r.json();
+        const c=document.getElementById('chatMessages');
+        c.innerHTML=msgs.map(m=>`<div class="chat-msg"><span class="chat-user" style="color:${getColor(m.pseudo)}">${escapeHtml(m.pseudo)}</span> ${escapeHtml(m.message)}<span class="chat-time">${formatTime(m.time)}</span></div>`).join('');
+        c.scrollTop=c.scrollHeight;
+    }catch(e){}
+}
+
+// CORRECTION : pseudo au lieu de user dans le body
+async function sendChat(){
+    if(!USERNAME){openPseudo();return;}
+    const i=document.getElementById('chatInput'),m=i.value.trim();
+    if(!m)return;
+    await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m,pseudo:USERNAME})});
+    i.value='';
+    loadChat();
+}
+
+function openPseudo(){
+    if(USERNAME) return;
+    var savedPseudo=localStorage.getItem('rick_trading_pseudo');
+    if(savedPseudo && savedPseudo.length>=2){
+        USERNAME=savedPseudo;
+        fetch('/api/pseudo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pseudo:USERNAME})}).catch(console.log);
         return;
     }
-    
-    document.getElementById('pseudoModal').style.display = 'flex';
+    document.getElementById('pseudoModal').style.display='flex';
 }
 
 function closePseudoModal(){ document.getElementById('pseudoModal').style.display='none'; }
 
-function setPseudo() {
-    var n = document.getElementById('pseudoInput').value.trim();
-    if (n.length < 2) return;
-    
-    USERNAME = n;
-    
-    // Sauvegarder dans localStorage (persistant entre sessions)
-    localStorage.setItem('rick_trading_pseudo', USERNAME);
-    
-    fetch('/api/pseudo', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({pseudo: USERNAME})
-    });
-    
+function setPseudo(){
+    var n=document.getElementById('pseudoInput').value.trim();
+    if(n.length<2) return;
+    USERNAME=n;
+    localStorage.setItem('rick_trading_pseudo',USERNAME);
+    fetch('/api/pseudo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pseudo:USERNAME})});
     closePseudoModal();
 }
-// ========== FIN FONCTIONS MODIFIÉES ==========
 
 function escapeHtml(s){ return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 function openAdminModal(){ document.getElementById('adminModal').style.display='flex'; document.getElementById('adminPass').value=''; document.getElementById('adminError').style.display='none'; }
 function closeAdminModal(){ document.getElementById('adminModal').style.display='none'; }
 function closeStatsModal(){ document.getElementById('statsModal').style.display='none'; }
+
 async function checkAdmin(){
     const p=document.getElementById('adminPass').value;
     const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(p));
@@ -173,34 +204,22 @@ async function checkAdmin(){
     if(hx===ADMIN_HASH){
         closeAdminModal();
         const r=await fetch('/api/stats'),d=await r.json();
-        document.getElementById('statsContent').innerHTML=`<p>👥 ${t('online')}: ${d.online}</p><p>❤️ ${t('likes')}: ${d.likes}</p><p>📊 ${t('visitors')}: ${d.visitors}</p>`;
+        document.getElementById('statsContent').innerHTML=`<p>❤️ Likes: ${d.likes}</p><p>📊 Visiteurs: ${d.visitors}</p>`;
         document.getElementById('statsModal').style.display='flex';
-    }else{document.getElementById('adminError').style.display='block';}
+    }else{
+        document.getElementById('adminError').style.display='block';
+    }
 }
-const pseudoModalHtml=`<div id="pseudoModal" class="modal"><div class="pseudo-box"><span class="close-modal" onclick="closePseudoModal()">&times;</span><h3 id="welcomeTitle">👋 Bienvenue !</h3><p id="pseudoText">Choisissez un pseudo pour chatter</p><input type="text" id="pseudoInput" maxlength="20" placeholder="Pseudo"><button id="joinBtn" onclick="setPseudo()">Rejoindre le chat</button></div></div>`;
+
+const pseudoModalHtml=`<div id="pseudoModal" class="modal"><div class="pseudo-box"><span class="close-modal" onclick="closePseudoModal()">&times;</span><h3>👋 Bienvenue !</h3><p>Choisissez un pseudo pour chatter</p><input type="text" id="pseudoInput" maxlength="20" placeholder="Pseudo"><button onclick="setPseudo()">Rejoindre le chat</button></div></div>`;
 document.body.insertAdjacentHTML('beforeend',pseudoModalHtml);
-updateOnline();setInterval(updateOnline,35000);
-loadChat();setInterval(loadChat,4000);
+
+updateOnline();
+setInterval(updateOnline,35000);
+loadChat();
+setInterval(loadChat,4000);
 updateAppLanguage();
 </script>
 <script src="/static/chart.js"></script>
 </body>
 </html>
-<script>
-function formatTime(timeStr) {
-    const [msgHour, msgMinute] = timeStr.split(':').map(Number);
-    const now = new Date();
-    const nowHour = now.getHours();
-    const nowMinute = now.getMinutes();
-    
-    let diffMinutes = (nowHour - msgHour) * 60 + (nowMinute - msgMinute);
-    if (diffMinutes < 0) diffMinutes += 24 * 60;
-    
-    if (diffMinutes < 1) return "à l'instant";
-    if (diffMinutes < 60) return `il y a ${diffMinutes} min`;
-    const hours = Math.floor(diffMinutes / 60);
-    if (hours < 24) return `il y a ${hours} h`;
-    const days = Math.floor(hours / 24);
-    return `il y a ${days} j`;
-}
-</script>
