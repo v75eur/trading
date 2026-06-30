@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Rick Trading - Plateforme</title>
-<link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
 <script src="/static/translations.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -131,6 +131,12 @@ body{font-family:system-ui,'Segoe UI',Roboto,sans-serif;background:#0d1117;color
     </div>
 </div>
 
+<!-- BOUTON LIKE PERSISTANT -->
+<div class="like-container">
+    <button class="like-btn" onclick="doLike()" id="likeBtn">❤️</button>
+    <span id="likeCount">0</span>
+</div>
+
 <div id="adminModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeAdminModal()">&times;</span>
@@ -152,17 +158,14 @@ body{font-family:system-ui,'Segoe UI',Roboto,sans-serif;background:#0d1117;color
 let USERNAME = "";
 let ADMIN_HASH = "d0695d2f4b6487fb81c7047ba01d06d5065aa1a9f18f89633389e1e9b5d85fd6";
 let lastMsgCount = 0;
-let typingTimeout = null;
 let isPageVisible = true;
 
 // ====================================================
-// VISIBILITE PAGE (pour notifications)
+// VISIBILITE PAGE
 // ====================================================
 document.addEventListener('visibilitychange', function() {
     isPageVisible = !document.hidden;
-    if (isPageVisible) {
-        document.getElementById('notifBadge').style.display = 'none';
-    }
+    if (isPageVisible) document.getElementById('notifBadge').style.display = 'none';
 });
 
 // ====================================================
@@ -182,7 +185,7 @@ function formatTime(timeStr) {
 }
 
 // ====================================================
-// SON NOTIFICATION (generé par Web Audio API, sans fichier)
+// SON NOTIFICATION
 // ====================================================
 function playNotifSound() {
     try {
@@ -202,10 +205,8 @@ function playNotifSound() {
 }
 
 // ====================================================
-// INDICATEUR EN TRAIN D ECRIRE
+// TYPING INDICATOR
 // ====================================================
-let typingUsers = {};
-
 function onTyping() {
     if (!USERNAME) return;
     fetch('/api/typing', {
@@ -221,11 +222,9 @@ async function updateTyping() {
         const data = await r.json();
         const others = (data.typing || []).filter(p => p !== USERNAME);
         const el = document.getElementById('typingIndicator');
-        if (others.length > 0) {
-            el.textContent = others.join(', ') + (others.length > 1 ? ' écrivent...' : ' écrit...');
-        } else {
-            el.textContent = '';
-        }
+        el.textContent = others.length > 0
+            ? others.join(', ') + (others.length > 1 ? ' écrivent...' : ' écrit...')
+            : '';
     } catch(e) {}
 }
 
@@ -264,6 +263,27 @@ async function updateOnline() {
 }
 
 // ====================================================
+// LIKE PERSISTANT
+// ====================================================
+async function doLike() {
+    const btn = document.getElementById('likeBtn');
+    btn.style.transform = 'scale(1.4)';
+    setTimeout(() => btn.style.transform = 'scale(1)', 300);
+    try {
+        const r = await fetch('/api/like', {method: 'POST'});
+        const d = await r.json();
+        document.getElementById('likeCount').innerText = d.likes;
+    } catch(e) {}
+}
+
+async function loadLikes() {
+    try {
+        const r = await fetch('/api/stats'), d = await r.json();
+        document.getElementById('likeCount').innerText = d.likes;
+    } catch(e) {}
+}
+
+// ====================================================
 // CHAT
 // ====================================================
 function addEmoji(e) {
@@ -287,23 +307,17 @@ async function loadChat() {
         const r = await fetch('/api/chat'), msgs = await r.json();
         const c = document.getElementById('chatMessages');
         const wasAtBottom = c.scrollHeight - c.scrollTop <= c.clientHeight + 40;
-
-        // Nouveau message detecte
         if (msgs.length > lastMsgCount && lastMsgCount > 0) {
-            if (!isPageVisible) {
-                document.getElementById('notifBadge').style.display = 'inline';
-            }
+            if (!isPageVisible) document.getElementById('notifBadge').style.display = 'inline';
             playNotifSound();
         }
         lastMsgCount = msgs.length;
-
         c.innerHTML = msgs.map(m => `
             <div class="chat-msg" style="border-left-color:${getColor(m.pseudo)}">
                 <span class="chat-user" style="color:${getColor(m.pseudo)}">${escapeHtml(m.pseudo)}</span>
                 ${escapeHtml(m.message)}
                 <span class="chat-time">${formatTime(m.time)}</span>
             </div>`).join('');
-
         if (wasAtBottom) c.scrollTop = c.scrollHeight;
     } catch(e) {}
 }
@@ -381,7 +395,7 @@ async function checkAdmin() {
 }
 
 // ====================================================
-// PSEUDO MODAL HTML
+// PSEUDO MODAL
 // ====================================================
 const pseudoModalHtml = `
 <div id="pseudoModal" class="modal">
@@ -401,11 +415,12 @@ document.body.insertAdjacentHTML('beforeend', pseudoModalHtml);
 // ====================================================
 openPseudo();
 updateOnline();
-setInterval(updateOnline, 35000);
+loadLikes();
 loadChat();
+updateAppLanguage();
+setInterval(updateOnline, 35000);
 setInterval(loadChat, 4000);
 setInterval(updateTyping, 3000);
-updateAppLanguage();
 </script>
 <script src="/static/chart.js"></script>
 </body>
