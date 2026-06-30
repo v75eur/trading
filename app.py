@@ -8,20 +8,13 @@ from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
 
-STATS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'stats.json')
-PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
-SCREENSHOT_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'screenshots')
-os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
-os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
-
 # ====================================================
-# NEON DATABASE
+# NEON DATABASE - UNIQUEMENT via variable d'environnement
 # ====================================================
 
-DATABASE_URL = os.environ.get(
-    'DATABASE_URL',
-    'postgresql://neondb_owner:npg_aqF7AXVNWz8x@ep-quiet-haze-atkvj1il-pooler.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
-)
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if not DATABASE_URL:
+    raise ValueError("❌ DATABASE_URL environment variable is not set!")
 
 def get_db():
     return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
@@ -41,10 +34,22 @@ def init_db():
                     CREATE INDEX IF NOT EXISTS idx_chat_created_at ON chat (created_at);
                 """)
             conn.commit()
+            print("✅ Base de données initialisée avec succès")
     except Exception as e:
-        print(f"[DB INIT ERROR] {e}")
+        print(f"❌ [DB INIT ERROR] {e}")
 
+# Initialiser la base de données au démarrage
 init_db()
+
+# ====================================================
+# FICHIERS STATIQUES
+# ====================================================
+
+STATS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'stats.json')
+PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
+SCREENSHOT_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'screenshots')
+os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
+os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
 
 # ====================================================
 # HEURE BÉNIN
@@ -82,7 +87,7 @@ def check_business_hours():
         return render_template('maintenance.html'), 503
 
 # ====================================================
-# STATS (JSON - inchangé)
+# STATS (JSON)
 # ====================================================
 
 def load_stats():
@@ -198,6 +203,7 @@ def get_chat():
         messages = list(reversed([dict(r) for r in rows]))
         return jsonify(messages)
     except Exception as e:
+        print(f"❌ [get_chat ERROR] {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/chat', methods=['POST'])
@@ -217,6 +223,7 @@ def post_chat():
             conn.commit()
         return jsonify({"success": True})
     except Exception as e:
+        print(f"❌ [post_chat ERROR] {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/admin/clear-chat', methods=['POST'])
@@ -228,10 +235,11 @@ def clear_chat():
             conn.commit()
         return jsonify({"success": True})
     except Exception as e:
+        print(f"❌ [clear_chat ERROR] {e}")
         return jsonify({"error": str(e)}), 500
 
 # ====================================================
-# PSEUDO (JSON - inchangé)
+# PSEUDO (JSON)
 # ====================================================
 
 @app.route('/api/pseudo', methods=['POST'])
@@ -285,5 +293,18 @@ def formation4():
 def coming_soon():
     return render_template('coming-soon.html')
 
+# ====================================================
+# ERREUR 404 PERSONNALISÉE
+# ====================================================
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('maintenance.html'), 404
+
+# ====================================================
+# LANCEMENT
+# ====================================================
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)   
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
