@@ -3,49 +3,11 @@ import json, os, time, random, base64, re
 import datetime
 import pytz
 import sys
-import psycopg2
-from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
 
-# ====================================================
-# NEON DATABASE - UNIQUEMENT via variable d'environnement
-# ====================================================
-
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if not DATABASE_URL:
-    raise ValueError("❌ DATABASE_URL environment variable is not set!")
-
-def get_db():
-    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
-
-def init_db():
-    """Crée la table si elle n'existe pas encore."""
-    try:
-        with get_db() as conn:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    CREATE TABLE IF NOT EXISTS chat (
-                        id bigint generated always as identity primary key,
-                        pseudo text not null,
-                        message text not null,
-                        created_at timestamptz not null default now()
-                    );
-                    CREATE INDEX IF NOT EXISTS idx_chat_created_at ON chat (created_at);
-                """)
-            conn.commit()
-            print("✅ Base de données initialisée avec succès")
-    except Exception as e:
-        print(f"❌ [DB INIT ERROR] {e}")
-
-# Initialiser la base de données au démarrage
-init_db()
-
-# ====================================================
-# FICHIERS STATIQUES
-# ====================================================
-
 STATS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'stats.json')
+CHAT_FILE = os.path.join(os.path.dirname(__file__), 'data', 'chat.json')
 PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
 SCREENSHOT_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'screenshots')
 os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
@@ -55,14 +17,9 @@ os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
 # HEURE BÉNIN
 # ====================================================
 
-def heure_minute_benin():
-    tz = pytz.timezone('Africa/Porto-Novo')
-    now = datetime.datetime.now(tz)
-    return now.hour, now.minute
-
 def heure_benin():
-    h, _ = heure_minute_benin()
-    return h
+    tz = pytz.timezone('Africa/Porto-Novo')
+    return datetime.datetime.now(tz).hour
 
 # ====================================================
 # HEALTH CHECK - TOUJOURS 200 pour Render
@@ -70,24 +27,23 @@ def heure_benin():
 
 @app.route('/health')
 def health():
-    h, m = heure_minute_benin()
-    status = "OK - Ouvert" if (h, m) >= (7, 40) else "PAUSE - Reprise 7H40 Benin"
+    h = heure_benin()
+    status = "OK - Ouvert" if h >= 8 else "PAUSE - Reprise 8H Benin"
     return status, 200
 
 # ====================================================
-# BLOQUER VISITEURS 00H-7H40
+# BLOQUER VISITEURS 00H-8H (mais pas le health check)
 # ====================================================
 
 @app.before_request
 def check_business_hours():
+    # Ne jamais bloquer health check et ping
     if request.path in ('/health', '/api/ping'):
         return None
-    h, m = heure_minute_benin()
-    if (h, m) < (7, 40):
+    h = heure_benin()
+    if h < 8:
         return render_template('maintenance.html'), 503
 
-# ====================================================
-# STATS (JSON)
 # ====================================================
 
 def load_stats():
@@ -99,6 +55,18 @@ def load_stats():
 def save_stats(s):
     with open(STATS_FILE, 'w') as f:
         json.dump(s, f)
+
+def load_chat():
+    if os.path.exists(CHAT_FILE):
+        with open(CHAT_FILE, 'r') as f:
+            return json.load(f)
+    return []
+
+def save_chat(messages):
+    if len(messages) > 30:
+        messages = messages[-30:]
+    with open(CHAT_FILE, 'w') as f:
+        json.dump(messages, f)
 
 def load_pseudos():
     if os.path.exists(PSEUDOS_FILE):
@@ -178,33 +146,10 @@ def upload_screenshot():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ====================================================
-# CHAT — Neon PostgreSQL
-# ====================================================
-
 @app.route('/api/chat', methods=['GET'])
 def get_chat():
-    try:
-        with get_db() as conn:
-            with conn.cursor() as cur:
-                # Purge automatique des messages > 30 jours
-                cur.execute("DELETE FROM chat WHERE created_at < now() - interval '30 days'")
-                # Récupère les 30 derniers messages
-                cur.execute("""
-                    SELECT pseudo, message,
-                           to_char(created_at AT TIME ZONE 'Africa/Porto-Novo', 'HH24:MI') AS time
-                    FROM chat
-                    ORDER BY created_at DESC
-                    LIMIT 30
-                """)
-                rows = cur.fetchall()
-            conn.commit()
-        # On retourne du plus ancien au plus récent
-        messages = list(reversed([dict(r) for r in rows]))
-        return jsonify(messages)
-    except Exception as e:
-        print(f"❌ [get_chat ERROR] {e}")
-        return jsonify({"error": str(e)}), 500
+    messages = load_chat()
+    return jsonify(messages)
 
 @app.route('/api/chat', methods=['POST'])
 def post_chat():
@@ -213,34 +158,14 @@ def post_chat():
         return jsonify({"error": "missing fields"}), 400
     pseudo = data['pseudo'][:20]
     message = data['message'][:200]
-    try:
-        with get_db() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    "INSERT INTO chat (pseudo, message) VALUES (%s, %s)",
-                    (pseudo, message)
-                )
-            conn.commit()
-        return jsonify({"success": True})
-    except Exception as e:
-        print(f"❌ [post_chat ERROR] {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/admin/clear-chat', methods=['POST'])
-def clear_chat():
-    try:
-        with get_db() as conn:
-            with conn.cursor() as cur:
-                cur.execute("DELETE FROM chat")
-            conn.commit()
-        return jsonify({"success": True})
-    except Exception as e:
-        print(f"❌ [clear_chat ERROR] {e}")
-        return jsonify({"error": str(e)}), 500
-
-# ====================================================
-# PSEUDO (JSON)
-# ====================================================
+    messages = load_chat()
+    messages.append({
+        'pseudo': pseudo,
+        'message': message,
+        'time': time.strftime('%H:%M')
+    })
+    save_chat(messages)
+    return jsonify({"success": True})
 
 @app.route('/api/pseudo', methods=['POST'])
 def set_pseudo():
@@ -261,9 +186,10 @@ def get_pseudo():
     pseudos = load_pseudos()
     return jsonify({"pseudo": pseudos.get(ip, None)})
 
-# ====================================================
-# PAGES
-# ====================================================
+@app.route('/api/admin/clear-chat', methods=['POST'])
+def clear_chat():
+    save_chat([])
+    return jsonify({"success": True})
 
 @app.route('/app')
 def app_page():
@@ -293,18 +219,5 @@ def formation4():
 def coming_soon():
     return render_template('coming-soon.html')
 
-# ====================================================
-# ERREUR 404 PERSONNALISÉE
-# ====================================================
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('maintenance.html'), 404
-
-# ====================================================
-# LANCEMENT
-# ====================================================
-
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=5000)
