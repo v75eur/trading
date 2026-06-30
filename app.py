@@ -3,12 +3,22 @@ import json, os, time, random, base64, re
 import datetime
 import pytz
 import sys
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
 
 STATS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'stats.json')
-CHAT_FILE = os.path.join(os.path.dirname(__file__), 'data', 'chat.json')
 PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
+
+# ====================================================
+# CONNEXION BASE DE DONNEES (Neon Postgres) - persistant
+# ====================================================
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+def get_db_connection():
+    return psycopg2.connect(DATABASE_URL, sslmode='require')
 SCREENSHOT_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'screenshots')
 os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
 os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
@@ -17,9 +27,14 @@ os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
 # HEURE BÉNIN
 # ====================================================
 
-def heure_benin():
+def heure_minute_benin():
     tz = pytz.timezone('Africa/Porto-Novo')
-    return datetime.datetime.now(tz).hour
+    now = datetime.datetime.now(tz)
+    return now.hour, now.minute
+
+def heure_benin():
+    h, _ = heure_minute_benin()
+    return h
 
 # ====================================================
 # HEALTH CHECK - TOUJOURS 200 pour Render
@@ -27,21 +42,21 @@ def heure_benin():
 
 @app.route('/health')
 def health():
-    h = heure_benin()
-    status = "OK - Ouvert" if h >= 8 else "PAUSE - Reprise 8H Benin"
+    h, m = heure_minute_benin()
+    status = "OK - Ouvert" if (h, m) >= (7, 40) else "PAUSE - Reprise 7H40 Benin"
     return status, 200
 
 # ====================================================
-# BLOQUER VISITEURS 00H-8H (mais pas le health check)
+# BLOQUER VISITEURS 00H-7H40 (mais pas le health check / ping)
 # ====================================================
 
 @app.before_request
 def check_business_hours():
-    # Ne jamais bloquer health check et ping
+    # Ne jamais bloquer health check et ping (gardent le service eveille)
     if request.path in ('/health', '/api/ping'):
         return None
-    h = heure_benin()
-    if h < 8:
+    h, m = heure_minute_benin()
+    if (h, m) < (7, 40):
         return render_template('maintenance.html'), 503
 
 # ====================================================
@@ -57,16 +72,44 @@ def save_stats(s):
         json.dump(s, f)
 
 def load_chat():
-    if os.path.exists(CHAT_FILE):
-        with open(CHAT_FILE, 'r') as f:
-            return json.load(f)
-    return []
+    """Recupere les messages des 3 derniers jours depuis Postgres (Neon)."""
+    conn = get_db_connection()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            # Supprime automatiquement les messages de plus de 3 jours
+            cur.execute("DELETE FROM chat WHERE created_at < now() - interval '3 days';")
+            cur.execute("""
+                SELECT pseudo, message, to_char(created_at, 'HH24:MI') AS time
+                FROM chat
+                ORDER BY created_at ASC;
+            """)
+            rows = cur.fetchall()
+            conn.commit()
+            return [dict(r) for r in rows]
+    finally:
+        conn.close()
 
-def save_chat(messages):
-    if len(messages) > 30:
-        messages = messages[-30:]
-    with open(CHAT_FILE, 'w') as f:
-        json.dump(messages, f)
+def save_chat_message(pseudo, message):
+    """Insere un nouveau message dans Postgres (Neon)."""
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO chat (pseudo, message) VALUES (%s, %s);",
+                (pseudo, message)
+            )
+            conn.commit()
+    finally:
+        conn.close()
+
+def clear_all_chat():
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM chat;")
+            conn.commit()
+    finally:
+        conn.close()
 
 def load_pseudos():
     if os.path.exists(PSEUDOS_FILE):
@@ -158,13 +201,7 @@ def post_chat():
         return jsonify({"error": "missing fields"}), 400
     pseudo = data['pseudo'][:20]
     message = data['message'][:200]
-    messages = load_chat()
-    messages.append({
-        'pseudo': pseudo,
-        'message': message,
-        'time': time.strftime('%H:%M')
-    })
-    save_chat(messages)
+    save_chat_message(pseudo, message)
     return jsonify({"success": True})
 
 @app.route('/api/pseudo', methods=['POST'])
@@ -188,7 +225,7 @@ def get_pseudo():
 
 @app.route('/api/admin/clear-chat', methods=['POST'])
 def clear_chat():
-    save_chat([])
+    clear_all_chat()
     return jsonify({"success": True})
 
 @app.route('/app')
