@@ -17,9 +17,14 @@ os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
 # HEURE BÉNIN
 # ====================================================
 
-def heure_benin():
+def heure_minute_benin():
     tz = pytz.timezone('Africa/Porto-Novo')
-    return datetime.datetime.now(tz).hour
+    now = datetime.datetime.now(tz)
+    return now.hour, now.minute
+
+def heure_benin():
+    h, _ = heure_minute_benin()
+    return h
 
 # ====================================================
 # HEALTH CHECK - TOUJOURS 200 pour Render
@@ -27,21 +32,21 @@ def heure_benin():
 
 @app.route('/health')
 def health():
-    h = heure_benin()
-    status = "OK - Ouvert" if h >= 8 else "PAUSE - Reprise 8H Benin"
+    h, m = heure_minute_benin()
+    status = "OK - Ouvert" if (h, m) >= (7, 40) else "PAUSE - Reprise 7H40 Benin"
     return status, 200
 
 # ====================================================
-# BLOQUER VISITEURS 00H-8H (mais pas le health check)
+# BLOQUER VISITEURS 00H-7H40 (mais pas le health check / ping)
 # ====================================================
 
 @app.before_request
 def check_business_hours():
-    # Ne jamais bloquer health check et ping
+    # Ne jamais bloquer health check et ping (gardent le service eveille)
     if request.path in ('/health', '/api/ping'):
         return None
-    h = heure_benin()
-    if h < 8:
+    h, m = heure_minute_benin()
+    if (h, m) < (7, 40):
         return render_template('maintenance.html'), 503
 
 # ====================================================
