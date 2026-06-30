@@ -8,8 +8,10 @@ from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
 
-STATS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'stats.json')
 PSEUDOS_FILE = os.path.join(os.path.dirname(__file__), 'data', 'pseudos.json')
+SCREENSHOT_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'screenshots')
+os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
+os.makedirs(os.path.join(os.path.dirname(__file__), 'data'), exist_ok=True)
 
 # ====================================================
 # CONNEXION BASE DE DONNEES (Neon Postgres) - persistant
@@ -19,12 +21,50 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='require')
-SCREENSHOT_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'screenshots')
-os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
-os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
+
+def init_db():
+    """Cree les tables si elles n'existent pas."""
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS chat (
+                    id bigint generated always as identity primary key,
+                    pseudo text not null,
+                    message text not null,
+                    created_at timestamptz not null default now()
+                );
+            """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS stats (
+                    key text primary key,
+                    value integer not null default 0
+                );
+            """)
+            cur.execute("""
+                INSERT INTO stats (key, value) VALUES ('likes', 112)
+                ON CONFLICT (key) DO NOTHING;
+            """)
+            cur.execute("""
+                INSERT INTO stats (key, value) VALUES ('visitors', 0)
+                ON CONFLICT (key) DO NOTHING;
+            """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS liked_ips (
+                    ip text primary key
+                );
+            """)
+            conn.commit()
+    finally:
+        conn.close()
+
+try:
+    init_db()
+except Exception as e:
+    print(f"[WARN] init_db failed: {e}")
 
 # ====================================================
-# HEURE BÉNIN
+# HEURE BENIN
 # ====================================================
 
 def heure_minute_benin():
@@ -52,7 +92,6 @@ def health():
 
 @app.before_request
 def check_business_hours():
-    # Ne jamais bloquer health check et ping (gardent le service eveille)
     if request.path in ('/health', '/api/ping'):
         return None
     h, m = heure_minute_benin()
@@ -60,28 +99,17 @@ def check_business_hours():
         return render_template('maintenance.html'), 503
 
 # ====================================================
-
-def load_stats():
-    if os.path.exists(STATS_FILE):
-        with open(STATS_FILE, 'r') as f:
-            return json.load(f)
-    return {'likes': 112, 'visitors': 0, 'online': {}, 'liked_ips': []}
-
-def save_stats(s):
-    with open(STATS_FILE, 'w') as f:
-        json.dump(s, f)
+# CHAT - Neon Postgres persistant, rotation 3 jours
+# ====================================================
 
 def load_chat():
-    """Recupere les messages des 3 derniers jours depuis Postgres (Neon)."""
     conn = get_db_connection()
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            # Supprime automatiquement les messages de plus de 3 jours
             cur.execute("DELETE FROM chat WHERE created_at < now() - interval '3 days';")
             cur.execute("""
-                SELECT pseudo, message, to_char(created_at, 'HH24:MI') AS time
-                FROM chat
-                ORDER BY created_at ASC;
+                SELECT pseudo, message, to_char(created_at AT TIME ZONE 'Africa/Porto-Novo', 'HH24:MI') AS time
+                FROM chat ORDER BY created_at ASC;
             """)
             rows = cur.fetchall()
             conn.commit()
@@ -90,7 +118,6 @@ def load_chat():
         conn.close()
 
 def save_chat_message(pseudo, message):
-    """Insere un nouveau message dans Postgres (Neon)."""
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
@@ -111,11 +138,58 @@ def clear_all_chat():
     finally:
         conn.close()
 
+# ====================================================
+# STATS - Neon Postgres persistant
+# ====================================================
+
+def get_stat(key):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT value FROM stats WHERE key=%s;", (key,))
+            row = cur.fetchone()
+            return row[0] if row else 0
+    finally:
+        conn.close()
+
+def increment_stat(key, amount=1):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO stats (key, value) VALUES (%s, %s)
+                ON CONFLICT (key) DO UPDATE SET value = stats.value + %s;
+            """, (key, amount, amount))
+            conn.commit()
+    finally:
+        conn.close()
+
+def check_and_add_liked_ip(ip):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT ip FROM liked_ips WHERE ip=%s;", (ip,))
+            if cur.fetchone():
+                return False
+            cur.execute("INSERT INTO liked_ips (ip) VALUES (%s);", (ip,))
+            conn.commit()
+            return True
+    finally:
+        conn.close()
+
+# ====================================================
+# PSEUDOS (fichier local - pas critique)
+# ====================================================
+
 def load_pseudos():
     if os.path.exists(PSEUDOS_FILE):
         with open(PSEUDOS_FILE, 'r') as f:
             return json.load(f)
     return {}
+
+# ====================================================
+# ONLINE CACHE
+# ====================================================
 
 online_cache = {"value": 12, "last_update": 0}
 
@@ -124,15 +198,13 @@ def online_display():
     global online_cache
     now = time.time()
     if now - online_cache["last_update"] > 35:
-        stats = load_stats()
-        real_online = len([k for k, v in stats.get('online', {}).items() if now - v < 300])
         h = heure_benin()
         if h < 8: fake = 0
         elif h < 12: fake = random.randint(5, 12)
         elif h < 18: fake = random.randint(8, 18)
         elif h < 24: fake = random.randint(10, 22)
         else: fake = random.randint(4, 10)
-        online_cache["value"] = real_online + fake
+        online_cache["value"] = fake
         online_cache["last_update"] = now
     return jsonify({"online": online_cache["value"]})
 
@@ -142,33 +214,27 @@ def ping():
 
 @app.route('/api/stats')
 def stats():
-    stats = load_stats()
-    return jsonify({"likes": stats.get('likes', 0), "visitors": stats.get('visitors', 0)})
+    likes = get_stat('likes')
+    visitors = get_stat('visitors')
+    return jsonify({"likes": likes, "visitors": visitors})
 
 @app.route('/api/like', methods=['POST'])
 def like():
     ip = request.remote_addr
-    stats = load_stats()
-    liked = stats.get('liked_ips', [])
-    if ip in liked:
-        return jsonify({"liked": True, "likes": stats.get('likes', 0)})
-    liked.append(ip)
-    stats['likes'] = stats.get('likes', 0) + 1
-    stats['liked_ips'] = liked
-    save_stats(stats)
-    return jsonify({"liked": True, "likes": stats['likes']})
+    added = check_and_add_liked_ip(ip)
+    if added:
+        increment_stat('likes')
+    likes = get_stat('likes')
+    return jsonify({"liked": True, "likes": likes})
 
 @app.route('/api/visit', methods=['POST'])
 def visit():
-    ip = request.remote_addr
-    stats = load_stats()
-    stats['visitors'] = stats.get('visitors', 0) + 1
-    now = time.time()
-    if 'online' not in stats: stats['online'] = {}
-    stats['online'][ip] = now
-    stats['online'] = {k: v for k, v in stats['online'].items() if now - v < 300}
-    save_stats(stats)
+    increment_stat('visitors')
     return jsonify({"ok": True})
+
+# ====================================================
+# SCREENSHOT
+# ====================================================
 
 @app.route('/api/screenshot', methods=['POST'])
 def upload_screenshot():
@@ -188,6 +254,15 @@ def upload_screenshot():
         return jsonify({"success": True, "filename": filename})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# Alias pour corriger le 404 de l'ancien JS
+@app.route('/api/chart-screenshot', methods=['GET', 'POST'])
+def chart_screenshot_alias():
+    return jsonify({"success": True, "filename": None})
+
+# ====================================================
+# CHAT ROUTES
+# ====================================================
 
 @app.route('/api/chat', methods=['GET'])
 def get_chat():
@@ -227,6 +302,43 @@ def get_pseudo():
 def clear_chat():
     clear_all_chat()
     return jsonify({"success": True})
+
+
+# ====================================================
+# TYPING INDICATOR
+# ====================================================
+
+typing_cache = {}
+
+@app.route('/api/typing', methods=['POST'])
+def set_typing():
+    data = request.json
+    if not data or 'pseudo' not in data:
+        return jsonify({"error": "missing pseudo"}), 400
+    pseudo = data['pseudo'][:20]
+    typing_cache[pseudo] = time.time()
+    return jsonify({"success": True})
+
+@app.route('/api/typing', methods=['GET'])
+def get_typing():
+    now = time.time()
+    # Garder seulement les gens qui ont tapé dans les 4 dernières secondes
+    active = [p for p, t in typing_cache.items() if now - t < 4]
+    return jsonify({"typing": active})
+
+# ====================================================
+# FAVICON
+# ====================================================
+
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file('favicon.ico') if os.path.exists(
+        os.path.join(os.path.dirname(__file__), 'static', 'favicon.ico')
+    ) else ('', 204)
+
+# ====================================================
+# PAGES
+# ====================================================
 
 @app.route('/app')
 def app_page():

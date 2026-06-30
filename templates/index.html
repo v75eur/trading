@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Rick Trading - Plateforme</title>
+<link rel="icon" href="/static/favicon.ico" type="image/x-icon">
 <script src="/static/translations.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -15,7 +16,8 @@ body{font-family:system-ui,'Segoe UI',Roboto,sans-serif;background:#0d1117;color
 .price-live{font-weight:bold;color:#3fb950;min-width:90px}
 .right-header{display:flex;align-items:center;gap:15px}
 .online-indicator{display:flex;align-items:center;gap:6px;background:#1e293b;padding:4px 12px;border-radius:30px;font-size:0.85rem}
-.online-dot{width:8px;height:8px;background:#3fb950;border-radius:50%;box-shadow:0 0 4px #3fb950}
+.online-dot{width:8px;height:8px;background:#3fb950;border-radius:50%;box-shadow:0 0 4px #3fb950;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 .lang-select{background:#21262d;color:#f59e0b;border:1px solid #f59e0b;border-radius:6px;padding:5px 10px;cursor:pointer}
 .main-layout{display:flex;flex:1;overflow:hidden}
 .chart-area{flex:1;display:flex;flex-direction:column}
@@ -23,26 +25,33 @@ body{font-family:system-ui,'Segoe UI',Roboto,sans-serif;background:#0d1117;color
 .chart-info{background:#161b22;padding:6px 15px;display:flex;gap:20px;font-size:0.75rem;border-top:1px solid #30363d;flex-wrap:wrap}
 .chart-info span{background:#0d1117;padding:3px 10px;border-radius:20px}
 .chat-panel{width:320px;background:#161b22;border-left:1px solid #30363d;display:flex;flex-direction:column}
-.chat-header{background:#21262d;padding:10px;text-align:center;font-weight:bold;color:#58a6ff;border-bottom:1px solid #30363d}
-.chat-messages{flex:1;overflow-y:auto;padding:10px}
-.chat-msg{background:#0d1117;padding:6px 10px;margin:5px 0;border-radius:10px;font-size:0.85rem}
+.chat-header{background:#21262d;padding:10px;text-align:center;font-weight:bold;color:#58a6ff;border-bottom:1px solid #30363d;display:flex;align-items:center;justify-content:center;gap:8px}
+.chat-messages{flex:1;overflow-y:auto;padding:10px;scroll-behavior:smooth}
+.chat-msg{background:#0d1117;padding:8px 12px;margin:5px 0;border-radius:12px;font-size:0.85rem;border-left:3px solid transparent;animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.chat-msg:hover{background:#161b22}
 .chat-user{font-weight:bold;margin-right:6px}
-.chat-time{color:#666;font-size:0.7rem;margin-left:6px}
+.chat-time{color:#555;font-size:0.7rem;margin-left:6px}
+.chat-typing{color:#555;font-size:0.78rem;padding:4px 10px;font-style:italic;min-height:22px}
 .chat-input-area{padding:10px;border-top:1px solid #30363d}
-.chat-input-area input{width:100%;background:#0d1117;border:1px solid #30363d;padding:8px;border-radius:25px;color:white;margin-bottom:6px}
-.chat-input-area button{width:100%;background:#58a6ff;color:#0d1117;border:none;padding:6px;border-radius:25px;font-weight:bold;cursor:pointer}
+.chat-input-area input{width:100%;background:#0d1117;border:1px solid #30363d;padding:8px 14px;border-radius:25px;color:white;margin-bottom:6px;transition:border-color 0.2s}
+.chat-input-area input:focus{outline:none;border-color:#58a6ff}
+.chat-input-area button{width:100%;background:#58a6ff;color:#0d1117;border:none;padding:8px;border-radius:25px;font-weight:bold;cursor:pointer;transition:background 0.2s}
+.chat-input-area button:hover{background:#79c0ff}
 .emoji-bar{display:flex;gap:5px;margin-bottom:6px;justify-content:center}
-.emoji-bar button{background:#21262d;border:none;font-size:1.1rem;padding:3px 6px;border-radius:8px;cursor:pointer}
-.like-container{position:fixed;bottom:20px;right:340px;display:flex;align-items:center;gap:8px;background:rgba(22,27,34,0.9);padding:5px 10px;border-radius:50px;z-index:100}
-.like-btn{background:#f85149;border:none;color:white;font-size:1rem;width:30px;height:30px;border-radius:50%;cursor:pointer}
-#adminTrigger{position:fixed;bottom:15px;left:15px;width:30px;height:30px;background:#21262d;border:1px solid #30363d;border-radius:50%;color:#8b949e;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200}
+.emoji-bar button{background:#21262d;border:none;font-size:1.1rem;padding:3px 6px;border-radius:8px;cursor:pointer;transition:transform 0.1s}
+.emoji-bar button:hover{transform:scale(1.2)}
+.like-container{position:fixed;bottom:20px;right:340px;display:flex;align-items:center;gap:8px;background:rgba(22,27,34,0.95);padding:5px 12px;border-radius:50px;z-index:100;border:1px solid #30363d}
+.like-btn{background:#f85149;border:none;color:white;font-size:1rem;width:30px;height:30px;border-radius:50%;cursor:pointer;transition:transform 0.2s}
+.like-btn:hover{transform:scale(1.15)}
 .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10001;display:none;justify-content:center;align-items:center}
 .modal-content{background:#1a1a2e;border:1px solid #f59e0b;border-radius:16px;padding:25px;width:320px;text-align:center;position:relative}
 .close-modal{position:absolute;top:10px;right:15px;font-size:20px;cursor:pointer;color:#8b949e}
 .pseudo-box{background:#1a1a2e;border:2px solid #58a6ff;border-radius:20px;padding:25px;width:320px;text-align:center;position:relative}
 .pseudo-box input{width:100%;padding:10px;margin:10px 0;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:white}
 .pseudo-box button{background:linear-gradient(135deg,#58a6ff,#3fb950);color:white;border:none;padding:10px;border-radius:8px;cursor:pointer;width:100%;font-weight:bold}
-@media (max-width:700px){.chat-panel{width:280px}.like-container{right:300px}}
+.notif-badge{background:#f85149;color:white;border-radius:50%;padding:1px 6px;font-size:0.7rem;display:none}
+@media(max-width:700px){.chat-panel{width:280px}.like-container{right:295px}}
 </style>
 </head>
 <body>
@@ -51,17 +60,38 @@ body{font-family:system-ui,'Segoe UI',Roboto,sans-serif;background:#0d1117;color
     <div class="logo" id="appTitle"></div>
     <div class="controls">
         <a href="/" class="home-btn" id="homeBtn">🏠 <span id="homeText"></span></a>
-        <select id="sym" onchange="changeSymbol()"><option value="R_75">Volatility 75</option><option value="frxEURUSD">EUR/USD</option><option value="frxXAUUSD">XAU/USD</option></select>
-        <select id="tf" onchange="changeTF()"><option value="5">M5</option><option value="15">M15</option><option value="60">H1</option><option value="240">H4</option></select>
+        <select id="sym" onchange="changeSymbol()">
+            <option value="R_75">Volatility 75</option>
+            <option value="frxEURUSD">EUR/USD</option>
+            <option value="frxXAUUSD">XAU/USD</option>
+        </select>
+        <select id="tf" onchange="changeTF()">
+            <option value="5">M5</option>
+            <option value="15">M15</option>
+            <option value="60">H1</option>
+            <option value="240">H4</option>
+        </select>
         <span class="price-live" id="price">---</span>
-        <button onclick="zoomIn()">+</button><button onclick="zoomOut()">-</button><button onclick="resetZoom()">↺</button>
+        <button onclick="zoomIn()">+</button>
+        <button onclick="zoomOut()">-</button>
+        <button onclick="resetZoom()">↺</button>
     </div>
     <div class="right-header">
-        <div class="online-indicator"><span class="online-dot"></span><span id="onlineCount">0</span><span id="onlineLabel"></span></div>
+        <div class="online-indicator">
+            <span class="online-dot"></span>
+            <span id="onlineCount">0</span>
+            <span id="onlineLabel"></span>
+        </div>
         <select id="langSelect" class="lang-select" onchange="changeAppLanguage(this.value)">
-            <option value="fr">🇫🇷 FR</option><option value="en">🇬🇧 EN</option><option value="es">🇪🇸 ES</option>
-            <option value="pt">🇵🇹 PT</option><option value="ru">🇷🇺 RU</option><option value="it">🇮🇹 IT</option>
-            <option value="de">🇩🇪 DE</option><option value="zh">🇨🇳 中文</option><option value="ja">🇯🇵 JP</option>
+            <option value="fr">🇫🇷 FR</option>
+            <option value="en">🇬🇧 EN</option>
+            <option value="es">🇪🇸 ES</option>
+            <option value="pt">🇵🇹 PT</option>
+            <option value="ru">🇷🇺 RU</option>
+            <option value="it">🇮🇹 IT</option>
+            <option value="de">🇩🇪 DE</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 JP</option>
         </select>
     </div>
 </div>
@@ -76,148 +106,305 @@ body{font-family:system-ui,'Segoe UI',Roboto,sans-serif;background:#0d1117;color
             <span id="statsInfo"><span id="statsLabel"></span>: <span id="statsValue">--</span></span>
         </div>
     </div>
+
     <div class="chat-panel">
-        <div class="chat-header"><span id="chatTitle"></span></div>
+        <div class="chat-header">
+            <span id="chatTitle"></span>
+            <span class="notif-badge" id="notifBadge">!</span>
+        </div>
         <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-typing" id="typingIndicator"></div>
         <div class="chat-input-area">
-            <div class="emoji-bar"><button onclick="addEmoji('🚀')">🚀</button><button onclick="addEmoji('📈')">📈</button><button onclick="addEmoji('📉')">📉</button><button onclick="addEmoji('💰')">💰</button><button onclick="addEmoji('🔥')">🔥</button></div>
-            <input type="text" id="chatInput" placeholder="" onkeypress="if(event.key==='Enter')sendChat()" onclick="openPseudo()">
+            <div class="emoji-bar">
+                <button onclick="addEmoji('🚀')">🚀</button>
+                <button onclick="addEmoji('📈')">📈</button>
+                <button onclick="addEmoji('📉')">📉</button>
+                <button onclick="addEmoji('💰')">💰</button>
+                <button onclick="addEmoji('🔥')">🔥</button>
+            </div>
+            <input type="text" id="chatInput" placeholder=""
+                onkeypress="if(event.key==='Enter')sendChat()"
+                oninput="onTyping()"
+                onclick="openPseudo()">
             <button id="sendBtn" onclick="sendChat()"></button>
         </div>
     </div>
 </div>
 
-<div id="adminModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeAdminModal()">&times;</span><h3 id="adminTitle">⚙️ Admin</h3><input type="password" id="adminPass" placeholder="Mot de passe"><button id="adminAccessBtn" onclick="checkAdmin()">🔓 Accéder</button><p id="adminError" style="color:#f85149;display:none;">Mot de passe incorrect</p></div></div>
-<div id="statsModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeStatsModal()">&times;</span><h3 id="statsTitle">📊 Statistiques</h3><div id="statsContent"></div></div></div>
+<div id="adminModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeAdminModal()">&times;</span>
+        <h3 id="adminTitle">⚙️ Admin</h3>
+        <input type="password" id="adminPass" placeholder="Mot de passe">
+        <button id="adminAccessBtn" onclick="checkAdmin()">🔓 Accéder</button>
+        <p id="adminError" style="color:#f85149;display:none;">Mot de passe incorrect</p>
+    </div>
+</div>
+<div id="statsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeStatsModal()">&times;</span>
+        <h3 id="statsTitle">📊 Statistiques</h3>
+        <div id="statsContent"></div>
+    </div>
+</div>
 
 <script>
 let USERNAME = "";
 let ADMIN_HASH = "d0695d2f4b6487fb81c7047ba01d06d5065aa1a9f18f89633389e1e9b5d85fd6";
+let lastMsgCount = 0;
+let typingTimeout = null;
+let isPageVisible = true;
 
+// ====================================================
+// VISIBILITE PAGE (pour notifications)
+// ====================================================
+document.addEventListener('visibilitychange', function() {
+    isPageVisible = !document.hidden;
+    if (isPageVisible) {
+        document.getElementById('notifBadge').style.display = 'none';
+    }
+});
+
+// ====================================================
+// FORMAT TEMPS
+// ====================================================
 function formatTime(timeStr) {
+    if (!timeStr) return '';
     const [msgHour, msgMinute] = timeStr.split(':').map(Number);
     const now = new Date();
-    const nowHour = now.getHours();
-    const nowMinute = now.getMinutes();
-    let diffMinutes = (nowHour - msgHour) * 60 + (nowMinute - msgMinute);
+    let diffMinutes = (now.getHours() - msgHour) * 60 + (now.getMinutes() - msgMinute);
     if (diffMinutes < 0) diffMinutes += 24 * 60;
     if (diffMinutes < 1) return "à l'instant";
     if (diffMinutes < 60) return `il y a ${diffMinutes} min`;
     const hours = Math.floor(diffMinutes / 60);
-    if (hours < 24) return `il y a ${hours} h`;
-    const days = Math.floor(hours / 24);
-    return `il y a ${days} j`;
+    if (hours < 24) return `il y a ${hours}h`;
+    return `il y a ${Math.floor(hours / 24)}j`;
 }
 
-function updateAppLanguage(){
-    const lang=getCurrentLanguage(),t=translations[lang];
-    if(t){
-        document.getElementById('appTitle').innerHTML=t.app_title;
-        document.getElementById('canalLabel').innerHTML=t.canal;
-        document.getElementById('srLabel').innerHTML=t.sr;
-        document.getElementById('signalsLabel').innerHTML=t.signals;
-        document.getElementById('statsLabel').innerHTML=t.stats;
-        document.getElementById('chatTitle').innerHTML=t.chat_title;
-        document.getElementById('chatInput').placeholder=t.chat_placeholder;
-        document.getElementById('sendBtn').innerHTML=t.chat_send;
-        document.getElementById('onlineLabel').innerHTML=t.online;
-        document.getElementById('homeText').innerHTML=t.home;
-        document.getElementById('adminTitle').innerHTML="⚙️ " + t.admin_title;
-        document.getElementById('statsTitle').innerHTML="📊 " + t.stats_title;
-        document.getElementById('adminAccessBtn').innerHTML=t.admin_access;
+// ====================================================
+// SON NOTIFICATION (generé par Web Audio API, sans fichier)
+// ====================================================
+function playNotifSound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.3);
+    } catch(e) {}
+}
+
+// ====================================================
+// INDICATEUR EN TRAIN D ECRIRE
+// ====================================================
+let typingUsers = {};
+
+function onTyping() {
+    if (!USERNAME) return;
+    fetch('/api/typing', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({pseudo: USERNAME})
+    }).catch(() => {});
+}
+
+async function updateTyping() {
+    try {
+        const r = await fetch('/api/typing');
+        const data = await r.json();
+        const others = (data.typing || []).filter(p => p !== USERNAME);
+        const el = document.getElementById('typingIndicator');
+        if (others.length > 0) {
+            el.textContent = others.join(', ') + (others.length > 1 ? ' écrivent...' : ' écrit...');
+        } else {
+            el.textContent = '';
+        }
+    } catch(e) {}
+}
+
+// ====================================================
+// LANGUE
+// ====================================================
+function updateAppLanguage() {
+    const lang = getCurrentLanguage(), t = translations[lang];
+    if (t) {
+        document.getElementById('appTitle').innerHTML = t.app_title;
+        document.getElementById('canalLabel').innerHTML = t.canal;
+        document.getElementById('srLabel').innerHTML = t.sr;
+        document.getElementById('signalsLabel').innerHTML = t.signals;
+        document.getElementById('statsLabel').innerHTML = t.stats;
+        document.getElementById('chatTitle').innerHTML = t.chat_title;
+        document.getElementById('chatInput').placeholder = t.chat_placeholder;
+        document.getElementById('sendBtn').innerHTML = t.chat_send;
+        document.getElementById('onlineLabel').innerHTML = t.online;
+        document.getElementById('homeText').innerHTML = t.home;
+        document.getElementById('adminTitle').innerHTML = "⚙️ " + t.admin_title;
+        document.getElementById('statsTitle').innerHTML = "📊 " + t.stats_title;
+        document.getElementById('adminAccessBtn').innerHTML = t.admin_access;
     }
-    document.getElementById('langSelect').value=getCurrentLanguage();
+    document.getElementById('langSelect').value = getCurrentLanguage();
+}
+function changeAppLanguage(lang) { setLanguage(lang); }
+
+// ====================================================
+// ONLINE
+// ====================================================
+async function updateOnline() {
+    try {
+        const r = await fetch('/api/online-display'), d = await r.json();
+        document.getElementById('onlineCount').innerText = d.online;
+    } catch(e) {}
 }
 
-function changeAppLanguage(lang){ setLanguage(lang); }
-
-async function updateOnline(){
-    try{
-        const r=await fetch('/api/online-display'),d=await r.json();
-        document.getElementById('onlineCount').innerText=d.online;
-    }catch(e){}
-}
-
-function addEmoji(e){
-    document.getElementById('chatInput').value+=e;
+// ====================================================
+// CHAT
+// ====================================================
+function addEmoji(e) {
+    document.getElementById('chatInput').value += e;
     document.getElementById('chatInput').focus();
 }
 
-function getColor(name){
-    let colors=['#58a6ff','#3fb950','#f0883e','#a371f7','#f85149','#d29922','#79c0ff','#7ee787'];
-    let h=0;
-    for(let i=0;i<name.length;i++) h=((h<<5)-h)+name.charCodeAt(i),h|=0;
-    return colors[Math.abs(h)%colors.length];
+function getColor(name) {
+    const colors = ['#58a6ff','#3fb950','#f0883e','#a371f7','#f85149','#d29922','#79c0ff','#7ee787'];
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = ((h << 5) - h) + name.charCodeAt(i), h |= 0;
+    return colors[Math.abs(h) % colors.length];
 }
 
-// CORRECTION : m.pseudo au lieu de m.user
-async function loadChat(){
-    try{
-        const r=await fetch('/api/chat'),msgs=await r.json();
-        const c=document.getElementById('chatMessages');
-        c.innerHTML=msgs.map(m=>`<div class="chat-msg"><span class="chat-user" style="color:${getColor(m.pseudo)}">${escapeHtml(m.pseudo)}</span> ${escapeHtml(m.message)}<span class="chat-time">${formatTime(m.time)}</span></div>`).join('');
-        c.scrollTop=c.scrollHeight;
-    }catch(e){}
+function escapeHtml(s) {
+    return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
 }
 
-// CORRECTION : pseudo au lieu de user dans le body
-async function sendChat(){
-    if(!USERNAME){openPseudo();return;}
-    const i=document.getElementById('chatInput'),m=i.value.trim();
-    if(!m)return;
-    await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m,pseudo:USERNAME})});
-    i.value='';
+async function loadChat() {
+    try {
+        const r = await fetch('/api/chat'), msgs = await r.json();
+        const c = document.getElementById('chatMessages');
+        const wasAtBottom = c.scrollHeight - c.scrollTop <= c.clientHeight + 40;
+
+        // Nouveau message detecte
+        if (msgs.length > lastMsgCount && lastMsgCount > 0) {
+            if (!isPageVisible) {
+                document.getElementById('notifBadge').style.display = 'inline';
+            }
+            playNotifSound();
+        }
+        lastMsgCount = msgs.length;
+
+        c.innerHTML = msgs.map(m => `
+            <div class="chat-msg" style="border-left-color:${getColor(m.pseudo)}">
+                <span class="chat-user" style="color:${getColor(m.pseudo)}">${escapeHtml(m.pseudo)}</span>
+                ${escapeHtml(m.message)}
+                <span class="chat-time">${formatTime(m.time)}</span>
+            </div>`).join('');
+
+        if (wasAtBottom) c.scrollTop = c.scrollHeight;
+    } catch(e) {}
+}
+
+async function sendChat() {
+    if (!USERNAME) { openPseudo(); return; }
+    const i = document.getElementById('chatInput'), m = i.value.trim();
+    if (!m) return;
+    await fetch('/api/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: m, pseudo: USERNAME})
+    });
+    i.value = '';
     loadChat();
 }
 
-function openPseudo(){
-    if(USERNAME) return;
-    var savedPseudo=localStorage.getItem('rick_trading_pseudo');
-    if(savedPseudo && savedPseudo.length>=2){
-        USERNAME=savedPseudo;
-        fetch('/api/pseudo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pseudo:USERNAME})}).catch(console.log);
+// ====================================================
+// PSEUDO
+// ====================================================
+function openPseudo() {
+    if (USERNAME) return;
+    var saved = localStorage.getItem('rick_trading_pseudo');
+    if (saved && saved.length >= 2) {
+        USERNAME = saved;
+        fetch('/api/pseudo', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({pseudo: USERNAME})
+        }).catch(() => {});
         return;
     }
-    document.getElementById('pseudoModal').style.display='flex';
+    document.getElementById('pseudoModal').style.display = 'flex';
 }
 
-function closePseudoModal(){ document.getElementById('pseudoModal').style.display='none'; }
+function closePseudoModal() { document.getElementById('pseudoModal').style.display = 'none'; }
 
-function setPseudo(){
-    var n=document.getElementById('pseudoInput').value.trim();
-    if(n.length<2) return;
-    USERNAME=n;
-    localStorage.setItem('rick_trading_pseudo',USERNAME);
-    fetch('/api/pseudo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pseudo:USERNAME})});
+function setPseudo() {
+    var n = document.getElementById('pseudoInput').value.trim();
+    if (n.length < 2) return;
+    USERNAME = n;
+    localStorage.setItem('rick_trading_pseudo', USERNAME);
+    fetch('/api/pseudo', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({pseudo: USERNAME})
+    });
     closePseudoModal();
 }
 
-function escapeHtml(s){ return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
-function openAdminModal(){ document.getElementById('adminModal').style.display='flex'; document.getElementById('adminPass').value=''; document.getElementById('adminError').style.display='none'; }
-function closeAdminModal(){ document.getElementById('adminModal').style.display='none'; }
-function closeStatsModal(){ document.getElementById('statsModal').style.display='none'; }
+// ====================================================
+// ADMIN
+// ====================================================
+function openAdminModal() {
+    document.getElementById('adminModal').style.display = 'flex';
+    document.getElementById('adminPass').value = '';
+    document.getElementById('adminError').style.display = 'none';
+}
+function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
+function closeStatsModal() { document.getElementById('statsModal').style.display = 'none'; }
 
-async function checkAdmin(){
-    const p=document.getElementById('adminPass').value;
-    const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(p));
-    const hx=Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
-    if(hx===ADMIN_HASH){
+async function checkAdmin() {
+    const p = document.getElementById('adminPass').value;
+    const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(p));
+    const hx = Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2,'0')).join('');
+    if (hx === ADMIN_HASH) {
         closeAdminModal();
-        const r=await fetch('/api/stats'),d=await r.json();
-        document.getElementById('statsContent').innerHTML=`<p>❤️ Likes: ${d.likes}</p><p>📊 Visiteurs: ${d.visitors}</p>`;
-        document.getElementById('statsModal').style.display='flex';
-    }else{
-        document.getElementById('adminError').style.display='block';
+        const r = await fetch('/api/stats'), d = await r.json();
+        document.getElementById('statsContent').innerHTML =
+            `<p>❤️ Likes : ${d.likes}</p><p>📊 Visiteurs : ${d.visitors}</p>`;
+        document.getElementById('statsModal').style.display = 'flex';
+    } else {
+        document.getElementById('adminError').style.display = 'block';
     }
 }
 
-const pseudoModalHtml=`<div id="pseudoModal" class="modal"><div class="pseudo-box"><span class="close-modal" onclick="closePseudoModal()">&times;</span><h3>👋 Bienvenue !</h3><p>Choisissez un pseudo pour chatter</p><input type="text" id="pseudoInput" maxlength="20" placeholder="Pseudo"><button onclick="setPseudo()">Rejoindre le chat</button></div></div>`;
-document.body.insertAdjacentHTML('beforeend',pseudoModalHtml);
+// ====================================================
+// PSEUDO MODAL HTML
+// ====================================================
+const pseudoModalHtml = `
+<div id="pseudoModal" class="modal">
+    <div class="pseudo-box">
+        <span class="close-modal" onclick="closePseudoModal()">&times;</span>
+        <h3>👋 Bienvenue !</h3>
+        <p>Choisissez un pseudo pour chatter</p>
+        <input type="text" id="pseudoInput" maxlength="20" placeholder="Pseudo"
+            onkeypress="if(event.key==='Enter')setPseudo()">
+        <button onclick="setPseudo()">Rejoindre le chat</button>
+    </div>
+</div>`;
+document.body.insertAdjacentHTML('beforeend', pseudoModalHtml);
 
+// ====================================================
+// INIT
+// ====================================================
+openPseudo();
 updateOnline();
-setInterval(updateOnline,35000);
+setInterval(updateOnline, 35000);
 loadChat();
-setInterval(loadChat,4000);
+setInterval(loadChat, 4000);
+setInterval(updateTyping, 3000);
 updateAppLanguage();
 </script>
 <script src="/static/chart.js"></script>
