@@ -1,0 +1,17 @@
+name: Auto Deploy 7H40
+on:
+  schedule:
+    - cron: '40 6 * * *'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Push pour declencher Render
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          echo "$(date)" > .last_deploy
+          git add .last_deploy
+          git commit -m "auto deploy 7H40"
+          git push
