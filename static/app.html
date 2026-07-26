@@ -61,7 +61,7 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#c9d1d9;height:10
 </div>
 <script src="/static/chart.js"></script>
 <script>
-    const API_URL = 'https://TON-API.onrender.com';
+    const API_URL = 'https://trading-api.onrender.com';
     let USERNAME = localStorage.getItem('rick_pseudo') || '';
     if(!USERNAME){USERNAME=prompt('Votre pseudo:');if(USERNAME)localStorage.setItem('rick_pseudo',USERNAME)}
     function getColor(n){let c=['#58a6ff','#3fb950','#f0883e','#a371f7','#f85149','#d29922'],h=0;for(let i=0;i<n.length;i++)h=((h<<5)-h)+n.charCodeAt(i);return c[Math.abs(h)%c.length]}

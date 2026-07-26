@@ -81,7 +81,7 @@
     <footer>© 2025 Rick Trading - Le trading comporte des risques - Ce site ne constitue pas un conseil en investissement</footer>
 
     <script>
-        const API_URL = 'https://TON-API.onrender.com';
+        const API_URL = 'https://trading-api.onrender.com';
         async function updateOnline(){try{const r=await fetch(API_URL+'/api/online'),d=await r.json();document.getElementById('onlineCount').innerText=d.online}catch(e){}}
         updateOnline();setInterval(updateOnline,35000);
 
