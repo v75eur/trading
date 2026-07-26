@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rick Trading</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Space Grotesk',sans-serif;background:#07090c;color:#e6edf3;min-height:100vh}
+        .ticker{background:#0d1117;border-bottom:1px solid rgba(255,255,255,0.07);padding:9px 0;overflow:hidden;white-space:nowrap}
+        .ticker div{display:inline-flex;gap:48px;animation:scroll 38s linear infinite;font-family:'JetBrains Mono',monospace;font-size:0.78rem;padding-left:48px}
+        .ticker .up{color:#3fb950}.ticker .down{color:#f85149}
+        @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+        .hero{text-align:center;padding:3rem 1rem;background:radial-gradient(ellipse 900px 500px at 50% -10%,rgba(240,169,62,0.1),transparent 70%)}
+        .pyfiglet{font-family:'Courier New',monospace;font-size:clamp(1.2rem,4vw,2.5rem);font-weight:bold;animation:rainbow 5s linear infinite,glow 2s ease-in-out infinite;line-height:1.2;margin-bottom:0.5rem}
+        .subtitle{font-family:'Courier New',monospace;font-size:clamp(0.7rem,2vw,1rem);color:#f0a93e;animation:glow 2s ease-in-out infinite}
+        @keyframes rainbow{0%{color:#f00}16%{color:#f80}33%{color:#ff0}50%{color:#0f0}66%{color:#08f}83%{color:#80f}100%{color:#f00}}
+        @keyframes glow{0%,100%{text-shadow:0 0 10px #f0a93e,0 0 20px #f0a93e}50%{text-shadow:0 0 20px #f0a93e,0 0 40px #f0a93e}}
+
+        .banner{background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px solid #f0a93e;border-radius:12px;padding:1rem;margin:1.5rem auto;max-width:600px;text-align:center;box-shadow:0 0 20px rgba(240,169,62,0.3)}
+        .banner a{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:#f0a93e;text-decoration:none;animation:blink 1s infinite;display:block}
+        .banner p{color:#8b949e;font-size:0.75rem;font-family:'JetBrains Mono',monospace;margin-top:0.3rem}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+        .online{display:inline-flex;align-items:center;gap:8px;background:#0d1117;padding:7px 20px;border-radius:50px;margin:1rem 0;border:1px solid rgba(255,255,255,0.07);font-family:'JetBrains Mono',monospace;font-size:0.8rem}
+        .dot{width:8px;height:8px;background:#3fb950;border-radius:50%;box-shadow:0 0 6px #3fb950;animation:pulse 1.5s infinite}
+        @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.25)}}
+
+        .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;font-size:0.95rem;font-weight:600;border-radius:12px;text-decoration:none;transition:all 0.18s;margin:0.5rem}
+        .btn-primary{background:#f0a93e;color:#0a0a0a}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(240,169,62,0.3)}
+        .btn-outline{background:transparent;color:#e6edf3;border:1px solid rgba(255,255,255,0.07)}.btn-outline:hover{border-color:#f0a93e;color:#f0a93e}
+
+        .cards{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;max-width:760px;margin:2rem auto;padding:0 1rem}
+        .card{flex:1;min-width:260px;max-width:320px;background:#0d1117;border-radius:14px;border:1px solid rgba(255,255,255,0.07);overflow:hidden}
+        .card:hover{transform:translateY(-4px);border-color:rgba(240,169,62,0.4)}
+        .card-header{padding:0.7rem 1rem;border-bottom:1px solid rgba(255,255,255,0.07);font-weight:600;font-size:0.8rem;font-family:'JetBrains Mono',monospace;display:flex;justify-content:space-between}
+        .card-body{padding:1rem;text-align:center;min-height:150px;display:flex;align-items:center;justify-content:center}
+        .live-tag{font-size:0.65rem;color:#3fb950;border:1px solid rgba(63,185,80,0.3);background:rgba(63,185,80,0.08);padding:2px 8px;border-radius:20px}
+
+        footer{text-align:center;padding:1.5rem;color:#545d68;font-size:0.7rem;font-family:'JetBrains Mono',monospace;border-top:1px solid rgba(255,255,255,0.07);margin-top:2rem}
+
+        @media(max-width:700px){.cards{flex-direction:column;align-items:center}.card{max-width:100%}}
+    </style>
+</head>
+<body>
+    <div class="ticker"><div id="tickerTrack"><span>VOLATILITY 75 ···</span><span>EUR/USD ···</span><span>XAU/USD ···</span><span>VOLATILITY 75 ···</span><span>EUR/USD ···</span><span>XAU/USD ···</span></div></div>
+
+    <div class="hero">
+        <div class="pyfiglet">
+█▀█ █ █▀▀ █▄▀   ▀█▀ █▀█ █▀█ █▀▄ █ █▀▀ █▀▀<br>
+█▀▄ █ █▄▄ █░█   ░█░ █▀▄ █▀█ █▄▀ █ █▄█ █▀▀
+        </div>
+        <div class="subtitle">« La plateforme des traders africains »</div>
+
+        <div class="online"><span class="dot"></span><strong id="onlineCount">0</strong> traders en ligne</div>
+
+        <div class="banner">
+            <a href="https://sitmessag-site.onrender.com" target="_blank">💬 ÉCRIRE À L'ADMIN - Requêtes, bots, services, trading...</a>
+            <p>Décris ton projet, l'admin te contactera directement</p>
+        </div>
+
+        <div>
+            <a href="/app" class="btn btn-primary">📈 Lancer la plateforme</a>
+            <a href="/formation" class="btn btn-outline">🎓 Formation gratuite</a>
+        </div>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <div class="card-header">📊 Aperçu du marché <span class="live-tag">LIVE</span></div>
+            <div class="card-body">Chargement...</div>
+        </div>
+        <div class="card">
+            <div class="card-header">⚡ Espace partenaires</div>
+            <div class="card-body">À venir</div>
+        </div>
+    </div>
+
+    <footer>© 2025 Rick Trading - Le trading comporte des risques - Ce site ne constitue pas un conseil en investissement</footer>
+
+    <script>
+        const API_URL = 'https://TON-API.onrender.com';
+        async function updateOnline(){try{const r=await fetch(API_URL+'/api/online'),d=await r.json();document.getElementById('onlineCount').innerText=d.online}catch(e){}}
+        updateOnline();setInterval(updateOnline,35000);
+
+        // Ticker temps réel via Deriv WebSocket
+        const symbols=[{sym:'R_75',label:'VOLATILITY 75'},{sym:'frxEURUSD',label:'EUR/USD'},{sym:'frxXAUUSD',label:'XAU/USD'}];
+        let prices={};
+        function renderTicker(){const t=document.getElementById('tickerTrack');let items=symbols.map(s=>{const p=prices[s.sym];if(!p)return`<span>${s.label} ···</span>`;const cls=p.dir==='up'?'up':p.dir==='down'?'down':'';const arrow=p.dir==='up'?'▲':p.dir==='down'?'▼':'·';return`<span>${s.label} <span class="${cls}">${p.value.toFixed(s.sym.includes('frx')?5:2)} ${arrow}</span></span>`});t.innerHTML=items.join('')+items.join('')}
+        function connectTicker(){try{const ws=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');ws.onopen=()=>symbols.forEach(s=>ws.send(JSON.stringify({ticks:s.sym,subscribe:1})));ws.onmessage=m=>{const d=JSON.parse(m.data);if(d.tick){const sym=d.tick.symbol,newVal=+d.tick.quote,prev=prices[sym];prices[sym]={value:newVal,dir:prev?newVal>prev.value?'up':newVal<prev.value?'down':prev.dir:null};renderTicker()}};ws.onclose=()=>setTimeout(connectTicker,8000)}catch(e){}}
+        connectTicker();renderTicker();
+    </script>
+</body>
+</html>
