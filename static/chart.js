@@ -130,22 +130,17 @@ function loop(){
     if(lastR){let y=Y(lastR.price);ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(R,y);ctx.strokeStyle='#f85149';ctx.setLineDash([6,4]);ctx.stroke();ctx.fillStyle='#f85149';ctx.fillText('R:'+lastR.price.toFixed(dec),L+4,y-8);}
     if(lastS){let y=Y(lastS.price);ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(R,y);ctx.strokeStyle='#3fb950';ctx.setLineDash([6,4]);ctx.stroke();ctx.fillStyle='#3fb950';ctx.fillText('S:'+lastS.price.toFixed(dec),L+4,y-8);}
     ctx.setLineDash([]);
+    // Ligne de tendance HAUSSIERE
+    if(divergences.length>0 && divergences[0].type.includes('HAUSSIERE')){
+        ctx.fillStyle='#3fb950';ctx.font='bold 12px monospace';
+        ctx.fillText('CANAL HAUSSIER ✓',L+10,T+20);
+    }
+    // Ligne de tendance BAISSIERE
+    if(divergences.length>0 && divergences[0].type.includes('BAISSIERE')){
+        ctx.fillStyle='#f85149';ctx.font='bold 12px monospace';
+        ctx.fillText('CANAL BAISSIER ✗',L+10,T+20);
+    }
     for(let i=si;i<n;i++){let c=candles[i];let x=L+(i-si)*tw+2;let g=c.c>=c.o;ctx.strokeStyle=g?'#3fb950':'#f85149';ctx.beginPath();ctx.moveTo(x+cw/2,Y(c.h));ctx.lineTo(x+cw/2,Y(c.l));ctx.stroke();ctx.fillStyle=g?'#3fb950':'#f85149';let y1=Y(c.o),y2=Y(c.c);ctx.fillRect(x,Math.min(y1,y2),cw,Math.max(1,Math.abs(y2-y1)));}
-    if(lastDivLine&&lastDivLine.i1>=si&&lastDivLine.i2>=si){
-        let x1=L+(lastDivLine.i1-si)*tw+2,y1=Y(candles[lastDivLine.i1].h);
-        let x2=L+(lastDivLine.i2-si)*tw+2,y2=Y(candles[lastDivLine.i2].h);
-        ctx.beginPath();ctx.moveTo(x1,y1-15);ctx.lineTo(x2,y2-15);ctx.strokeStyle=lastDivLine.color;ctx.lineWidth=2.5;ctx.stroke();ctx.fillStyle=lastDivLine.color;ctx.fillText('DIV',(x1+x2)/2,y1-22);
-    }
-    if(price>0){let y=Y(price);ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(R,y);ctx.strokeStyle='#fff';ctx.stroke();ctx.fillStyle='#fff';ctx.fillText(price.toFixed(dec),R+6,y+4);}
-    if(macdData.length){
-        let mT=B+15,mH=80,mMin=1e10,mMax=-1e10;
-        for(let i=si;i<n;i++){if(macdData[i]){if(macdData[i].v<mMin)mMin=macdData[i].v;if(macdData[i].v>mMax)mMax=macdData[i].v;}if(signalData[i]){if(signalData[i].v<mMin)mMin=signalData[i].v;if(signalData[i].v>mMax)mMax=signalData[i].v;}}
-        let mRng=mMax-mMin||1,my=v=>mT+(mMax-v)/mRng*mH;
-        for(let i=si;i<n;i++){if(histogramData[i]){let hx=L+(i-si)*tw+2,hv=histogramData[i].v,hy=my(hv),hz=my(0);ctx.fillStyle=hv>=0?'rgba(63,185,80,0.6)':'rgba(248,81,73,0.6)';ctx.fillRect(hx,Math.min(hy,hz),cw,Math.abs(hy-hz));}}
-        ctx.beginPath();ctx.strokeStyle='#58a6ff';for(let i=si;i<n;i++)if(macdData[i]){let x=L+(i-si)*tw+2,y=my(macdData[i].v);if(i===si)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
-        ctx.beginPath();ctx.strokeStyle='#f0883e';for(let i=si;i<n;i++)if(signalData[i]){let x=L+(i-si)*tw+2,y=my(signalData[i].v);if(i===si)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
-        ctx.fillStyle='#58a6ff';ctx.fillText('MACD',L,mT+12);ctx.fillStyle='#f0883e';ctx.fillText('Signal',L+40,mT+12);
-    }
     requestAnimationFrame(loop);
 }
 
